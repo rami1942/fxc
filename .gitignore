@@ -2,3 +2,9 @@
 .project
 .settings
 fxc/target
+
+Debug
+Release
+fxc.sdf
+ipch
+fxc.vcxproj.user

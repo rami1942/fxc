@@ -1,0 +1,6 @@
+LIBRARY fxc
+
+EXPORTS
+	TrapLots
+
+VERSION 1.0
