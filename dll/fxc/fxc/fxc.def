@@ -1,7 +1,8 @@
 LIBRARY fxc
 
 EXPORTS
-	TrapLots
-	test
+	InitEnv
+	TerminateEnv
+	GetTrapList
 
 VERSION 1.0
