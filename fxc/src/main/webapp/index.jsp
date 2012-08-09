@@ -9,18 +9,37 @@
 </head>
 <body>
 
+<p>トラップ</p>
 <input type="button" value="Extend ↑" />
 <table border="1">
-<tr><td>S</td><td>98.60</td><td>4,000</td><td><input type="button" value="Purge" /></td></tr>
-<tr><td>S</td><td>98.40</td><td>4,000</td><td><input type="button" value="Purge" /></td></tr>
-<tr><td>S</td><td>98.20</td><td>4,000</td><td><input type="button" value="CLOSE" /></td></tr>
-<tr><td>S</td><td>98.00</td><td>4,000</td><td><input type="button" value="CLOSE" /></td></tr>
+<c:forEach var="sp" items="${shorts}">
+<tr>
+  <td>S</td>
+  <td>${f:out(sp.openPrice) }</td>
+  <td>${f:out(eachLots) }</td>
+  <td><input type="button" value="Delete" /></td>
+</tr>
+</c:forEach>
 </table>
 <input type="button" value="Extend ↓" />
 
+<p>本体ロング</p>
+
+<p>
+平均建値: ${longAverage}<br/>
+トラップ本数: ${numTraps}
+</p>
+<table border="1">
+<c:forEach var="lp" items="${longs}">
+<tr>
+  <td>L</td>
+  <td>${lp.openPrice}</td>
+  <td>${lp.lots}</td>
+</tr>
+</c:forEach>
+</table>
 <ul>
-<li><a href="hello">HelloAction</a></li>
-<li><a href="cubby-admin">Admin Tool</a></li>
+<li><a href="config">設定</a></li>
 </ul>
 </body>
 </html>

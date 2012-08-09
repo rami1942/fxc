@@ -146,19 +146,17 @@
 		(cp932やutf8など．デフォルトのlatin1は不可)行なっていれば，
 		文字化けは防げます．
 	-->
-	<!--
 	<component name="xaDataSource"
 		class="org.seasar.extension.dbcp.impl.XADataSourceImpl">
 		<property name="driverClassName">
 			"com.mysql.jdbc.Driver"
 		</property>
 		<property name="URL">
-			"jdbc:mysql://localhost:3306/test"
+			"jdbc:mysql://localhost:3306/fxc_dev"
 		</property>
-		<property name="user">"xxx"</property>
-		<property name="password">"xxx"</property>
+		<property name="user">"fxc_dev"</property>
+		<property name="password">"fxc_dev"</property>
 	</component>
-	-->
 
 	<!-- for SQLServer -->
 	<!--
