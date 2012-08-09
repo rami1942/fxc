@@ -9,6 +9,7 @@ import org.seasar.cubby.action.ActionClass;
 import org.seasar.cubby.action.ActionResult;
 import org.seasar.cubby.action.Forward;
 import org.seasar.cubby.action.Path;
+import org.seasar.cubby.action.Redirect;
 import org.seasar.extension.jdbc.JdbcManager;
 
 @ActionClass
@@ -43,4 +44,55 @@ public class IndexAction {
 		
 		return new Forward("index.jsp");
 	}
+	
+	public ActionResult extendUp() {
+		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").limit(1).getResultList();
+		ShortPosition sp = s.get(0);
+		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", "trap_width").getSingleResult();
+		Double width = Double.valueOf(c.confValue);
+		
+		ShortPosition np = new ShortPosition();
+		Double d = sp.openPrice + width;
+		d = Math.round(d * 1000.0) / 1000.0;
+		np.openPrice = d;
+		np.isReal = 0;
+		jdbcManager.insert(np).execute();
+		
+		return new Redirect("/");
+	}
+	
+	public ActionResult shortenUp() {
+		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").limit(1).getResultList();
+		ShortPosition sp = s.get(0);
+		
+		jdbcManager.delete(sp).execute();
+		
+		return new Redirect("/");
+	}
+	
+	public ActionResult extendDown() {
+		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice asc").limit(1).getResultList();
+		ShortPosition sp = s.get(0);
+		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", "trap_width").getSingleResult();
+		Double width = Double.valueOf(c.confValue);
+		
+		ShortPosition np = new ShortPosition();
+		Double d = sp.openPrice - width;
+		d = Math.round(d * 1000.0) / 1000.0;
+		np.openPrice = d;
+		np.isReal = 0;
+		jdbcManager.insert(np).execute();
+		
+		return new Redirect("/");
+	}
+	
+	public ActionResult shortenDown() {
+		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice asc").limit(1).getResultList();
+		ShortPosition sp = s.get(0);
+		
+		jdbcManager.delete(sp).execute();
+		
+		return new Redirect("/");
+	}
+
 }

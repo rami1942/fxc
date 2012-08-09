@@ -10,18 +10,43 @@
 <body>
 
 <p>トラップ</p>
-<input type="button" value="Extend ↑" />
-<table border="1">
-<c:forEach var="sp" items="${shorts}">
+<table>
 <tr>
-  <td>S</td>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="extendUp" value="${action}">
+<input type="submit" value="Extend ↑" />
+</t:form>
+</td>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="shortenUp" value="${action}">
+<input type="submit" value="Shorten ↓" />
+</t:form>
+</td>
+</tr>
+</table>
+<table border="1">
+<c:forEach var="sp" items="${shorts}" varStatus="stat">
+<tr>
+  <td>${stat.count}</td>
   <td>${f:out(sp.openPrice) }</td>
   <td>${f:out(eachLots) }</td>
-  <td><input type="button" value="Delete" /></td>
 </tr>
 </c:forEach>
 </table>
-<input type="button" value="Extend ↓" />
+<table>
+<tr>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="extendDown" value="${action}">
+<input type="submit" value="Extend ↓" />
+</t:form>
+</td>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="shortenDown" value="${action}">
+<input type="submit" value="Shorten ↑" />
+</t:form>
+</td>
+</tr>
+</table>
 
 <p>本体ロング</p>
 
@@ -30,9 +55,9 @@
 トラップ本数: ${numTraps}
 </p>
 <table border="1">
-<c:forEach var="lp" items="${longs}">
+<c:forEach var="lp" items="${longs}" varStatus="stat">
 <tr>
-  <td>L</td>
+  <td>${stat.count }</td>
   <td>${lp.openPrice}</td>
   <td>${lp.lots}</td>
 </tr>
