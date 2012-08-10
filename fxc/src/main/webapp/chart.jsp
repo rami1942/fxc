@@ -19,7 +19,7 @@ var price = [${prices}];
 var under = Math.round(baseLine + 0.5) + 1;
 
 var bx = 150;
-var by = 100;
+var by = 20;
 var boxSize = 40;
 
 window.onload=function() {
@@ -64,7 +64,7 @@ function drawPriceArrow(ctx, currentPrice) {
 	ctx.lineWidth=2;
 	ctx.beginPath();
 	ctx.moveTo(80, pos);
-	ctx.lineTo(120, pos);
+	ctx.lineTo(110, pos);
 	ctx.stroke();
 	ctx.fillStyle='red';
 	ctx.beginPath();
