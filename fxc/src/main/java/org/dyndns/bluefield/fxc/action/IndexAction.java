@@ -95,4 +95,7 @@ public class IndexAction {
 		return new Redirect("/");
 	}
 
+	public ActionResult chart() {
+		return new Forward("chart.jsp");
+	}
 }
