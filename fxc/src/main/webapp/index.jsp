@@ -64,6 +64,7 @@
 </c:forEach>
 </table>
 <ul>
+<li><a href="chart">チャート</a></li>
 <li><a href="config">設定</a></li>
 </ul>
 </body>

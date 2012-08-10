@@ -7,40 +7,39 @@
     <meta http-equiv="Content-Language" content="ja" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
-    <title>Canvas</title>
+    <title>状況</title>
 <script type="text/javascript">
 
-var width = 7;
-var under = 4;
+var width = ${numTraps};
+var currentPrice = ${currentPricePos};
+var basePrice = '${basePrice}';
+var baseLine = ${baseLine};
+var price = [${prices}];
 
-var priceText = '82.936';
-var priceLine = 2.57;
-
-var price = ['83.450', '83.050', '82.650', '82.250'];
+var under = Math.round(baseLine + 0.5) + 1;
 
 var bx = 150;
 var by = 100;
 var boxSize = 40;
 
-
 window.onload=function() {
 	var canvas = document.getElementById('cvs');
 	var ctx = canvas.getContext('2d');
 
+	// 建値(価格・横線)
 	ctx.strokeStyle='red';
 	ctx.lineWidth=2;
 	ctx.beginPath();
-	ctx.moveTo(80, by + boxSize * (priceLine + 1));
-	ctx.lineTo(bx + boxSize * (width + 1), by + boxSize * (priceLine + 1));
+	ctx.moveTo(80, by + boxSize * (baseLine + 1));
+	ctx.lineTo(bx + boxSize * (width + 1), by + boxSize * (baseLine + 1));
 	ctx.stroke();
-	
 	ctx.font="14px 'Times New Roman'";
 	ctx.fillStyle = 'red';
-	ctx.fillText(priceText, 20, by + 5 + boxSize * (priceLine + 1));
-
+	ctx.fillText(basePrice, 20, by + 5 + boxSize * (baseLine + 1));
 	
 	drawBlocks(ctx, width, under);
 
+	// 価格の横線
 	for (var i = 0; i < width; i+= 2) {
 		ctx.beginPath();
 		ctx.moveTo(80, by + boxSize * (i + 1));
@@ -48,11 +47,32 @@ window.onload=function() {
 		ctx.stroke();
 	}
 
+	// 価格の表示
 	ctx.font="16px 'Times New Roman'";
 	ctx.fillStyle = 'black';
 	for (i = 0; i < width; i += 2) {
 		ctx.fillText(price[i/2], 20, by + 5 + boxSize * (i+1));
 	}
+
+	drawPriceArrow(ctx, currentPrice);
+}
+
+function drawPriceArrow(ctx, currentPrice) {
+	// 現在値を示す矢印
+	var pos = by + boxSize * (currentPrice + 1);
+	ctx.strokeStyle='red';
+	ctx.lineWidth=2;
+	ctx.beginPath();
+	ctx.moveTo(80, pos);
+	ctx.lineTo(120, pos);
+	ctx.stroke();
+	ctx.fillStyle='red';
+	ctx.beginPath();
+	ctx.moveTo(120, pos);
+	ctx.lineTo(100, pos - 6);
+	ctx.lineTo(100, pos + 6);
+	ctx.closePath();
+	ctx.fill();
 }
 
 function drawBlocks(ctx, width, under) {
@@ -100,6 +120,9 @@ function drawBlock(ctx, x, y, typ) {
 </script>
   </head>
   <body>
+    <p>
+    <a href="${contextPath}/">戻る</a>
+    </p>
     <canvas id="cvs" width="1000" height="1000"></canvas>
   </body>
 </html>
