@@ -15,6 +15,8 @@ var currentPrice = ${currentPricePos};
 var basePrice = '${basePrice}';
 var baseLine = ${baseLine};
 var price = [${prices}];
+var ispos = [${positions}];
+var longPos = [${longPositions}];
 
 var under = Math.round(baseLine + 0.5) + 1;
 
@@ -39,7 +41,22 @@ window.onload=function() {
 	
 	drawBlocks(ctx, width, under);
 
+	ctx.lineWidth=4;
+	for (var i = 0; i < width; i++) {
+		if (ispos[i] == 0) {
+			ctx.strokeStyle = 'lime';
+		} else {
+			ctx.strokeStyle = 'magenta';
+		}
+		ctx.beginPath();
+		ctx.moveTo(bx + boxSize * (width - i - 1), by + boxSize * (i+1) - 1);
+		ctx.lineTo(bx + boxSize * (width - i), by + boxSize * (i+1) - 1);
+		ctx.stroke();
+	}
+
 	// 価格の横線
+	ctx.lineWidth=2;
+	ctx.strokeStyle='black';
 	for (var i = 0; i < width; i+= 2) {
 		ctx.beginPath();
 		ctx.moveTo(80, by + boxSize * (i + 1));
@@ -55,6 +72,22 @@ window.onload=function() {
 	}
 
 	drawPriceArrow(ctx, currentPrice);
+	drawLongArrow(ctx);
+}
+
+function drawLongArrow(ctx) {
+	ctx.fillStyle = 'black';
+	ctx.lineWidth = 1;
+	for (var i = 0; i < longPos.length; i++) {
+		var ypos = by + boxSize * (longPos[i] + 1);
+		var xpos = bx + width * boxSize + 20;
+		ctx.beginPath();
+		ctx.moveTo(xpos, ypos);
+		ctx.lineTo(xpos + 20, ypos - 6);
+		ctx.lineTo(xpos + 20, ypos + 6);
+		ctx.closePath();
+		ctx.fill();
+	}
 }
 
 function drawPriceArrow(ctx, currentPrice) {

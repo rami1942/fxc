@@ -27,6 +27,8 @@ public class IndexAction {
 	public String basePrice;
 	public Double baseLine;
 	public String prices;
+	public String positions;
+	public String longPositions;
 	
 	public ActionResult index() {
 		shorts = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").getResultList();
@@ -103,16 +105,13 @@ public class IndexAction {
 
 	public ActionResult chart() {
 		shorts = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").getResultList();
+		longs = jdbcManager.from(LongPosition.class).orderBy("openPrice desc").getResultList();
 		
 		Double trapWidth = Double.valueOf(jdbcManager.from(Configuration.class).where("confKey=?", "trap_width").getSingleResult().confValue);
 
 		// 平均建値・トラップ本数の算出
-		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", "lots").getSingleResult();
-		if (c != null) {
-			eachLots = Integer.valueOf(c.confValue);
-		}
+		eachLots = Integer.valueOf(jdbcManager.from(Configuration.class).where("confKey=?", "lots").getSingleResult().confValue);
 
-		longs = jdbcManager.from(LongPosition.class).orderBy("openPrice desc").getResultList();
 		int l = 0;
 		double pr = 0.0;
 		for (LongPosition p : longs) {
@@ -130,7 +129,8 @@ public class IndexAction {
 		// 現在価格位置の算出
 		Double curPrice = Double.valueOf(jdbcManager.from(Configuration.class).where("confKey=?", "current_price").getSingleResult().confValue);		
 		currentPricePos = (shorts.get(0).openPrice - curPrice) / trapWidth;
-		
+
+		// 目盛
 		StringBuilder buf = new StringBuilder();
 		int i = 0;
 		for (ShortPosition sp : shorts) {
@@ -142,6 +142,23 @@ public class IndexAction {
 			i++;
 		}
 		prices = buf.toString();
+		
+		// ショートポジション
+		buf = new StringBuilder();
+		for (ShortPosition sp : shorts) {
+			buf.append(sp.isReal);
+			buf.append(',');
+		}
+		positions = buf.toString();
+		
+		// ロングポジション
+		buf = new StringBuilder();
+		for (LongPosition lp : longs) {
+			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
+			buf.append(d);
+			buf.append(',');
+		}
+		longPositions = buf.toString();
 		
 		return new Forward("chart.jsp");
 	}
