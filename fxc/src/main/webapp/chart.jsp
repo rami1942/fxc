@@ -13,16 +13,32 @@
 var width = 7;
 var under = 4;
 
+var priceText = '82.936';
+var priceLine = 2.57;
+
 var price = ['83.450', '83.050', '82.650', '82.250'];
 
 var bx = 150;
 var by = 100;
 var boxSize = 40;
 
+
 window.onload=function() {
 	var canvas = document.getElementById('cvs');
 	var ctx = canvas.getContext('2d');
 
+	ctx.strokeStyle='red';
+	ctx.lineWidth=2;
+	ctx.beginPath();
+	ctx.moveTo(80, by + boxSize * (priceLine + 1));
+	ctx.lineTo(bx + boxSize * (width + 1), by + boxSize * (priceLine + 1));
+	ctx.stroke();
+	
+	ctx.font="14px 'Times New Roman'";
+	ctx.fillStyle = 'red';
+	ctx.fillText(priceText, 20, by + 5 + boxSize * (priceLine + 1));
+
+	
 	drawBlocks(ctx, width, under);
 
 	for (var i = 0; i < width; i+= 2) {
@@ -35,7 +51,7 @@ window.onload=function() {
 	ctx.font="16px 'Times New Roman'";
 	ctx.fillStyle = 'black';
 	for (i = 0; i < width; i += 2) {
-		ctx.fillText(price[i/2], 20, 100 + 5 + 40 * (i+1));
+		ctx.fillText(price[i/2], 20, by + 5 + boxSize * (i+1));
 	}
 }
 
