@@ -4,5 +4,7 @@ EXPORTS
 	InitEnv
 	TerminateEnv
 	GetTrapList
+	UpdatePrice
+	GetTrapLots
 
 VERSION 1.0
