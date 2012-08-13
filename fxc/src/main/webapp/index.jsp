@@ -13,14 +13,14 @@
 <table>
 <tr>
 <td>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="extendUp" value="${action}">
+<form action="extendUp">
 <input type="submit" value="Extend ↑" />
-</t:form>
+</form>
 </td>
 <td>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="shortenUp" value="${action}">
+<form action="shortenUp">
 <input type="submit" value="Shorten ↓" />
-</t:form>
+</form>
 </td>
 </tr>
 </table>
@@ -36,14 +36,14 @@
 <table>
 <tr>
 <td>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="extendDown" value="${action}">
+<form action="extendDown">
 <input type="submit" value="Extend ↓" />
-</t:form>
+</form>
 </td>
 <td>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="shortenDown" value="${action}">
+<form action="shortenDown">
 <input type="submit" value="Shorten ↑" />
-</t:form>
+</form>
 </td>
 </tr>
 </table>

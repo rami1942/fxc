@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
   <head>
@@ -38,7 +38,7 @@ window.onload=function() {
 	ctx.font="14px 'Times New Roman'";
 	ctx.fillStyle = 'red';
 	ctx.fillText(basePrice, 20, by + 5 + boxSize * (baseLine + 1));
-	
+
 	drawBlocks(ctx, width, under);
 
 	ctx.lineWidth=4;
@@ -115,14 +115,14 @@ function drawBlocks(ctx, width, under) {
 		}
 		for (x = width - y; x < width; x++) {
 			drawBlock(ctx, x, y, 1);
-		} 			
+		}
 	}
-	
+
 	for (y = under; y < width; y++) {
 		for (x = 0; x < width - y; x++) {
 			drawBlock(ctx, x, y, 2);
 		}
-	}	
+	}
 }
 
 function drawBlock(ctx, x, y, typ) {
@@ -153,8 +153,12 @@ function drawBlock(ctx, x, y, typ) {
 </script>
   </head>
   <body>
+  	<p>
+  	  ${currentDatetime}<br/>
+  	  現在値: ${currentPrice}<br/>
+  	</p>
     <p>
-    <a href="${contextPath}/">戻る</a>
+    <a href="./">戻る</a>
     </p>
     <canvas id="cvs" width="1000" height="1000"></canvas>
   </body>
