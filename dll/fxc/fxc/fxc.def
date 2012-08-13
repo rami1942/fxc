@@ -8,5 +8,6 @@ EXPORTS
 	GetTrapLots
 	SetLongPosition
 	UpdateShortPosition
+	GetTakeProfitWidth
 
 VERSION 1.0

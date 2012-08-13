@@ -97,6 +97,35 @@ __declspec(dllexport) int __stdcall GetTrapLots() {
 	return lots;
 }
 
+__declspec(dllexport) double __stdcall GetTakeProfitWidth() {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select conf_value from configuration where conf_key='tp_width'", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+	double tpWidth;
+	SQLBindCol(hStmt, 1, SQL_C_DOUBLE, &tpWidth, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+	}
+	DBCloseStmt(hStmt);
+
+	DBDisconnectDataSource(hEnv, hDBC);
+	return tpWidth;
+}
+
 __declspec(dllexport) int __stdcall SetLongPosition(double *buffer, int *lots) {
 	SQLHDBC hDBC;
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
