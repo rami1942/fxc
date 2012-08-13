@@ -14,3 +14,11 @@ create table long_position (
   open_price double not null,
   lots int not null
 );
+
+create table history (
+  id int auto_increment primary key,
+  event_type int not null,
+  event_dt datetime,
+  price double,
+  lots int
+);
