@@ -96,3 +96,64 @@ __declspec(dllexport) int __stdcall GetTrapLots() {
 	DBDisconnectDataSource(hEnv, hDBC);
 	return lots;
 }
+
+__declspec(dllexport) int __stdcall SetLongPosition(double *buffer, int *lots) {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from long_position", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+	int i = 0;
+	while(true) {
+		if (buffer[i] == 0) break;
+
+		char buf[1024];
+		sprintf_s(buf, 1024, "insert into long_position (open_price, lots) values (%lf, %d)", buffer[i], lots[i]);
+
+		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+			DBEndTrans(hEnv, hDBC, false);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+
+		i++;
+	}
+
+	DBEndTrans(hEnv, hDBC, true);
+	DBDisconnectDataSource(hEnv, hDBC);
+	return 1;
+}
+
+__declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_position set is_real = 0", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+	int i = 0;
+	while(true) {
+		if (position[i] == 0) break;
+
+		char buf[1024];
+		sprintf_s(buf, 1024, "update short_position set is_real = 1 where open_price = %lf", position[i]);
+
+		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+			DBEndTrans(hEnv, hDBC, false);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+
+		i++;
+	}
+
+	DBEndTrans(hEnv, hDBC, true);
+	DBDisconnectDataSource(hEnv, hDBC);
+	return 1;
+
+}
