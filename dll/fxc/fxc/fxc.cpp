@@ -132,7 +132,7 @@ __declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
 
 	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_position set is_real = 0", false)) {
+	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_position set is_real = 2 where is_real=1", false)) {
 		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
@@ -150,6 +150,12 @@ __declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
 		}
 
 		i++;
+	}
+
+	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_position set is_real = 0 where is_real=2", false)) {
+		DBEndTrans(hEnv, hDBC, false);
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
 	}
 
 	DBEndTrans(hEnv, hDBC, true);

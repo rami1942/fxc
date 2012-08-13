@@ -18,8 +18,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	InitEnv();
 
-	double price[] = {82.65, 82.45, 0};
-	UpdateShortPosition(price);
+	int lots = GetTrapLots();
+	printf("LOTS=%d", lots);
 
 	TerminateEnv();
 	return 0;
