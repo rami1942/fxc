@@ -9,11 +9,7 @@ create table configuration (
   conf_value varchar(255)
 );
 
-create table long_position (
-  id int auto_increment primary key,
-  open_price double not null,
-  lots int not null
-);
+---
 
 create table history (
   id int auto_increment primary key,
@@ -31,6 +27,54 @@ begin
     insert into history (event_type, event_dt, price) 
         values (0, now(), OLD.open_price);
   end if;
+end;//
+delimiter ;
+
+create table long_position (
+  open_price double primary key,
+  lots int not null,
+  is_real char(1)
+);
+
+delimiter //
+create trigger long_insert after insert on long_position
+for each row
+begin
+  insert into history (event_type, event_dt, price, lots)
+      values(3, now(), NEW.open_price, NEW.lots);
+end;//
+delimiter ;
+
+delimiter //
+create trigger long_delete after delete on long_position
+for each row
+begin
+  insert into history (event_type, event_dt, price, lots)
+      values(4, now(), OLD.open_price, OLD.lots);
+end;//
+delimiter ;
+
+create table delete_request (
+  id int auto_increment primary key,
+  price double not null
+);
+
+delimiter //
+create trigger short_delete after delete on short_position
+for each row
+begin
+  insert into history (event_type, event_dt, price)
+    values (2, now(), OLD.open_price);
+  insert into delete_request (price) values (OLD.open_price);
+end;//
+delimiter ;
+
+delimiter //
+create trigger short_insert after insert on short_position
+for each row
+begin
+  insert into history (event_type, event_dt, price)
+    values (1, now(), NEW.open_price);
 end;//
 delimiter ;
 
