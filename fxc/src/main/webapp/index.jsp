@@ -30,6 +30,10 @@
   <td>${stat.count}</td>
   <td>${f:out(sp.openPrice) }</td>
   <td>${f:out(eachLots) }</td>
+  <td>
+  	<c:if test="${sp.isReal == 1}">◯</c:if>
+  	<c:if test="${sp.isReal == 0}">&nbsp;</c:if>
+  </td>
 </tr>
 </c:forEach>
 </table>
