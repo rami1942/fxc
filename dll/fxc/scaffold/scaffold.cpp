@@ -12,14 +12,17 @@ extern int __stdcall UpdatePrice(double price);
 extern int __stdcall GetTrapLots();
 extern int __stdcall SetLongPosition(double *buffer, int *lots);
 extern int __stdcall UpdateShortPosition(double *position);
+extern int __stdcall UpdateLongPosition(double *position, int *lots);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 
 	InitEnv();
 
-	int lots = GetTrapLots();
-	printf("LOTS=%d", lots);
+	double price[] = {83.105, 83.058, 82.735, 82.561, 0};
+	int lots[] = {21000, 14000, 21000, 14000, 0};
+
+	UpdateLongPosition(price, lots);
 
 	TerminateEnv();
 	return 0;
