@@ -97,6 +97,35 @@ __declspec(dllexport) int __stdcall GetTrapLots() {
 	return lots;
 }
 
+__declspec(dllexport) double __stdcall GetTakeProfitWidth() {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select conf_value from configuration where conf_key='tp_width'", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+	double tpWidth;
+	SQLBindCol(hStmt, 1, SQL_C_DOUBLE, &tpWidth, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+	}
+	DBCloseStmt(hStmt);
+
+	DBDisconnectDataSource(hEnv, hDBC);
+	return tpWidth;
+}
+
 __declspec(dllexport) int __stdcall SetLongPosition(double *buffer, int *lots) {
 	SQLHDBC hDBC;
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
@@ -157,6 +186,84 @@ __declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
 		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
+
+	DBEndTrans(hEnv, hDBC, true);
+	DBDisconnectDataSource(hEnv, hDBC);
+	return 1;
+}
+
+__declspec(dllexport) int __stdcall UpdateLongPosition(double *position, int *lots) {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "update long_position set is_real = 0", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+	int i = 0;
+	while (true) {
+		if (position[i] == 0.0) break;
+
+		char buf[1024];
+		sprintf_s(buf, 1024, "insert into long_position (open_price, lots, is_real) values (%lf, %d, 1) on duplicate key update is_real=1", position[i], lots[i]);
+
+		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+			DBEndTrans(hEnv, hDBC, false);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+
+		i++;
+	}
+	
+	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from long_position where is_real=0", false)) {
+		DBEndTrans(hEnv, hDBC, false);
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+	DBEndTrans(hEnv, hDBC, true);
+	DBDisconnectDataSource(hEnv, hDBC);
+	return 1;
+}
+
+__declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select price from delete_request", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+	double price;
+	SQLBindCol(hStmt, 1, SQL_C_DOUBLE, &price, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+		position[i] = price;
+
+		i++;
+	}
+	DBCloseStmt(hStmt);
+	position[i] = 0.0;
+
+	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from delete_request", false)) {
+		DBEndTrans(hEnv, hDBC, false);
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
 
 	DBEndTrans(hEnv, hDBC, true);
 	DBDisconnectDataSource(hEnv, hDBC);
