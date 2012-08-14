@@ -22,3 +22,15 @@ create table history (
   price double,
   lots int
 );
+
+delimiter //
+create trigger short_repeat after update on short_position
+for each row
+begin
+  if OLD.is_real = 2 and NEW.is_real = 0 then
+    insert into history (event_type, event_dt, price) 
+        values (0, now(), OLD.open_price);
+  end if;
+end;//
+delimiter ;
+
