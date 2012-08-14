@@ -10,5 +10,6 @@ EXPORTS
 	UpdateShortPosition
 	UpdateLongPosition
 	GetTakeProfitWidth
+	GetDeleteRequest
 
 VERSION 1.0

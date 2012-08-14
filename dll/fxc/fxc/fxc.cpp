@@ -228,3 +228,45 @@ __declspec(dllexport) int __stdcall UpdateLongPosition(double *position, int *lo
 	DBDisconnectDataSource(hEnv, hDBC);
 	return 1;
 }
+
+__declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
+	SQLHDBC hDBC;
+	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select price from delete_request", false)) {
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+	double price;
+	SQLBindCol(hStmt, 1, SQL_C_DOUBLE, &price, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			DBDisconnectDataSource(hEnv, hDBC);
+			return 0;
+		}
+		position[i] = price;
+
+		i++;
+	}
+	DBCloseStmt(hStmt);
+	position[i] = 0.0;
+
+	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from delete_request", false)) {
+		DBEndTrans(hEnv, hDBC, false);
+		DBDisconnectDataSource(hEnv, hDBC);
+		return 0;
+	}
+
+
+	DBEndTrans(hEnv, hDBC, true);
+	DBDisconnectDataSource(hEnv, hDBC);
+	return 1;
+
+}
