@@ -18,7 +18,7 @@ var price = [${prices}];
 var ispos = [${positions}];
 var longPos = [${longPositions}];
 
-var under = Math.round(baseLine + 0.5) + 1;
+var under = Math.round(baseLine + 0.5) ;
 
 var bx = 150;
 var by = 20;
