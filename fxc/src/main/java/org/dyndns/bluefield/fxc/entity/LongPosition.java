@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 public class LongPosition {
 	public Double openPrice;
 	public Integer lots;
+	public Integer isWideBody;
 
 	public Double getOpenPrice() {
 		return openPrice;
@@ -18,5 +19,11 @@ public class LongPosition {
 	}
 	public void setLots(Integer lots) {
 		this.lots = lots;
+	}
+	public Integer getIsWideBody() {
+		return isWideBody;
+	}
+	public void setIsWideBody(Integer isWideBody) {
+		this.isWideBody = isWideBody;
 	}
 }
