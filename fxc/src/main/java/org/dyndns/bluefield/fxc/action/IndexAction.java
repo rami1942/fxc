@@ -71,7 +71,7 @@ public class IndexAction {
 		np.isReal = 0;
 		jdbcManager.insert(np).execute();
 
-		return new Redirect("/");
+		return new Redirect("./");
 	}
 
 	public ActionResult shortenUp() {
@@ -80,7 +80,7 @@ public class IndexAction {
 
 		jdbcManager.delete(sp).execute();
 
-		return new Redirect("/");
+		return new Redirect("./");
 	}
 
 	public ActionResult extendDown() {
@@ -96,7 +96,7 @@ public class IndexAction {
 		np.isReal = 0;
 		jdbcManager.insert(np).execute();
 
-		return new Redirect("/");
+		return new Redirect("./");
 	}
 
 	public ActionResult shortenDown() {
@@ -105,7 +105,7 @@ public class IndexAction {
 
 		jdbcManager.delete(sp).execute();
 
-		return new Redirect("/");
+		return new Redirect("./");
 	}
 
 	public ActionResult chart() {
