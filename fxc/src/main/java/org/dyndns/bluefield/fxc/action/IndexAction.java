@@ -4,20 +4,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.dyndns.bluefield.fxc.entity.Configuration;
+import javax.annotation.Resource;
+
 import org.dyndns.bluefield.fxc.entity.LongPosition;
 import org.dyndns.bluefield.fxc.entity.ShortPosition;
+import org.dyndns.bluefield.fxc.service.ConfigService;
+import org.dyndns.bluefield.fxc.service.PositionService;
 import org.seasar.cubby.action.ActionClass;
 import org.seasar.cubby.action.ActionResult;
 import org.seasar.cubby.action.Forward;
 import org.seasar.cubby.action.Path;
 import org.seasar.cubby.action.Redirect;
-import org.seasar.extension.jdbc.JdbcManager;
 
 @ActionClass
 @Path("/")
 public class IndexAction {
-	public JdbcManager jdbcManager;
+	@Resource
+	private PositionService positionService;
+	@Resource
+	private ConfigService configService;
 
 	public List<ShortPosition> shorts;
 	public Integer eachLots;
@@ -36,14 +41,10 @@ public class IndexAction {
 	public String longPositions;
 
 	public ActionResult index() {
-		shorts = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").getResultList();
-
-		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", "lots").getSingleResult();
-		if (c != null) {
-			eachLots = Integer.valueOf(c.confValue);
-		}
-
-		longs = jdbcManager.from(LongPosition.class).orderBy("openPrice desc").getResultList();
+		shorts = positionService.getShortPositions();		
+		eachLots = configService.getByInteger("lots");
+		longs = positionService.getLongPositions();
+		
 		int l = 0;
 		double pr = 0.0;
 		for (LongPosition p : longs) {
@@ -59,63 +60,42 @@ public class IndexAction {
 	}
 
 	public ActionResult extendUp() {
-		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").limit(1).getResultList();
-		ShortPosition sp = s.get(0);
-		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", "trap_width").getSingleResult();
-		Double width = Double.valueOf(c.confValue);
-
-		ShortPosition np = new ShortPosition();
-		Double d = sp.openPrice + width;
-		d = Math.round(d * 1000.0) / 1000.0;
-		np.openPrice = d;
-		np.isReal = 0;
-		jdbcManager.insert(np).execute();
+		ShortPosition sp = positionService.getMaxShortPosition();
+		Double width = configService.getByDouble("trap_width");		
+		positionService.insert(sp.openPrice + width);
 
 		return new Redirect("./");
 	}
 
 	public ActionResult shortenUp() {
-		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").limit(1).getResultList();
-		ShortPosition sp = s.get(0);
-
-		jdbcManager.delete(sp).execute();
-
+		ShortPosition sp = positionService.getMaxShortPosition();
+		positionService.delete(sp);
 		return new Redirect("./");
 	}
 
 	public ActionResult extendDown() {
-		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice asc").limit(1).getResultList();
-		ShortPosition sp = s.get(0);
-		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", "trap_width").getSingleResult();
-		Double width = Double.valueOf(c.confValue);
-
-		ShortPosition np = new ShortPosition();
-		Double d = sp.openPrice - width;
-		d = Math.round(d * 1000.0) / 1000.0;
-		np.openPrice = d;
-		np.isReal = 0;
-		jdbcManager.insert(np).execute();
+		ShortPosition sp = positionService.getMinShortPosition();
+		Double width = configService.getByDouble("trap_width");		
+		positionService.insert(sp.openPrice - width);
 
 		return new Redirect("./");
 	}
 
 	public ActionResult shortenDown() {
-		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice asc").limit(1).getResultList();
-		ShortPosition sp = s.get(0);
-
-		jdbcManager.delete(sp).execute();
+		ShortPosition sp = positionService.getMinShortPosition();
+		positionService.delete(sp);
 
 		return new Redirect("./");
 	}
 
 	public ActionResult chart() {
-		shorts = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").getResultList();
-		longs = jdbcManager.from(LongPosition.class).orderBy("openPrice desc").getResultList();
+		shorts = positionService.getShortPositions();
+		longs = positionService.getLongPositions();
 
-		Double trapWidth = Double.valueOf(jdbcManager.from(Configuration.class).where("confKey=?", "trap_width").getSingleResult().confValue);
+		Double trapWidth = configService.getByDouble("trap_width");
 
 		// 平均建値・トラップ本数の算出
-		eachLots = Integer.valueOf(jdbcManager.from(Configuration.class).where("confKey=?", "lots").getSingleResult().confValue);
+		eachLots = configService.getByInteger("lots");
 
 		int l = 0;
 		double pr = 0.0;
@@ -132,7 +112,7 @@ public class IndexAction {
 		baseLine = (shorts.get(0).openPrice - longAverage) / trapWidth;
 
 		// 現在価格位置の算出
-		Double curPrice = Double.valueOf(jdbcManager.from(Configuration.class).where("confKey=?", "current_price").getSingleResult().confValue);
+		Double curPrice = configService.getByDouble("current_price");
 		currentPricePos = (shorts.get(0).openPrice - curPrice) / trapWidth;
 		currentPrice = String.format("%3.3f", curPrice);
 
