@@ -9,7 +9,6 @@ create table configuration (
   conf_value varchar(255)
 );
 
----
 
 create table history (
   id int auto_increment primary key,
@@ -77,4 +76,10 @@ begin
     values (1, now(), NEW.open_price);
 end;//
 delimiter ;
+
+---
+
+alter table long_position add (
+  is_wide_body char(1) default 1
+);
 
