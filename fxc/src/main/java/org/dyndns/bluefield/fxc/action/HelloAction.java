@@ -18,16 +18,10 @@ package org.dyndns.bluefield.fxc.action;
 
 import org.seasar.cubby.action.ActionClass;
 import org.seasar.cubby.action.ActionContext;
-import org.seasar.cubby.action.ActionResult;
-import org.seasar.cubby.action.Forward;
-import org.seasar.cubby.action.Redirect;
 import org.seasar.cubby.action.RequestParameter;
-import org.seasar.cubby.action.Validation;
 import org.seasar.cubby.validator.DefaultValidationRules;
 import org.seasar.cubby.validator.ValidationRules;
 import org.seasar.cubby.validator.validators.RequiredValidator;
-
-import org.dyndns.bluefield.fxc.service.HelloService;
 
 @ActionClass
 public class HelloAction {
@@ -41,13 +35,13 @@ public class HelloAction {
 
 	public ActionContext actionContext;
 
-	public HelloService helloService;
+//	public HelloService helloService;
 
 	@RequestParameter
 	public String name;
 
 	public String message;
-
+/*
 	public ActionResult index() {
 		return new Forward("index.jsp");
 	}
@@ -63,5 +57,5 @@ public class HelloAction {
 				"notice", "Redirect OK!(this message is flash message)");
 		return new Redirect("/hello/");
 	}
-
+*/
 }
