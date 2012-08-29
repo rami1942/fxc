@@ -6,7 +6,6 @@ EXPORTS
 	GetTrapList
 	UpdatePrice
 	GetTrapLots
-	SetLongPosition
 	UpdateShortPosition
 	UpdateLongPosition
 	GetTakeProfitWidth
