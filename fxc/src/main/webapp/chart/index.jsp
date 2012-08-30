@@ -159,7 +159,7 @@ function drawBlock(ctx, x, y, typ) {
   	  現在値: ${currentPrice}<br/>
   	</p>
     <p>
-    <a href="./">戻る</a>
+    <a href="../">戻る</a>
     </p>
     <canvas id="cvs" width="1000" height="1000"></canvas>
   </body>
