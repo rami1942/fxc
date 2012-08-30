@@ -33,8 +33,10 @@ public class ChartAction {
 	public String basePrice;
 	public Double baseLine;
 	public String prices;
+	
 	public String positions;
 	public String longPositions;
+	public String freezePositions;
 
 	public ActionResult index() {
 		List<ShortPosition> shorts = positionService.getShortPositions();
@@ -83,13 +85,20 @@ public class ChartAction {
 		// ロングポジション
 		buf = new StringBuilder();
 		for (LongPosition lp : longs) {
-			if (lp.isWideBody == 0) continue;
 			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
 			buf.append(d);
 			buf.append(',');
 		}
 		longPositions = buf.toString();
-
+		
+		buf = new StringBuilder();
+		for (LongPosition lp : positionService.getFreezeLongs()) {
+			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
+			buf.append(d);
+			buf.append(',');
+		}
+		freezePositions = buf.toString();
+		
 		return new Forward("index.jsp");
 	}
 }

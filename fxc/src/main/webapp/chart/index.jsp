@@ -16,6 +16,7 @@ var baseLine = ${baseLine};
 var price = [${prices}];
 var ispos = [${positions}];
 var longPos = [${longPositions}];
+var freezePos = [${freezePositions}];
 
 var under = Math.round(baseLine + 0.5) ;
 
@@ -72,6 +73,7 @@ window.onload=function() {
 
 	drawPriceArrow(ctx, currentPrice);
 	drawLongMarker(ctx);
+	drawFreezeMarker(ctx);
 }
 
 // ロングを示すマーカー
@@ -87,6 +89,22 @@ function drawLongMarker(ctx) {
 		ctx.lineTo(xpos + 20, ypos + 6);
 		ctx.closePath();
 		ctx.fill();
+	}
+}
+
+// 凍結ロングを示すマーカー
+function drawFreezeMarker(ctx) {
+	ctx.strokeStyle = 'black';
+	ctx.lineWidth = 1;
+	for (var i = 0; i < freezePos.length; i++) {
+		var ypos = by + boxSize * (freezePos[i] + 1);
+		var xpos = bx + width * boxSize + 20;
+		ctx.beginPath();
+		ctx.moveTo(xpos, ypos);
+		ctx.lineTo(xpos + 20, ypos - 6);
+		ctx.lineTo(xpos + 20, ypos + 6);
+		ctx.closePath();
+		ctx.stroke();
 	}
 }
 
