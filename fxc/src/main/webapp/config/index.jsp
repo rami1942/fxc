@@ -14,12 +14,20 @@
 <t:form action="update" value="${action}">
 <table border="1">
 <tr>
-	<th>トラップ通貨数</th>
+	<th>トラップあたり通貨数</th>
 	<td><t:input type="text" name="lots" /></td>
 </tr>
 <tr>
-	<th>トラップ幅(銭)</th>
+	<th>トラップ間隔</th>
 	<td><t:input type="text" name="trapWidth" /></td>
+</tr>
+<tr>
+	<th>利確幅</th>
+	<td><t:input type="text" name="tpWidth" /></td>
+</tr>
+<tr>
+	<th>平均建値オフセット</th>
+	<td><t:input type="text" name="baseOffset" /></td>
 </tr>
 </table>
 <input type="submit" value="設定" />

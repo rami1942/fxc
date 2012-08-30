@@ -33,7 +33,7 @@ public class ChartAction {
 	public String basePrice;
 	public Double baseLine;
 	public String prices;
-	
+
 	public String positions;
 	public String longPositions;
 	public String freezePositions;
@@ -50,7 +50,7 @@ public class ChartAction {
 		numTraps = info.numTraps;
 
 		basePrice = Double.toString(longAverage);
-		baseLine = (shorts.get(0).openPrice - longAverage) / trapWidth;
+		baseLine = (shorts.get(0).openPrice - longAverage) / trapWidth + Double.valueOf(configService.getByDouble("base_offset"));
 
 		// 現在価格位置の算出
 		Double curPrice = configService.getByDouble("current_price");
@@ -90,7 +90,7 @@ public class ChartAction {
 			buf.append(',');
 		}
 		longPositions = buf.toString();
-		
+
 		buf = new StringBuilder();
 		for (LongPosition lp : positionService.getFreezeLongs()) {
 			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
@@ -98,7 +98,7 @@ public class ChartAction {
 			buf.append(',');
 		}
 		freezePositions = buf.toString();
-		
+
 		return new Forward("index.jsp");
 	}
 }
