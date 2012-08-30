@@ -1,10 +1,12 @@
 package org.dyndns.bluefield.fxc.util;
 
+import java.util.List;
+
 public class PriceUtil {
 
 	public static String separateComma(String orig) {
 		StringBuilder buf = new StringBuilder();
-		
+
 		boolean isFirst = true;
 		int fp = orig.length() % 3;
 		if (fp > 0) {
@@ -21,7 +23,11 @@ public class PriceUtil {
 			buf.append(orig.substring(p, p+3));
 			p += 3;
 		}
-		
+
 		return buf.toString();
+	}
+
+	public static Integer size(List<?> list) {
+		return list.size();
 	}
 }

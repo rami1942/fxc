@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Script-Type" content="text/JavaScript" />
   <link href="${contextPath}/css/default.css" rel="stylesheet" type="text/css" media="screen,projection"/>
   <title>Position</title>
-  
+
 <script type="text/javascript">
 
 function freeze(form, price) {
@@ -18,7 +18,7 @@ function freeze(form, price) {
 </head>
 <body>
 
-<c:if test="${shorts.size() != numTraps }">
+<c:if test="${my:size(shorts) != numTraps }">
 <font color="red">
 トラップの本数と本体のサイズが一致していません。チャートは正しく表示されないかも。
 </font>
@@ -87,7 +87,7 @@ function freeze(form, price) {
 </table>
 </form>
 
-<c:if test="${freezes.size() > 0 }">
+<c:if test="${my:size(freezes) > 0 }">
 <p>凍結ポジション</p>
 <form action="unfreezePosition">
 <input type="hidden" name="price" />
