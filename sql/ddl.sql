@@ -83,3 +83,19 @@ alter table long_position add (
   is_wide_body char(1) default 1
 );
 
+create table trade_result (
+  id int auto_increment primary key,
+  close_dt datetime,
+  is_long char(1),
+  is_trap char(1),
+  open_price double,
+  close_price double,
+  profit int
+);
+
+create table reservation (
+  id int auto_increment primary key,
+  reserve_dt datetime,
+  purpose char(1),
+  amount int
+);
