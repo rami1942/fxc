@@ -18,6 +18,12 @@ function freeze(form, price) {
 </head>
 <body>
 
+<c:if test="${shorts.size() != numTraps }">
+<font color="red">
+トラップの本数と本体のサイズが一致していません。チャートは正しく表示されないかも。
+</font>
+</c:if>
+
 <p>トラップ</p>
 <table>
 <tr>
