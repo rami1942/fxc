@@ -14,6 +14,7 @@ import org.seasar.cubby.action.ActionResult;
 import org.seasar.cubby.action.Forward;
 import org.seasar.cubby.action.Path;
 import org.seasar.cubby.action.Redirect;
+import org.seasar.cubby.action.RequestParameter;
 
 @ActionClass
 @Path("/")
@@ -23,6 +24,9 @@ public class IndexAction {
 	@Resource
 	private ConfigService configService;
 
+	@RequestParameter
+	public String price;
+	
 	public List<ShortPosition> shorts;
 	public List<LongPosition> longs;
 	public List<LongPosition> freezes;
@@ -69,6 +73,16 @@ public class IndexAction {
 		ShortPosition sp = positionService.getMinShortPosition();
 		positionService.delete(sp);
 
+		return new Redirect("./");
+	}
+	
+	public ActionResult freezePosition() {
+		positionService.setToFreeze(price);
+		return new Redirect("./");
+	}
+	
+	public ActionResult unfreezePosition() {
+		positionService.setToUnfreeze(price);
 		return new Redirect("./");
 	}
 }

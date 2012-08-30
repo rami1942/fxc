@@ -1,9 +1,12 @@
 package org.dyndns.bluefield.fxc.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity(name="long_position")
 public class LongPosition {
+	
+	@Id
 	public Double openPrice;
 	public Integer lots;
 	public Integer isWideBody;

@@ -71,4 +71,19 @@ public class PositionService {
 		
 		return info;
 	}
+	
+	public void setToFreeze(String price) {
+		LongPosition lp = jdbcManager.from(LongPosition.class).where("openPrice=?", price).getSingleResult();
+		if (lp == null) return;
+		lp.isWideBody = 0;
+		jdbcManager.update(lp).execute();
+	}
+	
+	public void setToUnfreeze(String price) {
+		LongPosition lp = jdbcManager.from(LongPosition.class).where("openPrice=?", price).getSingleResult();
+		if (lp == null) return;
+		lp.isWideBody = 1;
+		jdbcManager.update(lp).execute();
+	}
+
 }

@@ -6,6 +6,15 @@
   <meta http-equiv="Content-Script-Type" content="text/JavaScript" />
   <link href="${contextPath}/css/default.css" rel="stylesheet" type="text/css" media="screen,projection"/>
   <title>Position</title>
+  
+<script type="text/javascript">
+
+function freeze(form, price) {
+	form.price.value = price;
+	form.submit();
+}
+
+</script>
 </head>
 <body>
 
@@ -58,27 +67,35 @@
 平均建値: ${longAverage}<br/>
 トラップ本数: ${numTraps}
 </p>
+<form action="freezePosition">
+<input type="hidden" name="price" value="" />
 <table border="1">
 <c:forEach var="lp" items="${longs}" varStatus="stat">
 <tr>
-  <td>${stat.count }</td>
+  <td>${stat.count}</td>
   <td>${lp.openPrice}</td>
   <td>${lp.lots}</td>
+  <td><input type="button" value="凍結" onclick="freeze(this.form, ${lp.openPrice})"/></td>
 </tr>
 </c:forEach>
 </table>
+</form>
 
 <c:if test="${freezes.size() > 0 }">
 <p>凍結ポジション</p>
+<form action="unfreezePosition">
+<input type="hidden" name="price" />
 <table border="1">
 <c:forEach var="fp" items="${freezes}" varStatus="stat">
 <tr>
 	<td>${stat.count}</td>
 	<td>${fp.openPrice}</td>
 	<td>${fp.lots}</td>
+	<td><input type="button" value="解凍" onclick="freeze(this.form, ${fp.openPrice})"/></td>
 </tr>
 </c:forEach>
 </table>
+</form>
 </c:if>
 
 <ul>
