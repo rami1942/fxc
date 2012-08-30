@@ -44,7 +44,7 @@ function freeze(form, price) {
 <tr>
   <td>${stat.count}</td>
   <td>${f:out(sp.openPrice) }</td>
-  <td>${f:out(eachLots) }</td>
+  <td>${f:out(my:commaSep(eachLots)) }</td>
   <td>
   	<c:if test="${sp.isReal == 1}">◯</c:if>
   	<c:if test="${sp.isReal == 0}">&nbsp;</c:if>
@@ -80,7 +80,7 @@ function freeze(form, price) {
 <tr>
   <td>${stat.count}</td>
   <td>${lp.openPrice}</td>
-  <td>${lp.lots}</td>
+  <td>${my:commaSep(lp.lots)}</td>
   <td><input type="button" value="凍結" onclick="freeze(this.form, ${lp.openPrice})"/></td>
 </tr>
 </c:forEach>

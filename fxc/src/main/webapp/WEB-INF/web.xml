@@ -163,6 +163,10 @@
     </welcome-file-list>
 
     <jsp-config>
+    	<taglib>
+    		<taglib-uri>http://fxc.bluefield.dyndns.org/tags/</taglib-uri>
+    		<taglib-location>/WEB-INF/mytag.tld</taglib-location>
+    	</taglib>
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>
             <el-ignored>false</el-ignored>
