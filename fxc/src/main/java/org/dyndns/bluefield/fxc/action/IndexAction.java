@@ -10,6 +10,7 @@ import org.dyndns.bluefield.fxc.entity.LongPosition;
 import org.dyndns.bluefield.fxc.entity.ShortPosition;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
+import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
 import org.seasar.cubby.action.ActionClass;
 import org.seasar.cubby.action.ActionResult;
 import org.seasar.cubby.action.Forward;
@@ -45,16 +46,9 @@ public class IndexAction {
 		eachLots = configService.getByInteger("lots");
 		longs = positionService.getLongPositions();
 		
-		int l = 0;
-		double pr = 0.0;
-		for (LongPosition p : longs) {
-			l += p.lots;
-			pr += p.openPrice * p.lots;
-		}
-		longAverage = pr / l;
-		longAverage = Math.round(longAverage * 1000.0) / 1000.0;
-
-		numTraps = l / eachLots;
+		LongInfo info = positionService.calcTraps(longs);
+		longAverage = info.avg;
+		numTraps = info.numTraps;
 
 		return new Forward("index.jsp");
 	}
@@ -97,16 +91,9 @@ public class IndexAction {
 		// 平均建値・トラップ本数の算出
 		eachLots = configService.getByInteger("lots");
 
-		int l = 0;
-		double pr = 0.0;
-		for (LongPosition p : longs) {
-			l += p.lots;
-			pr += p.openPrice * p.lots;
-		}
-		longAverage = pr / l;
-		longAverage = Math.round(longAverage * 1000.0) / 1000.0;
-
-		numTraps = l / eachLots;
+		LongInfo info = positionService.calcTraps(longs);
+		longAverage = info.avg;
+		numTraps = info.numTraps;
 
 		basePrice = longAverage.toString();
 		baseLine = (shorts.get(0).openPrice - longAverage) / trapWidth;

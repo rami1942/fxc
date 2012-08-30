@@ -10,8 +10,15 @@ import org.dyndns.bluefield.fxc.entity.ShortPosition;
 import org.seasar.extension.jdbc.JdbcManager;
 
 public class PositionService {
+	public static class LongInfo {
+		public Double avg;
+		public Integer numTraps;
+	}
+	
 	@Resource
 	private JdbcManager jdbcManager;
+	@Resource
+	private ConfigService configService;
 
 	public List<ShortPosition> getShortPositions() {
 		return jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").getResultList();
@@ -40,5 +47,24 @@ public class PositionService {
 	
 	public void delete(ShortPosition sp) {
 		jdbcManager.delete(sp).execute();
+	}
+	
+	public LongInfo calcTraps(List<LongPosition> longs) {
+		LongInfo info = new LongInfo();
+		Integer eachLots = configService.getByInteger("lots");
+
+		int l = 0;
+		double pr = 0.0;
+		for (LongPosition p : longs) {
+			l += p.lots;
+			pr += p.openPrice * p.lots;
+		}
+		double longAverage = pr / l;
+		longAverage = Math.round(longAverage * 1000.0) / 1000.0;
+
+		info.numTraps = l / eachLots;
+		info.avg = longAverage;
+		
+		return info;
 	}
 }
