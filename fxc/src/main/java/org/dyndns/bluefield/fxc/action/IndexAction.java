@@ -131,6 +131,7 @@ public class IndexAction {
 		// ロングポジション
 		buf = new StringBuilder();
 		for (LongPosition lp : longs) {
+			if (lp.isWideBody == 0) continue;
 			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
 			buf.append(d);
 			buf.append(',');

@@ -56,6 +56,7 @@ public class PositionService {
 		int l = 0;
 		double pr = 0.0;
 		for (LongPosition p : longs) {
+			if (p.isWideBody == 0) continue;
 			l += p.lots;
 			pr += p.openPrice * p.lots;
 		}
