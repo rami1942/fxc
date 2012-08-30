@@ -72,10 +72,11 @@ window.onload=function() {
 	}
 
 	drawPriceArrow(ctx, currentPrice);
-	drawLongArrow(ctx);
+	drawLongMarker(ctx);
 }
 
-function drawLongArrow(ctx) {
+// ロングを示すマーカー
+function drawLongMarker(ctx) {
 	ctx.fillStyle = 'black';
 	ctx.lineWidth = 1;
 	for (var i = 0; i < longPos.length; i++) {
