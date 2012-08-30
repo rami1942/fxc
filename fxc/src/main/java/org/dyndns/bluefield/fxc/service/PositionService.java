@@ -25,7 +25,11 @@ public class PositionService {
 	}
 	
 	public List<LongPosition> getLongPositions() {
-		return jdbcManager.from(LongPosition.class).orderBy("openPrice desc").getResultList();
+		return jdbcManager.from(LongPosition.class).where("isWideBody=1").orderBy("openPrice desc").getResultList();
+	}
+	
+	public List<LongPosition> getFreezeLongs()	 {
+		return jdbcManager.from(LongPosition.class).where("isWideBody=0").orderBy("openPrice desc").getResultList();
 	}
 	
 	public ShortPosition getMaxShortPosition() {
@@ -56,7 +60,6 @@ public class PositionService {
 		int l = 0;
 		double pr = 0.0;
 		for (LongPosition p : longs) {
-			if (p.isWideBody == 0) continue;
 			l += p.lots;
 			pr += p.openPrice * p.lots;
 		}

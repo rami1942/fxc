@@ -24,15 +24,17 @@ public class IndexAction {
 	private ConfigService configService;
 
 	public List<ShortPosition> shorts;
+	public List<LongPosition> longs;
+	public List<LongPosition> freezes;
 	public Integer eachLots;
 	public Integer numTraps;
 	public Double longAverage;
-	public List<LongPosition> longs;
 
 	public ActionResult index() {
 		shorts = positionService.getShortPositions();		
-		eachLots = configService.getByInteger("lots");
 		longs = positionService.getLongPositions();
+		freezes = positionService.getFreezeLongs();
+		eachLots = configService.getByInteger("lots");
 		
 		LongInfo info = positionService.calcTraps(longs);
 		longAverage = info.avg;

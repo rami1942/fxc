@@ -67,6 +67,20 @@
 </tr>
 </c:forEach>
 </table>
+
+<c:if test="${freezes.size() > 0 }">
+<p>凍結ポジション</p>
+<table border="1">
+<c:forEach var="fp" items="${freezes}" varStatus="stat">
+<tr>
+	<td>${stat.count}</td>
+	<td>${fp.openPrice}</td>
+	<td>${fp.lots}</td>
+</tr>
+</c:forEach>
+</table>
+</c:if>
+
 <ul>
 <li><a href="chart">チャート</a></li>
 <li><a href="config">設定</a></li>
