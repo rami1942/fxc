@@ -20,4 +20,10 @@ public class ConfigService {
 		if (c == null) return null;
 		return Double.valueOf(c.confValue);
 	}
+	
+	public void set(String key, String value) {
+		Configuration c = jdbcManager.from(Configuration.class).where("confKey=?", key).getSingleResult();
+		c.confValue = value;
+		jdbcManager.update(c).execute();
+	}
 }

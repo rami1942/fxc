@@ -5,9 +5,25 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta http-equiv="Content-Script-Type" content="text/JavaScript" />
   <link href="${contextPath}/css/default.css" rel="stylesheet" type="text/css" media="screen,projection" charset="utf-8" />
-  <title>Position</title>
+  <title>設定</title>
 </head>
 <body>
-Config
+<c:import url="/common/errors.jsp"/>
+<c:import url="/common/notice.jsp"/>
+
+<t:form action="update" value="${action}">
+<table border="1">
+<tr>
+	<th>トラップ通貨数</th>
+	<td><t:input type="text" name="lots" /></td>
+</tr>
+<tr>
+	<th>トラップ幅(銭)</th>
+	<td><t:input type="text" name="trapWidth" /></td>
+</tr>
+</table>
+<input type="submit" value="設定" />
+</t:form>
+
 </body>
 </html>
