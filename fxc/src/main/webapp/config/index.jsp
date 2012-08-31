@@ -33,5 +33,8 @@
 <input type="submit" value="設定" />
 </t:form>
 
+<p>
+<a href="../">戻る</a>
+</p>
 </body>
 </html>

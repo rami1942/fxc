@@ -38,6 +38,8 @@ public class ChartAction {
 	public String longPositions;
 	public String freezePositions;
 
+	public String accessKey;
+
 	public ActionResult index() {
 		List<ShortPosition> shorts = positionService.getShortPositions();
 		List<LongPosition> longs = positionService.getLongPositions();
@@ -98,6 +100,8 @@ public class ChartAction {
 			buf.append(',');
 		}
 		freezePositions = buf.toString();
+
+		accessKey = configService.getByString("auth_key");
 
 		return new Forward("index.jsp");
 	}

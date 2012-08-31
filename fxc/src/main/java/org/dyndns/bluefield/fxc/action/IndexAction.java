@@ -26,20 +26,22 @@ public class IndexAction {
 
 	@RequestParameter
 	public String price;
-	
+
 	public List<ShortPosition> shorts;
 	public List<LongPosition> longs;
 	public List<LongPosition> freezes;
 	public Integer eachLots;
 	public Integer numTraps;
 	public Double longAverage;
+	public String accessKey;
 
 	public ActionResult index() {
-		shorts = positionService.getShortPositions();		
+		shorts = positionService.getShortPositions();
 		longs = positionService.getLongPositions();
 		freezes = positionService.getFreezeLongs();
 		eachLots = configService.getByInteger("lots");
-		
+		accessKey = configService.getByString("auth_key");
+
 		LongInfo info = positionService.calcTraps(longs);
 		longAverage = info.avg;
 		numTraps = info.numTraps;
@@ -49,7 +51,7 @@ public class IndexAction {
 
 	public ActionResult extendUp() {
 		ShortPosition sp = positionService.getMaxShortPosition();
-		Double width = configService.getByDouble("trap_width");		
+		Double width = configService.getByDouble("trap_width");
 		positionService.insert(sp.openPrice + width);
 
 		return new Redirect("./");
@@ -63,7 +65,7 @@ public class IndexAction {
 
 	public ActionResult extendDown() {
 		ShortPosition sp = positionService.getMinShortPosition();
-		Double width = configService.getByDouble("trap_width");		
+		Double width = configService.getByDouble("trap_width");
 		positionService.insert(sp.openPrice - width);
 
 		return new Redirect("./");
@@ -75,12 +77,12 @@ public class IndexAction {
 
 		return new Redirect("./");
 	}
-	
+
 	public ActionResult freezePosition() {
 		positionService.setToFreeze(price);
 		return new Redirect("./");
 	}
-	
+
 	public ActionResult unfreezePosition() {
 		positionService.setToUnfreeze(price);
 		return new Redirect("./");

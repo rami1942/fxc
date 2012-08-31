@@ -44,7 +44,7 @@ function freeze(form, price) {
 <tr>
   <td>${stat.count}</td>
   <td>${f:out(sp.openPrice) }</td>
-  <td>${f:out(my:commaSep(eachLots)) }</td>
+  <td align="right">${f:out(my:commaSep(eachLots)) }</td>
   <td>
   	<c:if test="${sp.isReal == 1}">◯</c:if>
   	<c:if test="${sp.isReal == 0}">&nbsp;</c:if>
@@ -80,7 +80,7 @@ function freeze(form, price) {
 <tr>
   <td>${stat.count}</td>
   <td>${lp.openPrice}</td>
-  <td>${my:commaSep(lp.lots)}</td>
+  <td align="right">${my:commaSep(lp.lots)}</td>
   <td><input type="button" value="凍結" onclick="freeze(this.form, ${lp.openPrice})"/></td>
 </tr>
 </c:forEach>
@@ -96,7 +96,7 @@ function freeze(form, price) {
 <tr>
 	<td>${stat.count}</td>
 	<td>${fp.openPrice}</td>
-	<td>${fp.lots}</td>
+	<td align="right">${my:commaSep(fp.lots)}</td>
 	<td><input type="button" value="解凍" onclick="freeze(this.form, ${fp.openPrice})"/></td>
 </tr>
 </c:forEach>
@@ -105,8 +105,8 @@ function freeze(form, price) {
 </c:if>
 
 <ul>
-<li><a href="chart">チャート</a></li>
-<li><a href="config">設定</a></li>
+<li><a href="chart?ak=${accessKey}">チャート</a></li>
+<li><a href="config?ak=${accessKey}">設定</a></li>
 </ul>
 </body>
 </html>
