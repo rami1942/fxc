@@ -24,7 +24,7 @@ __declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
 
 	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "select open_price from short_position order by open_price desc", false)) {
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select open_price from short_trap order by open_price desc", false)) {
 		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
@@ -131,7 +131,7 @@ __declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
 
 	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_position set is_real = 2 where is_real=1", false)) {
+	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_trap set is_real = 2 where is_real=1", false)) {
 		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
@@ -140,7 +140,7 @@ __declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
 		if (position[i] == 0) break;
 
 		char buf[1024];
-		sprintf_s(buf, 1024, "update short_position set is_real = 1 where open_price = %lf", position[i]);
+		sprintf_s(buf, 1024, "update short_trap set is_real = 1 where open_price = %lf", position[i]);
 
 		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 			DBEndTrans(hEnv, hDBC, false);
@@ -151,7 +151,7 @@ __declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
 		i++;
 	}
 
-	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_position set is_real = 0 where is_real=2", false)) {
+	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_trap set is_real = 0 where is_real=2", false)) {
 		DBEndTrans(hEnv, hDBC, false);
 		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
