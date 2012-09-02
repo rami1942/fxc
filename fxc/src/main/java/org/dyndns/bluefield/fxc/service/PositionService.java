@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.LongPosition;
-import org.dyndns.bluefield.fxc.entity.ShortPosition;
+import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.seasar.extension.jdbc.JdbcManager;
 
 public class PositionService {
@@ -20,8 +20,8 @@ public class PositionService {
 	@Resource
 	private ConfigService configService;
 
-	public List<ShortPosition> getShortPositions() {
-		return jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").getResultList();
+	public List<ShortTrap> getShortPositions() {
+		return jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").getResultList();
 	}
 	
 	public List<LongPosition> getLongPositions() {
@@ -32,24 +32,24 @@ public class PositionService {
 		return jdbcManager.from(LongPosition.class).where("isWideBody=0").orderBy("openPrice desc").getResultList();
 	}
 	
-	public ShortPosition getMaxShortPosition() {
-		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice desc").limit(1).getResultList();
+	public ShortTrap getMaxShortPosition() {
+		List<ShortTrap> s = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").limit(1).getResultList();
 		return s.get(0);
 	}
 	
-	public ShortPosition getMinShortPosition() {
-		List<ShortPosition> s = jdbcManager.from(ShortPosition.class).orderBy("openPrice asc").limit(1).getResultList();
+	public ShortTrap getMinShortPosition() {
+		List<ShortTrap> s = jdbcManager.from(ShortTrap.class).orderBy("openPrice asc").limit(1).getResultList();
 		return s.get(0);
 	}
 	
 	public void insert(Double price) {
-		ShortPosition np = new ShortPosition();
+		ShortTrap np = new ShortTrap();
 		np.openPrice = Math.round(price * 1000.0) / 1000.0;
 		np.isReal = 0;
 		jdbcManager.insert(np).execute();
 	}
 	
-	public void delete(ShortPosition sp) {
+	public void delete(ShortTrap sp) {
 		jdbcManager.delete(sp).execute();
 	}
 	

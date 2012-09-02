@@ -32,7 +32,8 @@ delimiter ;
 create table long_position (
   open_price double primary key,
   lots int not null,
-  is_real char(1)
+  is_real char(1),
+  is_wide_body char(1) default 1
 );
 
 delimiter //
@@ -79,10 +80,6 @@ delimiter ;
 
 ---
 
-alter table long_position add (
-  is_wide_body char(1) default 1
-);
-
 create table trade_result (
   id int auto_increment primary key,
   close_dt datetime,
@@ -99,3 +96,6 @@ create table reservation (
   purpose char(1),
   amount int
 );
+
+alter table short_position rename to short_trap;
+

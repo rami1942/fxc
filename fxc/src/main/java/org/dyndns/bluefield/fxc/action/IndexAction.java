@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.LongPosition;
-import org.dyndns.bluefield.fxc.entity.ShortPosition;
+import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
 import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
@@ -27,7 +27,7 @@ public class IndexAction {
 	@RequestParameter
 	public String price;
 
-	public List<ShortPosition> shorts;
+	public List<ShortTrap> shorts;
 	public List<LongPosition> longs;
 	public List<LongPosition> freezes;
 	public Integer eachLots;
@@ -50,7 +50,7 @@ public class IndexAction {
 	}
 
 	public ActionResult extendUp() {
-		ShortPosition sp = positionService.getMaxShortPosition();
+		ShortTrap sp = positionService.getMaxShortPosition();
 		Double width = configService.getByDouble("trap_width");
 		positionService.insert(sp.openPrice + width);
 
@@ -58,13 +58,13 @@ public class IndexAction {
 	}
 
 	public ActionResult shortenUp() {
-		ShortPosition sp = positionService.getMaxShortPosition();
+		ShortTrap sp = positionService.getMaxShortPosition();
 		positionService.delete(sp);
 		return new Redirect("./");
 	}
 
 	public ActionResult extendDown() {
-		ShortPosition sp = positionService.getMinShortPosition();
+		ShortTrap sp = positionService.getMinShortPosition();
 		Double width = configService.getByDouble("trap_width");
 		positionService.insert(sp.openPrice - width);
 
@@ -72,7 +72,7 @@ public class IndexAction {
 	}
 
 	public ActionResult shortenDown() {
-		ShortPosition sp = positionService.getMinShortPosition();
+		ShortTrap sp = positionService.getMinShortPosition();
 		positionService.delete(sp);
 
 		return new Redirect("./");
