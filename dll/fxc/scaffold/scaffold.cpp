@@ -11,7 +11,7 @@ extern int __stdcall GetTrapList(double *buffer);
 extern int __stdcall UpdatePrice(double price);
 extern int __stdcall GetTrapLots();
 extern int __stdcall SetLongPosition(double *buffer, int *lots);
-extern int __stdcall UpdateShortPosition(double *position);
+extern int __stdcall UpdateShortTrap(double *position);
 extern int __stdcall UpdateLongPosition(double *position, int *lots);
 
 int _tmain(int argc, _TCHAR* argv[])

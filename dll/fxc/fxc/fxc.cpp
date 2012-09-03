@@ -126,7 +126,7 @@ __declspec(dllexport) double __stdcall GetTakeProfitWidth() {
 	return tpWidth;
 }
 
-__declspec(dllexport) int __stdcall UpdateShortPosition(double *position) {
+__declspec(dllexport) int __stdcall UpdateShortTrap(double *position) {
 	SQLHDBC hDBC;
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
 

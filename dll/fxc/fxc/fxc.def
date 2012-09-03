@@ -6,7 +6,7 @@ EXPORTS
 	GetTrapList
 	UpdatePrice
 	GetTrapLots
-	UpdateShortPosition
+	UpdateShortTrap
 	UpdateLongPosition
 	GetTakeProfitWidth
 	GetDeleteRequest
