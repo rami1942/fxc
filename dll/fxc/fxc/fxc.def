@@ -3,6 +3,8 @@ LIBRARY fxc
 EXPORTS
 	InitEnv
 	TerminateEnv
+	Connect
+	Disconnect
 	GetTrapList
 	UpdatePrice
 	GetTrapLots

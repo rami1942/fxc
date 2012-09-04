@@ -7,6 +7,7 @@
 #include "odbcfunc.h"
 
 static SQLHENV hEnv;
+static SQLHDBC hDBC;
 
 __declspec(dllexport) int __stdcall InitEnv() {
 	DBConnectInit(&hEnv);
@@ -18,14 +19,20 @@ __declspec(dllexport) int __stdcall TerminateEnv() {
 	return 1;
 }
 
-__declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
-
-	SQLHDBC hDBC;
+__declspec(dllexport) int __stdcall Connect() {
 	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
+	return 1;
+}
+
+__declspec(dllexport) int __stdcall Disconnect() {
+	DBDisconnectDataSource(hEnv, hDBC);
+	return 0;
+}
+
+__declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "select open_price from short_trap order by open_price desc", false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
@@ -38,7 +45,6 @@ __declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 		if (rc == SQL_NO_DATA_FOUND) break;
 		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
 			DBCloseStmt(hStmt);
-			DBDisconnectDataSource(hEnv, hDBC);
 			return 0;
 		}
 		buffer[i++] = price;
@@ -46,35 +52,25 @@ __declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 	DBCloseStmt(hStmt);
 	buffer[i++] = 0.0L;
 
-	DBDisconnectDataSource(hEnv, hDBC);
 	return 1;
 }
 
 __declspec(dllexport) int __stdcall UpdatePrice(double price) {
-	SQLHDBC hDBC;
-	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
-
 	char buf[1024];
 	sprintf_s(buf, 1024, "update configuration set conf_value='%lf' where conf_key='current_price'", price);
 
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
 	DBEndTrans(hEnv, hDBC, true);
-	DBDisconnectDataSource(hEnv, hDBC);
 	return 1;
 }
 
 __declspec(dllexport) int __stdcall GetTrapLots() {
-	SQLHDBC hDBC;
-	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
-
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "select conf_value from configuration where conf_key='lots'", false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
@@ -87,23 +83,16 @@ __declspec(dllexport) int __stdcall GetTrapLots() {
 		if (rc == SQL_NO_DATA_FOUND) break;
 		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
 			DBCloseStmt(hStmt);
-			DBDisconnectDataSource(hEnv, hDBC);
 			return 0;
 		}
 	}
 	DBCloseStmt(hStmt);
-
-	DBDisconnectDataSource(hEnv, hDBC);
 	return lots;
 }
 
 __declspec(dllexport) double __stdcall GetTakeProfitWidth() {
-	SQLHDBC hDBC;
-	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
-
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "select conf_value from configuration where conf_key='tp_width'", false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
@@ -116,23 +105,16 @@ __declspec(dllexport) double __stdcall GetTakeProfitWidth() {
 		if (rc == SQL_NO_DATA_FOUND) break;
 		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
 			DBCloseStmt(hStmt);
-			DBDisconnectDataSource(hEnv, hDBC);
 			return 0;
 		}
 	}
 	DBCloseStmt(hStmt);
-
-	DBDisconnectDataSource(hEnv, hDBC);
 	return tpWidth;
 }
 
 __declspec(dllexport) int __stdcall UpdateShortTrap(double *position) {
-	SQLHDBC hDBC;
-	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
-
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_trap set is_real = 2 where is_real=1", false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 	int i = 0;
@@ -144,7 +126,6 @@ __declspec(dllexport) int __stdcall UpdateShortTrap(double *position) {
 
 		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 			DBEndTrans(hEnv, hDBC, false);
-			DBDisconnectDataSource(hEnv, hDBC);
 			return 0;
 		}
 
@@ -153,22 +134,16 @@ __declspec(dllexport) int __stdcall UpdateShortTrap(double *position) {
 
 	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_trap set is_real = 0 where is_real=2", false)) {
 		DBEndTrans(hEnv, hDBC, false);
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
 	DBEndTrans(hEnv, hDBC, true);
-	DBDisconnectDataSource(hEnv, hDBC);
 	return 1;
 }
 
 __declspec(dllexport) int __stdcall UpdateLongPosition(double *position, int *lots) {
-	SQLHDBC hDBC;
-	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
-
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "update long_position set is_real = 0", false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
@@ -181,7 +156,6 @@ __declspec(dllexport) int __stdcall UpdateLongPosition(double *position, int *lo
 
 		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 			DBEndTrans(hEnv, hDBC, false);
-			DBDisconnectDataSource(hEnv, hDBC);
 			return 0;
 		}
 
@@ -190,22 +164,16 @@ __declspec(dllexport) int __stdcall UpdateLongPosition(double *position, int *lo
 	
 	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from long_position where is_real=0", false)) {
 		DBEndTrans(hEnv, hDBC, false);
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
 	DBEndTrans(hEnv, hDBC, true);
-	DBDisconnectDataSource(hEnv, hDBC);
 	return 1;
 }
 
 __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
-	SQLHDBC hDBC;
-	if (!DBConnectDataSource("fxc", "", "", hEnv, &hDBC)) return 0;
-
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "select price from delete_request", false)) {
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
@@ -218,7 +186,6 @@ __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
 		if (rc == SQL_NO_DATA_FOUND) break;
 		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
 			DBCloseStmt(hStmt);
-			DBDisconnectDataSource(hEnv, hDBC);
 			return 0;
 		}
 		position[i] = price;
@@ -230,13 +197,11 @@ __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
 
 	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from delete_request", false)) {
 		DBEndTrans(hEnv, hDBC, false);
-		DBDisconnectDataSource(hEnv, hDBC);
 		return 0;
 	}
 
 
 	DBEndTrans(hEnv, hDBC, true);
-	DBDisconnectDataSource(hEnv, hDBC);
 	return 1;
 
 }

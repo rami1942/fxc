@@ -7,6 +7,8 @@
 
 extern int __stdcall InitEnv();
 extern int __stdcall TerminateEnv();
+extern int __stdcall Connect();
+extern int __stdcall Disconnect();
 extern int __stdcall GetTrapList(double *buffer);
 extern int __stdcall UpdatePrice(double price);
 extern int __stdcall GetTrapLots();
@@ -21,8 +23,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	double price[] = {83.105, 83.058, 82.735, 82.561, 0};
 	int lots[] = {21000, 14000, 21000, 14000, 0};
-
+	Connect();
 	UpdateLongPosition(price, lots);
+	Disconnect();
 
 	TerminateEnv();
 	return 0;
