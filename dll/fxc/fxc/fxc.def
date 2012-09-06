@@ -12,5 +12,7 @@ EXPORTS
 	UpdateLongPosition
 	GetTakeProfitWidth
 	GetDeleteRequest
-
+	SetMark
+	ClearMark
+	UpdatePosition
 VERSION 1.0
