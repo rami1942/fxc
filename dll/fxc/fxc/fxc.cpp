@@ -221,12 +221,22 @@ __declspec(dllexport) int __stdcall ClearMark() {
 	return 1;
 }
 
-__declspec(dllexport) int __stdcall UpdatePosition(int ticket_no, int magic_no, int pos_type, double open_price, double take_profit, double stop_loss, int swap) {
+__declspec(dllexport) int __stdcall UpdatePosition(int ticket_no, int magic_no, int pos_type, double open_price, double take_profit, double stop_loss, int swap, double profit, double lots, char *symbol) {
 	char buf[2048];
-	sprintf_s(buf, 2048, "insert into position (ticket_no, magic_no, pos_type, open_price, tp_price, sl_price, swap_point) " 
-		"values (%d, %d, %d, %lf, %lf, %lf, %d) on duplicate key update is_real=0,tp_price=%lf,sl_price=%lf,swap_point=%d",
-			ticket_no, magic_no, pos_type, open_price, take_profit, stop_loss, swap, take_profit, stop_loss, swap
+	sprintf_s(buf, 2048, "insert into position (ticket_no, magic_no, pos_type, open_price, tp_price, sl_price, swap_point, profit, lots, symbol) " 
+		"values (%d, %d, %d, %lf, %lf, %lf, %d, %lf, %lf, '%s') on duplicate key update is_real=0,tp_price=%lf,sl_price=%lf,swap_point=%d,profit=%lf",
+			ticket_no, magic_no, pos_type, open_price, take_profit, stop_loss, swap, profit, lots, symbol, take_profit, stop_loss, swap, profit
 		);
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+		return 0;
+	}
+	return 1;
+}
+
+__declspec(dllexport) int __stdcall SetAccountInfo(double balance) {
+	char buf[1024];
+	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='balance'", balance);
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 		return 0;

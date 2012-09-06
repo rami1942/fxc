@@ -15,4 +15,5 @@ EXPORTS
 	SetMark
 	ClearMark
 	UpdatePosition
+	SetAccountInfo
 VERSION 1.0

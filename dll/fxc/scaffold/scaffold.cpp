@@ -17,7 +17,8 @@ extern int __stdcall UpdateShortTrap(double *position);
 extern int __stdcall UpdateLongPosition(double *position, int *lots);
 extern int __stdcall SetMark();
 extern int __stdcall ClearMark();
-extern int __stdcall UpdatePosition(int ticket_no, int magic_no, int pos_type, double open_price, double take_profit, double stop_loss, int swap);
+extern int __stdcall SetAccountInfo(double balance);
+extern int __stdcall UpdatePosition(int ticket_no, int magic_no, int pos_type, double open_price, double take_profit, double stop_loss, int swap, double profit, double lots, char *symbol);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -32,9 +33,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	Disconnect();
 	*/
 
+	/*
+	Connect();
+	SetAccountInfo(512.0);
+	Disconnect();
+	*/
+
 	Connect();
 	SetMark();
-	UpdatePosition(10, 10, 1, 80.0, 80.0, 80.0, 10);
+	UpdatePosition(12, 10, 0, 80.2, 81.9, 79.0, 0, 50, 0.3, "audjpy");
 	ClearMark();
 	Disconnect();
 
