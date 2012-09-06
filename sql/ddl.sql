@@ -1,4 +1,4 @@
-create table short_position (
+create table short_trap (
   id int auto_increment primary key,
   open_price double not null,
   is_real char(1) not null default '0'
@@ -19,7 +19,7 @@ create table history (
 );
 
 delimiter //
-create trigger short_repeat after update on short_position
+create trigger short_repeat after update on short_trap
 for each row
 begin
   if OLD.is_real = 2 and NEW.is_real = 0 then
@@ -60,7 +60,7 @@ create table delete_request (
 );
 
 delimiter //
-create trigger short_delete after delete on short_position
+create trigger short_delete after delete on short_trap
 for each row
 begin
   insert into history (event_type, event_dt, price)
@@ -70,7 +70,7 @@ end;//
 delimiter ;
 
 delimiter //
-create trigger short_insert after insert on short_position
+create trigger short_insert after insert on short_trap
 for each row
 begin
   insert into history (event_type, event_dt, price)
@@ -97,5 +97,4 @@ create table reservation (
   amount int
 );
 
-alter table short_position rename to short_trap;
 
