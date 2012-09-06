@@ -5,4 +5,5 @@ insert into configuration (conf_key, conf_value) values
 ('lots', '7000'),
 ('current_price', '80.0'),
 ('auth_key', 'pass'),
-('base_offset', 0);
+('base_offset', 0),
+('balance', 0);

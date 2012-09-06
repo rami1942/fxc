@@ -78,6 +78,21 @@ begin
 end;//
 delimiter ;
 
+create table position (
+  ticket_no int primary key,
+
+  magic_no int,
+
+  pos_type char(1),
+  open_price double,
+  tp_price double,
+  sl_price double,
+  swap_point int,
+  profit double,
+
+  is_real char(1) default 0
+);
+
 ---
 
 create table trade_result (
@@ -95,20 +110,5 @@ create table reservation (
   reserve_dt datetime,
   purpose char(1),
   amount int
-);
-
-create table position (
-  ticket_no int primary key,
-
-  magic_no int,
-
-  pos_type char(1),
-  open_price double,
-  tp_price double,
-  sl_price double,
-  swap_point int,
-
-
-  is_real char(1) default 0
 );
 
