@@ -97,4 +97,18 @@ create table reservation (
   amount int
 );
 
+create table position (
+  ticket_no int primary key,
+
+  magic_no int,
+
+  pos_type char(1),
+  open_price double,
+  tp_price double,
+  sl_price double,
+  swap_point int,
+
+
+  is_real char(1) default 0
+);
 
