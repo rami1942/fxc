@@ -90,7 +90,9 @@ create table position (
   swap_point int,
   profit double,
 
-  is_real char(1) default 0
+  is_real char(1) default 0,
+  symbol varchar(16),
+  lots double
 );
 
 ---
@@ -112,7 +114,3 @@ create table reservation (
   amount int
 );
 
-alter table position add (
-  symbol varchar(16),
-  lots double
-);
