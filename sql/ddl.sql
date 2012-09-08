@@ -101,3 +101,4 @@ alter table position add (
   is_wide_body char(1) default 1
 );
 
+drop table long_position;
