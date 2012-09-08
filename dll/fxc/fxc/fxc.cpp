@@ -141,36 +141,6 @@ __declspec(dllexport) int __stdcall UpdateShortTrap(double *position) {
 	return 1;
 }
 
-__declspec(dllexport) int __stdcall UpdateLongPosition(double *position, int *lots) {
-	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "update long_position set is_real = 0", false)) {
-		return 0;
-	}
-
-	int i = 0;
-	while (true) {
-		if (position[i] == 0.0) break;
-
-		char buf[1024];
-		sprintf_s(buf, 1024, "insert into long_position (open_price, lots, is_real) values (%lf, %d, 1) on duplicate key update is_real=1", position[i], lots[i]);
-
-		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
-			DBEndTrans(hEnv, hDBC, false);
-			return 0;
-		}
-
-		i++;
-	}
-	
-	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from long_position where is_real=0", false)) {
-		DBEndTrans(hEnv, hDBC, false);
-		return 0;
-	}
-
-	DBEndTrans(hEnv, hDBC, true);
-	return 1;
-}
-
 __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "select price from delete_request", false)) {
@@ -234,12 +204,18 @@ __declspec(dllexport) int __stdcall UpdatePosition(int ticket_no, int magic_no, 
 	return 1;
 }
 
-__declspec(dllexport) int __stdcall SetAccountInfo(double balance) {
+__declspec(dllexport) int __stdcall SetAccountInfo(double balance, double margin) {
 	char buf[1024];
 	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='balance'", balance);
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 		return 0;
 	}
+
+	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='margin'", margin);
+	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+		return 0;
+	}
+
 	return 1;
 }
