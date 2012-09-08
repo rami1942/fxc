@@ -14,7 +14,6 @@ extern int __stdcall UpdatePrice(double price);
 extern int __stdcall GetTrapLots();
 extern int __stdcall SetLongPosition(double *buffer, int *lots);
 extern int __stdcall UpdateShortTrap(double *position);
-extern int __stdcall UpdateLongPosition(double *position, int *lots);
 extern int __stdcall SetMark();
 extern int __stdcall ClearMark();
 extern int __stdcall SetAccountInfo(double balance);
