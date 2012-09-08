@@ -30,6 +30,7 @@ public class IndexAction {
 	public List<ShortTrap> shorts;
 	public List<Position> longs;
 	public List<Position> freezes;
+	public List<Position> hedgeShorts;
 	public Integer eachLots;
 	public Integer numTraps;
 	public Double longAverage;
@@ -37,6 +38,7 @@ public class IndexAction {
 
 	public ActionResult index() {
 		shorts = positionService.getShortTraps();
+		hedgeShorts = positionService.getHedgeShorts();
 		longs = positionService.getLongPositions();
 		freezes = positionService.getFreezeLongs();
 		eachLots = configService.getByInteger("lots");

@@ -28,8 +28,12 @@ public class PositionService {
 		return jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and magicNo=0 and isWideBody=1").orderBy("openPrice desc").getResultList();
 	}
 
-	public List<Position> getFreezeLongs()	 {
+	public List<Position> getFreezeLongs() {
 		return jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and magicNo=0 and isWideBody=0").orderBy("openPrice desc").getResultList();
+	}
+
+	public List<Position> getHedgeShorts() {
+		return jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=1 and magicNo=0").orderBy("openPrice desc").getResultList();
 	}
 
 	public ShortTrap getMaxShortPosition() {

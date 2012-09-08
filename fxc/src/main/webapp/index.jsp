@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<html lang="ja">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -80,7 +80,7 @@ function freeze(form, price) {
 <tr>
   <td>${stat.count}</td>
   <td>${lp.openPrice}</td>
-  <td align="right">${lp.lotsDisp}</td>
+  <td align="right">${lp.lots}</td>
   <td><input type="button" value="凍結" onclick="freeze(this.form, ${lp.openPrice})"/></td>
 </tr>
 </c:forEach>
@@ -96,13 +96,24 @@ function freeze(form, price) {
 <tr>
 	<td>${stat.count}</td>
 	<td>${fp.openPrice}</td>
-	<td align="right">${my:commaSep(fp.lots)}</td>
+	<td align="right">${fp.lots}</td>
 	<td><input type="button" value="解凍" onclick="freeze(this.form, ${fp.openPrice})"/></td>
 </tr>
 </c:forEach>
 </table>
 </form>
 </c:if>
+
+<p>ヘッジショート</p>
+<table border="1">
+<c:forEach var="p" items="${hedgeShorts}" varStatus="stat">
+<tr>
+	<td>${stat.count}</td>
+	<td>${p.openPrice}</td>
+	<td align="right">${p.lots}</td>
+</tr>
+</c:forEach>
+</table>
 
 <ul>
 <li><a href="chart?ak=${accessKey}">チャート</a></li>
