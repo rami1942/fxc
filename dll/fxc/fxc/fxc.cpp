@@ -204,12 +204,18 @@ __declspec(dllexport) int __stdcall UpdatePosition(int ticket_no, int magic_no, 
 	return 1;
 }
 
-__declspec(dllexport) int __stdcall SetAccountInfo(double balance) {
+__declspec(dllexport) int __stdcall SetAccountInfo(double balance, double margin) {
 	char buf[1024];
 	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='balance'", balance);
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 		return 0;
 	}
+
+	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='margin'", margin);
+	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+		return 0;
+	}
+
 	return 1;
 }
