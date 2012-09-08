@@ -80,7 +80,7 @@ function freeze(form, price) {
 <tr>
   <td>${stat.count}</td>
   <td>${lp.openPrice}</td>
-  <td align="right">${my:commaSep(lp.lots)}</td>
+  <td align="right">${lp.lotsDisp}</td>
   <td><input type="button" value="凍結" onclick="freeze(this.form, ${lp.openPrice})"/></td>
 </tr>
 </c:forEach>

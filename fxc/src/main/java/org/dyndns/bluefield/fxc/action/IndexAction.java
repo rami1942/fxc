@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.dyndns.bluefield.fxc.entity.LongPosition;
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
@@ -28,8 +28,8 @@ public class IndexAction {
 	public String price;
 
 	public List<ShortTrap> shorts;
-	public List<LongPosition> longs;
-	public List<LongPosition> freezes;
+	public List<Position> longs;
+	public List<Position> freezes;
 	public Integer eachLots;
 	public Integer numTraps;
 	public Double longAverage;

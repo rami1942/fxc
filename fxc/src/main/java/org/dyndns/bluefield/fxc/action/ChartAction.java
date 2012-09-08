@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.dyndns.bluefield.fxc.entity.LongPosition;
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
@@ -42,7 +42,7 @@ public class ChartAction {
 
 	public ActionResult index() {
 		List<ShortTrap> shorts = positionService.getShortTraps();
-		List<LongPosition> longs = positionService.getLongPositions();
+		List<Position> longs = positionService.getLongPositions();
 
 		Double trapWidth = configService.getByDouble("trap_width");
 
@@ -86,7 +86,7 @@ public class ChartAction {
 
 		// ロングポジション
 		buf = new StringBuilder();
-		for (LongPosition lp : longs) {
+		for (Position lp : longs) {
 			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
 			buf.append(d);
 			buf.append(',');
@@ -94,7 +94,7 @@ public class ChartAction {
 		longPositions = buf.toString();
 
 		buf = new StringBuilder();
-		for (LongPosition lp : positionService.getFreezeLongs()) {
+		for (Position lp : positionService.getFreezeLongs()) {
 			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
 			buf.append(d);
 			buf.append(',');
