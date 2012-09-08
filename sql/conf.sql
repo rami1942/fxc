@@ -6,4 +6,5 @@ insert into configuration (conf_key, conf_value) values
 ('current_price', '80.0'),
 ('auth_key', 'pass'),
 ('base_offset', 0),
-('balance', 0);
+('balance', 0),
+('margin', 0);
