@@ -41,7 +41,7 @@ public class ChartAction {
 	public String accessKey;
 
 	public ActionResult index() {
-		List<ShortTrap> shorts = positionService.getShortPositions();
+		List<ShortTrap> shorts = positionService.getShortTraps();
 		List<LongPosition> longs = positionService.getLongPositions();
 
 		Double trapWidth = configService.getByDouble("trap_width");

@@ -20,7 +20,7 @@ public class PositionService {
 	@Resource
 	private ConfigService configService;
 
-	public List<ShortTrap> getShortPositions() {
+	public List<ShortTrap> getShortTraps() {
 		return jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").getResultList();
 	}
 	

@@ -36,7 +36,7 @@ public class IndexAction {
 	public String accessKey;
 
 	public ActionResult index() {
-		shorts = positionService.getShortPositions();
+		shorts = positionService.getShortTraps();
 		longs = positionService.getLongPositions();
 		freezes = positionService.getFreezeLongs();
 		eachLots = configService.getByInteger("lots");
