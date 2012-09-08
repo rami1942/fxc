@@ -112,3 +112,7 @@ create table reservation (
   amount int
 );
 
+alter table position add (
+  symbol varchar(16),
+  lots double
+);
