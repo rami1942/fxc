@@ -26,7 +26,13 @@ public class PositionService {
 	private ConfigService configService;
 
 	public List<ShortTrap> getShortTraps() {
-		return jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").getResultList();
+		List<ShortTrap> traps = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").getResultList();
+		for (ShortTrap s : traps) {
+			int magic = (int)Math.round(s.openPrice * 100  + 100000);
+			Position p = jdbcManager.from(Position.class).where("magicNo=?", magic).getSingleResult();
+			s.isReal = (p == null) ? 0 : 1;
+		}
+		return traps;
 	}
 
 	public List<Position> getLongPositions() {

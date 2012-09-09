@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Entity(name="short_trap")
 public class ShortTrap {
@@ -12,6 +13,8 @@ public class ShortTrap {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	public Integer id;
 	public Double openPrice;
+
+	@Transient
 	public Integer isReal;
 
 	public Integer getId() {
