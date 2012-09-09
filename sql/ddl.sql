@@ -15,19 +15,9 @@ create table history (
   event_type int not null,
   event_dt datetime,
   price double,
-  lots int
+  lots double,
+  ticket_no int
 );
-
-delimiter //
-create trigger short_repeat after update on short_trap
-for each row
-begin
-  if OLD.is_real = 2 and NEW.is_real = 0 then
-    insert into history (event_type, event_dt, price) 
-        values (0, now(), OLD.open_price);
-  end if;
-end;//
-delimiter ;
 
 create table delete_request (
   id int auto_increment primary key,
@@ -71,5 +61,41 @@ create table position (
   is_wide_body char(1) default 1
 );
 
----
 
+
+delimiter //
+create trigger position_insert after insert on position
+for each row
+begin
+  if NEW.magic_no = 0 then
+    if NEW.pos_type = 0 then
+      insert into history (ticket_no, event_type, event_dt, price, lots)
+            values (NEW.ticket_no, 3, now(), NEW.open_price, NEW.lots);
+    else
+      insert into history (ticket_no, event_type, event_dt, price, lots)
+            values (NEW.ticket_no, 5, now(), NEW.open_price, NEW.lots);
+    end if;
+  end if;
+end;//
+delimiter ;
+
+delimiter //
+create trigger position_delete after delete on position
+for each row
+begin
+  if OLD.magic_no <> 0 then
+    insert into history (ticket_no, event_type, event_dt, price, lots)
+          values (OLD.ticket_no, 0, now(), OLD.open_price, OLD.lots);
+  else
+    if OLD.pos_type = 0 then
+      insert into history(ticket_no, event_type, event_dt, price, lots)
+            values (OLD.ticket_no, 4, now(), OLD.open_price, OLD.lots);
+    else
+      insert into history (ticket_no, event_type, event_dt, price, lots)
+            values (OLD.ticket_no, 6, now(), OLD.open_price, OLD.lots);
+    end if;
+  end if;
+end;//
+delimiter ;
+
+---
