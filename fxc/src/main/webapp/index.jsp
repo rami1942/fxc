@@ -71,7 +71,8 @@ function freeze(form, price) {
 
 <p>
 平均建値: ${longAverage}<br/>
-トラップ本数: ${numTraps}
+トラップ本数: ${numTraps}<br/>
+ロスカット: ${lossCutPrice}(${lossCutLevel}%)
 </p>
 <form action="freezePosition">
 <input type="hidden" name="price" value="" />

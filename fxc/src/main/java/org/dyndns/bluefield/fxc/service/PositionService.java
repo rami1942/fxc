@@ -15,6 +15,11 @@ public class PositionService {
 		public Integer numTraps;
 	}
 
+	public static class LosscutInfo {
+		public Double price;
+		public Double level;
+	}
+
 	@Resource
 	private JdbcManager jdbcManager;
 	@Resource
@@ -77,17 +82,55 @@ public class PositionService {
 	}
 
 	public void setToFreeze(String price) {
-		Position lp = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and pos_type=0 and openPrice=?", price).getSingleResult();
+		Position lp = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and openPrice=?", price).getSingleResult();
 		if (lp == null) return;
 		lp.isWideBody = 0;
 		jdbcManager.update(lp).execute();
 	}
 
 	public void setToUnfreeze(String price) {
-		Position lp = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and pos_type=0 and openPrice=?", price).getSingleResult();
+		Position lp = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and openPrice=?", price).getSingleResult();
 		if (lp == null) return;
 		lp.isWideBody = 1;
 		jdbcManager.update(lp).execute();
+	}
+
+	private long calcRate(List<Position> pos, Double price) {
+		long total = 0L;
+		for (Position p : pos) {
+			if (p.posType == 0) {
+				total += (price - p.openPrice) * p.lots * 100000;
+			} else {
+				total += (p.openPrice - price) * p.lots * 100000;
+			}
+		}
+		return total;
+	}
+
+	public LosscutInfo calcLosscutRate() {
+		long margin = Math.round(configService.getByDouble("margin"));
+		long balance = Math.round(configService.getByDouble("balance"));
+		List<Position> pos = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0").getResultList();
+
+		double p;
+		double pMp = 0.0;
+		for (p = 100; p > 40; p-=0.5) {
+			long d = calcRate(pos, p);
+
+			double mp = (double)(balance+d) / (double)margin;
+			if (mp < 1.0) break;
+
+			pMp = mp;
+		}
+		p += 0.5;
+		pMp = Math.round(pMp * 10000.0) / 100.0;
+		System.out.println("P=" + p + " MP=" + pMp);
+
+		LosscutInfo lc = new LosscutInfo();
+		lc.price = p;
+		lc.level = pMp;
+
+		return lc;
 	}
 
 }

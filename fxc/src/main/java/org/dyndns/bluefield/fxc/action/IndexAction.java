@@ -9,6 +9,7 @@ import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
 import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
+import org.dyndns.bluefield.fxc.service.PositionService.LosscutInfo;
 import org.seasar.cubby.action.ActionClass;
 import org.seasar.cubby.action.ActionResult;
 import org.seasar.cubby.action.Forward;
@@ -35,6 +36,8 @@ public class IndexAction {
 	public Integer numTraps;
 	public Double longAverage;
 	public String accessKey;
+	public Double lossCutPrice;
+	public Double lossCutLevel;
 
 	public ActionResult index() {
 		shorts = positionService.getShortTraps();
@@ -43,6 +46,10 @@ public class IndexAction {
 		freezes = positionService.getFreezeLongs();
 		eachLots = configService.getByInteger("lots");
 		accessKey = configService.getByString("auth_key");
+
+		LosscutInfo lc = positionService.calcLosscutRate();
+		lossCutPrice = lc.price;
+		lossCutLevel = lc.level;
 
 		LongInfo info = positionService.calcTraps(longs);
 		longAverage = info.avg;
