@@ -29,31 +29,6 @@ begin
 end;//
 delimiter ;
 
-create table long_position (
-  open_price double primary key,
-  lots int not null,
-  is_real char(1),
-  is_wide_body char(1) default 1
-);
-
-delimiter //
-create trigger long_insert after insert on long_position
-for each row
-begin
-  insert into history (event_type, event_dt, price, lots)
-      values(3, now(), NEW.open_price, NEW.lots);
-end;//
-delimiter ;
-
-delimiter //
-create trigger long_delete after delete on long_position
-for each row
-begin
-  insert into history (event_type, event_dt, price, lots)
-      values(4, now(), OLD.open_price, OLD.lots);
-end;//
-delimiter ;
-
 create table delete_request (
   id int auto_increment primary key,
   price double not null
@@ -92,13 +67,9 @@ create table position (
 
   is_real char(1) default 0,
   symbol varchar(16),
-  lots double
+  lots double,
+  is_wide_body char(1) default 1
 );
 
 ---
 
-alter table position add (
-  is_wide_body char(1) default 1
-);
-
-drop table long_position;
