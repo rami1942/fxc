@@ -112,35 +112,6 @@ __declspec(dllexport) double __stdcall GetTakeProfitWidth() {
 	return tpWidth;
 }
 
-__declspec(dllexport) int __stdcall UpdateShortTrap(double *position) {
-	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_trap set is_real = 2 where is_real=1", false)) {
-		return 0;
-	}
-	int i = 0;
-	while(true) {
-		if (position[i] == 0) break;
-
-		char buf[1024];
-		sprintf_s(buf, 1024, "update short_trap set is_real = 1 where open_price = %lf", position[i]);
-
-		if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
-			DBEndTrans(hEnv, hDBC, false);
-			return 0;
-		}
-
-		i++;
-	}
-
-	if (!DBExecute(hEnv, hDBC, &hStmt, "update short_trap set is_real = 0 where is_real=2", false)) {
-		DBEndTrans(hEnv, hDBC, false);
-		return 0;
-	}
-
-	DBEndTrans(hEnv, hDBC, true);
-	return 1;
-}
-
 __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "select price from delete_request", false)) {
