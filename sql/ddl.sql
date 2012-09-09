@@ -1,7 +1,6 @@
 create table short_trap (
   id int auto_increment primary key,
-  open_price double not null,
-  is_real char(1) not null default '0'
+  open_price double not null
 );
 
 create table configuration (
@@ -99,3 +98,4 @@ end;//
 delimiter ;
 
 ---
+
