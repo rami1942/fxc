@@ -78,10 +78,17 @@ begin
 end;//
 delimiter ;
 
+---
+
+create table detail_request (
+  ticket_no int primary key
+);
+
 delimiter //
 create trigger position_delete after delete on position
 for each row
 begin
+  insert into detail_request (ticket_no) values (OLD.ticket_no);
   if OLD.magic_no <> 0 then
     insert into history (ticket_no, event_type, event_dt, price, lots)
           values (OLD.ticket_no, 0, now(), OLD.open_price, OLD.lots);
@@ -97,5 +104,29 @@ begin
 end;//
 delimiter ;
 
----
+create table closed_position (
+  ticket_no int primary key,
+  magic_no int not null,
+  pos_type char(1) default 0 not null,
+  symbol varchar(16),
+  lots double,
 
+  open_price double,
+  open_dt datetime,
+  close_price double,
+  close_dt datetime,
+  tp_price double,
+  sl_price double,
+
+  swap_point int,
+  profit double,
+);
+
+create table settlement_history (
+  id int auto_increment primary key,
+  settle_type char(1) default 0 not null,
+  settle_dt datetime not null,
+
+  balance double not null,
+  profit  double not null
+);
