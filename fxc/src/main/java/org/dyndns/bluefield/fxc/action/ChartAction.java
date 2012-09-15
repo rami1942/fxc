@@ -34,6 +34,9 @@ public class ChartAction {
 	public Double baseLine;
 	public String prices;
 
+	public String truePrice;
+	public Double trueLine;
+
 	public String positions;
 	public String longPositions;
 	public String freezePositions;
@@ -45,14 +48,18 @@ public class ChartAction {
 		List<Position> longs = positionService.getLongPositions();
 
 		Double trapWidth = configService.getByDouble("trap_width");
+		Double longShift = configService.getByDouble("long_shift");
+		Double baseOffset = configService.getByDouble("base_offset");
 
 		// 平均建値・トラップ本数の算出
 		LongInfo info = positionService.calcTraps(longs);
-		double longAverage = info.avg;
 		numTraps = info.numTraps;
 
-		basePrice = Double.toString(longAverage);
-		baseLine = (shorts.get(0).openPrice - longAverage) / trapWidth + Double.valueOf(configService.getByDouble("base_offset"));
+		basePrice = Double.toString(info.avg - longShift);
+		baseLine = (shorts.get(0).openPrice - info.avg + longShift) / trapWidth + baseOffset;
+
+		truePrice = Double.toString(info.avg);
+		trueLine = (shorts.get(0).openPrice - info.avg) / trapWidth + baseOffset;
 
 		// 現在価格位置の算出
 		Double curPrice = configService.getByDouble("current_price");

@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<html lang="ja">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="ja" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
     <title>状況</title>
+
+<script type="text/javascript" src="${contextPath}/js/anbt-dashed-line.js"></script>
 <script type="text/javascript">
 
 var width = ${numTraps};
 var currentPrice = ${currentPricePos};
 var basePrice = '${basePrice}';
 var baseLine = ${baseLine};
+var truePrice = '${truePrice}';
+var trueLine = ${trueLine};
 var price = [${prices}];
 var ispos = [${positions}];
 var longPos = [${longPositions}];
@@ -28,7 +32,26 @@ window.onload=function() {
 	var canvas = document.getElementById('cvs');
 	var ctx = canvas.getContext('2d');
 
-	// 建値(価格・横線)
+	// 建値
+	if (baseLine != trueLine) {
+		var lineStyle = {
+			color: "#ff0000",
+			pattern: "*-",
+			scale: 15,
+			width: 2,
+			cap: "butt", // butt, round, square
+			join: "bevel" // round, bevel, miter
+		};
+		var adl = new AnbtDashedLine();
+		var v = [[80, by + boxSize * (trueLine + 1)], [bx + boxSize * (width + 1), by + boxSize * (trueLine + 1)]];
+		adl.drawDashedPolyLine(ctx, v, lineStyle);
+
+		ctx.font="14px 'Times New Roman'";
+		ctx.fillStyle = 'red';
+		ctx.fillText(truePrice, 20, by + 5 + boxSize * (trueLine + 1));
+	}
+
+	// 仮想建値(価格・横線)
 	ctx.strokeStyle='red';
 	ctx.lineWidth=2;
 	ctx.beginPath();

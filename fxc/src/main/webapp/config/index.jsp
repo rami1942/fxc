@@ -29,6 +29,10 @@
 	<th>平均建値オフセット</th>
 	<td><t:input type="text" name="baseOffset" /></td>
 </tr>
+<tr>
+	<th>仮想建値幅</th>
+	<td><t:input type="text" name="longShift" /></td>
+</tr>
 </table>
 <input type="submit" value="設定" />
 </t:form>
