@@ -5,6 +5,8 @@ import java.util.List;
 public class PriceUtil {
 
 	public static String separateComma(String orig) {
+		if (orig == null || orig.equals("")) return "";
+
 		StringBuilder buf = new StringBuilder();
 		String s;
 		if (orig.charAt(0) == '-') {

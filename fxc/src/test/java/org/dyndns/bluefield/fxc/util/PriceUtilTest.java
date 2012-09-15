@@ -22,4 +22,9 @@ public class PriceUtilTest extends TestCase {
 	public void test5() {
 		assertEquals("-700,003", PriceUtil.separateComma("-700003"));
 	}
+
+	public void test6() {
+		assertEquals("", PriceUtil.separateComma(""));
+	}
+
 }
