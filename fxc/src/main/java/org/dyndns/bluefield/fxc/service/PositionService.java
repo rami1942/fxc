@@ -105,8 +105,11 @@ public class PositionService {
 		long total = 0L;
 		for (Position p : pos) {
 			if (p.posType == 0) {
+				// long
+				if (p.slPrice != null && p.slPrice != 0 && p.slPrice > price) continue;
 				total += (price - p.openPrice) * p.lots * 100000;
 			} else {
+				// short
 				total += (p.openPrice - price) * p.lots * 100000;
 			}
 		}
@@ -120,7 +123,7 @@ public class PositionService {
 
 		double p;
 		double pMp = 0.0;
-		for (p = 100; p > 40; p-=0.5) {
+		for (p = 100; p > 30.5; p-=0.5) {
 			long d = calcRate(pos, p);
 
 			double mp = (double)(balance+d) / (double)margin;
