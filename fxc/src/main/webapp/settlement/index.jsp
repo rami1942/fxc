@@ -8,10 +8,21 @@
   <title>決算</title>
 </head>
 <body>
-
+<p>
 前回: ${f:dateFormat(fromDt, "yyyy-MM-dd HH:mm:ss")}<br/>
-口座残高: ${my:commaSep(balance)}(${balanceDiff})<br/>
-含み損益: ${my:commaSep(profit)}(${profitDiff})<br/>
+<br/>
+口座残高: ¥${my:commaSep(balance)}(${balanceDiff})<br/>
+含み損益: ¥${my:commaSep(profit)}(${profitDiff})<br/>
+スワップ: ${my:commaSep(swapPoint)}<br/>
+リピート: ${numRepeat}回
+</p>
 
+<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="update" value="${action}">
+<input type="submit" value="更新" />
+</t:form>
+
+<p>
+<a href="../?ak=${accessKey}">戻る</a>
+</p>
 </body>
 </html>
