@@ -78,6 +78,15 @@ begin
 end;//
 delimiter ;
 
+create table settlement_history (
+  id int auto_increment primary key,
+  settle_type char(1) default 0 not null,
+  settle_dt datetime not null,
+
+  balance double not null,
+  profit  double not null
+);
+
 ---
 
 create table detail_request (
@@ -122,11 +131,3 @@ create table closed_position (
   profit double,
 );
 
-create table settlement_history (
-  id int auto_increment primary key,
-  settle_type char(1) default 0 not null,
-  settle_dt datetime not null,
-
-  balance double not null,
-  profit  double not null
-);

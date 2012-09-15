@@ -118,6 +118,7 @@ function freeze(form, price) {
 
 <ul>
 <li><a href="chart?ak=${accessKey}">チャート</a></li>
+<li><a href="settlement?ak=${accessKey}">決算</a></li>
 <li><a href="config?ak=${accessKey}">設定</a></li>
 </ul>
 </body>
