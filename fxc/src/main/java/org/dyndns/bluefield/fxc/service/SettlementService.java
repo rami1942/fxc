@@ -1,9 +1,11 @@
 package org.dyndns.bluefield.fxc.service;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.entity.SettlementHistory;
 import org.seasar.extension.jdbc.JdbcManager;
 
@@ -17,6 +19,8 @@ public class SettlementService {
 
 		public Integer balanceDiff;
 		public Integer profitDiff;
+
+		public Integer kkwProfit;
 	}
 
 	@Resource
@@ -35,7 +39,7 @@ public class SettlementService {
 		result.swapPoint = jdbcManager.selectBySql(Integer.class, "select sum(swap_point) from position").getSingleResult();
 
 		// 前回
-		SettlementHistory last = jdbcManager.from(SettlementHistory.class).orderBy("settleDt desc").limit(1).getSingleResult();
+		SettlementHistory last = jdbcManager.from(SettlementHistory.class).where("settleType=0").orderBy("settleDt desc").limit(1).getSingleResult();
 		if (last == null) {
 			result.lastSettlementDt = null;
 			result.balanceDiff = 0;
@@ -49,6 +53,13 @@ public class SettlementService {
 		// リピート回数
 		result.numRepeat = jdbcManager.selectBySql(Integer.class, "select count(*) from history where event_type=0 and event_dt >= ?", last.settleDt).getSingleResult();
 
+		// くるくるワイドスタートからの利益
+		SettlementHistory kkwStart = jdbcManager.from(SettlementHistory.class).where("settleType=5").orderBy("settleDt desc").limit(1).getSingleResult();
+		if (kkwStart == null) {
+			result.kkwProfit = 0;
+		} else {
+			result.kkwProfit = (int)Math.round(result.balance - kkwStart.balance);
+		}
 		return result;
 	}
 
@@ -59,5 +70,23 @@ public class SettlementService {
 		hist.balance = configService.getByDouble("balance");
 		hist.profit = jdbcManager.selectBySql(Double.class, "select sum(profit) + sum(swap_point) from position").getSingleResult();
 		jdbcManager.insert(hist).execute();
+	}
+
+	public List<ReservedProfit> reservedProfits() {
+		return jdbcManager.from(ReservedProfit.class).orderBy("reserveDt").getResultList();
+	}
+
+	public void reserve(Integer amount, String desc) {
+		ReservedProfit profit = new ReservedProfit();
+		profit.amount = amount;
+		profit.description = desc;
+		profit.reserveDt = new Date();
+		jdbcManager.insert(profit).execute();
+	}
+
+	public void unReserve(Integer id) {
+		System.out.println("XXXXXXXXXXXXXXXXXX" + id);
+		ReservedProfit profit = jdbcManager.from(ReservedProfit.class).where("id=?", id).getSingleResult();
+		jdbcManager.delete(profit).execute();
 	}
 }
