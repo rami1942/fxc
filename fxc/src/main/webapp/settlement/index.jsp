@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta charset="UTF-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta http-equiv="Content-Script-Type" content="text/JavaScript" />
   <link href="${contextPath}/css/default.css" rel="stylesheet" type="text/css" media="screen,projection"/>
@@ -53,7 +53,7 @@ function unReserve(form, id) {
 </tr>
 </c:forEach>
 </t:form>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="reserve" value="${action}">
+<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="reserve" method="POST" value="${action}">
 <tr>
 	<td><t:input type="text" name="reserveAmount" /></td>
 	<td><t:input type="text" name="reserveDesc" /></td>
