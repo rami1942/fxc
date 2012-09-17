@@ -41,7 +41,9 @@ function unReserve(form, id) {
 <p>
 <t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setVirtualPriceReservation" value="${action}" method="POST" >
 出口含み益: ¥${exitProfit}<br/>
-仮想建値割振り額: <t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" />
+仮想建値割振り額: <t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" /><br/>
+ショートヘッジ可能額: ${shAmount}<br/>
+ヘッジ可能量(Lot): ${hedgeLots}
 </t:form>
 </p>
 

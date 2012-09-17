@@ -8,4 +8,4 @@ insert into configuration (conf_key, conf_value) values
 ('base_offset', 0),
 ('balance', 0),
 ('margin', 0),
-('long_shift', 0);
+('vp_reserve', 0);

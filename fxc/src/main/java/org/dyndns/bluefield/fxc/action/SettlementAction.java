@@ -53,6 +53,9 @@ public class SettlementAction {
 
 	public String exitProfit;
 
+	public String shAmount;
+	public Double hedgeLots;
+
 	@RequestParameter
 	public Integer reserveAmount;
 	@RequestParameter
@@ -71,6 +74,15 @@ public class SettlementAction {
 			add("reserveDesc", new RequiredValidator());
 		}
 	};
+
+	private double calcHedgeLots(int reserve) {
+		double exitPrice = positionService.getMaxShortPosition().openPrice;
+		double curPrice = configService.getByDouble("current_price");
+		System.out.println("exit = " + exitPrice + " cur = " + curPrice);
+		double lots = reserve / (exitPrice - curPrice);
+		lots = Math.floor(lots / 100) / 1000;
+		return lots;
+	}
 
 	public ActionResult index() {
 		accessKey = configService.getByString("auth_key");
@@ -94,6 +106,11 @@ public class SettlementAction {
 
 		virtualPriceReservation = configService.getByInteger("vp_reserve");
 
+		shAmount = PriceUtil.separateComma(Integer.toString(exp + virtualPriceReservation));
+		// ヘッジ可能量の計算
+		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
+
+		// 余裕額の計算
 		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
 		for (ReservedProfit rp : reservedProfits) {

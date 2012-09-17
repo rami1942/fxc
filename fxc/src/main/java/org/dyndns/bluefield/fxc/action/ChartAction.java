@@ -54,14 +54,17 @@ public class ChartAction {
 		for (Position p : longs) {
 			if (p.isWideBody == 1) lots += p.lots;
 		}
-		Double longShift = configService.getByDouble("vp_reserve") / (lots * 100000);
+		double longShift = configService.getByDouble("vp_reserve") / (lots * 100000);
+
 
 		// 平均建値・トラップ本数の算出
 		LongInfo info = positionService.calcTraps(longs);
 		numTraps = info.numTraps;
 
 		// 建値・仮想建値
-		basePrice = Double.toString(info.avg - longShift);
+		double vp = info.avg - longShift;
+		vp = Math.round(vp * 1000.0) / 1000.0;
+		basePrice = Double.toString(vp);
 		baseLine = (shorts.get(0).openPrice - info.avg + longShift) / trapWidth + baseOffset;
 
 		truePrice = Double.toString(info.avg);
