@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.dyndns.bluefield.fxc.service.ConfigService;
+import org.seasar.extension.jdbc.JdbcManager;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 
@@ -34,9 +34,10 @@ public class AuthFilter implements Filter {
 		}
 
 		S2Container container = SingletonS2ContainerFactory.getContainer();
-		ConfigService configService = (ConfigService)container.getComponent(ConfigService.class);
+		JdbcManager jdbcManager = (JdbcManager)container.getComponent(JdbcManager.class);
+//		String key = jdbcManager.from(Configuration.class).where("confKey='auth_key'").getSingleResult().confValue;
+		String key = jdbcManager.selectBySql(String.class, "select conf_value from configuration where conf_key='auth_key'").getSingleResult();
 
-		String key = configService.getByString("auth_key");
 		String paramKey = req.getParameter("ak");
 		if (paramKey == null || !key.equals(paramKey)) {
 			// auth error
