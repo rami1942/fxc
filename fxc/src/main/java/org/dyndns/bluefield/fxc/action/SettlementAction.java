@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.service.ConfigService;
+import org.dyndns.bluefield.fxc.service.PositionService;
 import org.dyndns.bluefield.fxc.service.SettlementService;
 import org.dyndns.bluefield.fxc.service.SettlementService.SettleResult;
 import org.dyndns.bluefield.fxc.util.PriceUtil;
@@ -32,6 +33,9 @@ public class SettlementAction {
 	@Resource
 	private ConfigService configService;
 
+	@Resource
+	private PositionService positionService;
+
 	public Date fromDt;
 	public Integer balance;
 	public Integer profit;
@@ -46,6 +50,8 @@ public class SettlementAction {
 
 	public List<ReservedProfit> reservedProfits;
 	public Integer remain;
+
+	public String exitProfit;
 
 	@RequestParameter
 	public Integer reserveAmount;
@@ -80,11 +86,16 @@ public class SettlementAction {
 		profitDiff = PriceUtil.separateComma(diff.profitDiff.toString());
 		if (diff.profitDiff >= 0) profitDiff = "+" + profitDiff;
 
+		int exp = positionService.exitProfit();
+		exitProfit = PriceUtil.separateComma(Integer.toString(exp));
+
 		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
 		for (ReservedProfit rp : reservedProfits) {
 			remain -= rp.amount;
 		}
+		remain += exp;
+
 
 		return new Forward("index.jsp");
 	}

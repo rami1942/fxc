@@ -31,12 +31,18 @@ function unReserve(form, id) {
 </p>
 
 <t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="update" value="${action}">
-<input type="submit" value="更新" />
+<input type="submit" value="リセット" />
 </t:form>
 
 <p>
 くるくるワイド開始からの利益: ¥${kkwProfit}
 </p>
+
+<p>
+出口含み益: ¥${exitProfit}<br/>
+仮想建値割振り額: <input type="text" />
+</p>
+
 <table border="1">
 <tr>
 	<th>金額</th>

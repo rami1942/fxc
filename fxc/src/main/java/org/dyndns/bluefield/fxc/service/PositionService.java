@@ -133,13 +133,31 @@ public class PositionService {
 		}
 		p += 0.5;
 		pMp = Math.round(pMp * 10000.0) / 100.0;
-		System.out.println("P=" + p + " MP=" + pMp);
 
 		LosscutInfo lc = new LosscutInfo();
 		lc.price = p;
 		lc.level = pMp;
 
 		return lc;
+	}
+
+	public Integer exitProfit() {
+		List<ShortTrap> traps = getShortTraps();
+		Double exitPrice = traps.get(0).openPrice;
+		int total = 0;
+
+		int lotsPerTrap = configService.getByInteger("lots");
+
+		for (ShortTrap t : traps) {
+			total += (t.openPrice - exitPrice) * lotsPerTrap;
+		}
+
+		List<Position> longs = getLongPositions();
+		for (Position p : longs) {
+			total += (exitPrice - p.openPrice) * p.lots * 100000;
+		}
+
+		return total;
 	}
 
 }

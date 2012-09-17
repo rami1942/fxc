@@ -85,8 +85,8 @@ public class SettlementService {
 	}
 
 	public void unReserve(Integer id) {
-		System.out.println("XXXXXXXXXXXXXXXXXX" + id);
 		ReservedProfit profit = jdbcManager.from(ReservedProfit.class).where("id=?", id).getSingleResult();
 		jdbcManager.delete(profit).execute();
 	}
+
 }
