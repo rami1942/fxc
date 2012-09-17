@@ -61,6 +61,9 @@ public class SettlementAction {
 	@RequestParameter
 	public Integer id;
 
+	@RequestParameter
+	public Integer virtualPriceReservation;
+
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
 		public void initialize() {
@@ -89,13 +92,15 @@ public class SettlementAction {
 		int exp = positionService.exitProfit();
 		exitProfit = PriceUtil.separateComma(Integer.toString(exp));
 
+		virtualPriceReservation = configService.getByInteger("vp_reserve");
+
 		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
 		for (ReservedProfit rp : reservedProfits) {
 			remain -= rp.amount;
 		}
 		remain += exp;
-
+		remain -= virtualPriceReservation;
 
 		return new Forward("index.jsp");
 	}
@@ -117,6 +122,16 @@ public class SettlementAction {
 		accessKey = configService.getByString("auth_key");
 		if (id == null) return new Redirect("./");
 		settlementService.unReserve(id);
+		return new Redirect("./?ak=" + accessKey);
+	}
+
+	public ActionResult setVirtualPriceReservation() {
+		accessKey = configService.getByString("auth_key");
+
+		if (virtualPriceReservation != null) {
+			configService.set("vp_reserve", virtualPriceReservation.toString());
+		}
+
 		return new Redirect("./?ak=" + accessKey);
 	}
 }

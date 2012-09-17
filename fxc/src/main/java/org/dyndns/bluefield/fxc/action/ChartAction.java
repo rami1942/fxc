@@ -48,13 +48,19 @@ public class ChartAction {
 		List<Position> longs = positionService.getLongPositions();
 
 		Double trapWidth = configService.getByDouble("trap_width");
-		Double longShift = configService.getByDouble("long_shift");
 		Double baseOffset = configService.getByDouble("base_offset");
+
+		Double lots = 0.0;
+		for (Position p : longs) {
+			if (p.isWideBody == 1) lots += p.lots;
+		}
+		Double longShift = configService.getByDouble("vp_reserve") / (lots * 100000);
 
 		// 平均建値・トラップ本数の算出
 		LongInfo info = positionService.calcTraps(longs);
 		numTraps = info.numTraps;
 
+		// 建値・仮想建値
 		basePrice = Double.toString(info.avg - longShift);
 		baseLine = (shorts.get(0).openPrice - info.avg + longShift) / trapWidth + baseOffset;
 
@@ -100,6 +106,7 @@ public class ChartAction {
 		}
 		longPositions = buf.toString();
 
+		// 凍結分
 		buf = new StringBuilder();
 		for (Position lp : positionService.getFreezeLongs()) {
 			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
