@@ -34,16 +34,15 @@ function unReserve(form, id) {
 <input type="submit" value="リセット" />
 </t:form>
 
+<hr />
+
 <p>
-くるくるワイド開始からの利益: ¥${kkwProfit}
+累積利益: ¥${kkwProfit}
 </p>
 
 <p>
 <t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setVirtualPriceReservation" value="${action}" method="POST" >
-出口含み益: ¥${exitProfit}<br/>
 仮想建値割振り額: <t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" /><br/>
-ショートヘッジ可能額: ${shAmount}<br/>
-ヘッジ可能量(Lot): ${hedgeLots}
 </t:form>
 </p>
 
@@ -71,7 +70,13 @@ function unReserve(form, id) {
 </tr>
 </t:form>
 </table>
-<p>残額: ¥${my:commaSep(remain)}</p>
+<p>残額: ¥${my:commaSep(remain2)}</p>
+
+<hr />
+<p>
+ショートヘッジ可能額: ${shAmount}<br/>
+ヘッジ可能量(Lot): ${hedgeLots}
+</p>
 
 <p>
 <a href="../?ak=${accessKey}">戻る</a>

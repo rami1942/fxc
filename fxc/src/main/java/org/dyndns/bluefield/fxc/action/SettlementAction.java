@@ -50,6 +50,7 @@ public class SettlementAction {
 
 	public List<ReservedProfit> reservedProfits;
 	public Integer remain;
+	public Integer remain2;
 
 	public String exitProfit;
 
@@ -114,10 +115,11 @@ public class SettlementAction {
 		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
 		for (ReservedProfit rp : reservedProfits) {
-			remain -= rp.amount;
+			remain += rp.amount;
 		}
-		remain += exp;
 		remain -= virtualPriceReservation;
+		remain2 = remain;
+		remain += exp;
 
 		return new Forward("index.jsp");
 	}
