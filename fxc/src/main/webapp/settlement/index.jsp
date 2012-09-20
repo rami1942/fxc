@@ -64,6 +64,21 @@ function unReserve(form, id) {
 </tr>
 </table>
 
+<p>SL確定益</p>
+<table border="1">
+<tr>
+<th>建値</th><th>ロット</th><th>確定益</th>
+</tr>
+<c:forEach var="p" items="${hedges}">
+<tr>
+<td>${p.openPrice}</td>
+<td>${p.lots}</td>
+<td>${p.profit}</td>
+</tr>
+</c:forEach>
+</table>
+
+<p>調整分</p>
 <table border="1">
 <tr>
 	<th>金額</th>

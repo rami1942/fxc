@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
@@ -56,6 +57,8 @@ public class SettlementAction {
 
 	public Integer oneLinePrice;
 	
+	public List<Position> hedges;
+	
 	@RequestParameter
 	public Integer reserveAmount;
 	@RequestParameter
@@ -93,6 +96,7 @@ public class SettlementAction {
 	public ActionResult index() {
 		accessKey = configService.getByString("auth_key");
 
+		// 前回差分
 		SettleResult diff = settlementService.getDiffUntilNow();
 		fromDt = diff.lastSettlementDt;
 		balance = diff.balance;
@@ -101,27 +105,32 @@ public class SettlementAction {
 		numRepeat = diff.numRepeat;
 		kkwProfit = PriceUtil.separateComma(diff.kkwProfit.toString());
 
-		oneLinePrice = positionService.calcOneLinePrice();
-
 		balanceDiff = PriceUtil.separateComma(diff.balanceDiff.toString());
 		if (diff.balanceDiff >= 0) balanceDiff = "+" + balanceDiff;
 		profitDiff = PriceUtil.separateComma(diff.profitDiff.toString());
 		if (diff.profitDiff >= 0) profitDiff = "+" + profitDiff;
 
-		int exp = positionService.exitProfit();
+		// 仮想建値・確保益
 		virtualPriceReservation = configService.getByInteger("vp_reserve");
-		shAmount = PriceUtil.separateComma(Integer.toString(exp + virtualPriceReservation));
+		profitReservation = configService.getByInteger("profit_reservation");
+		oneLinePrice = positionService.calcOneLinePrice();
 		
-		// ヘッジ可能量の計算
+		// ヘッジ可能量
+		int exp = positionService.exitProfit();
+		shAmount = PriceUtil.separateComma(Integer.toString(exp + virtualPriceReservation));
 		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
 
-		profitReservation = configService.getByInteger("profit_reservation");
-
-		// 余裕額の計算
+		// SLによる確保益
+		hedges = settlementService.calcHedgedFixedProfit();
+		
+		// 余裕額
 		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
 		for (ReservedProfit rp : reservedProfits) {
 			remain += rp.amount;
+		}
+		for (Position p : hedges) {
+			remain += (int)Math.round(p.profit);
 		}
 		remain -= virtualPriceReservation;
 		remain -= profitReservation;

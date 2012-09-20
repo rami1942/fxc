@@ -1,10 +1,12 @@
 package org.dyndns.bluefield.fxc.service;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.entity.SettlementHistory;
 import org.seasar.extension.jdbc.JdbcManager;
@@ -28,6 +30,9 @@ public class SettlementService {
 
 	@Resource
 	private ConfigService configService;
+	
+	@Resource
+	private PositionService positionService;
 
 	public SettleResult getDiffUntilNow() {
 		SettleResult result = new SettleResult();
@@ -87,6 +92,20 @@ public class SettlementService {
 	public void unReserve(Integer id) {
 		ReservedProfit profit = jdbcManager.from(ReservedProfit.class).where("id=?", id).getSingleResult();
 		jdbcManager.delete(profit).execute();
+	}
+	
+	public List<Position> calcHedgedFixedProfit() {
+		List<Position> hedges = positionService.getHedgeShorts();
+		List<Position> hedgedFixed = new LinkedList<Position>();
+		
+		for (Position p : hedges) {
+			if (p.slPrice == null || p.slPrice == 0) continue;
+			if (p.openPrice < p.slPrice) continue;
+			p.profit = p.swapPoint + (p.openPrice - p.slPrice) * p.lots * 100000;
+			hedgedFixed.add(p);
+		}
+		
+		return hedgedFixed;
 	}
 
 }
