@@ -30,8 +30,6 @@ public class ConfigAction {
 	public Double tpWidth;
 	@RequestParameter
 	public Double baseOffset;
-	@RequestParameter
-	public Double longShift;
 
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
@@ -40,7 +38,6 @@ public class ConfigAction {
 			add("trapWidth", new RequiredValidator(), new NumberValidator());
 			add("tpWidth", new RequiredValidator(), new NumberValidator());
 			add("baseOffset", new RequiredValidator(), new NumberValidator());
-			add("longShift", new RequiredValidator(), new NumberValidator());
 		}
 	};
 
@@ -49,7 +46,6 @@ public class ConfigAction {
 		trapWidth = configService.getByDouble("trap_width");
 		tpWidth = configService.getByDouble("tp_width");
 		baseOffset = configService.getByDouble("base_offset");
-		longShift = configService.getByDouble("long_shift");
 		return new Forward("index.jsp");
 	}
 
@@ -58,8 +54,7 @@ public class ConfigAction {
 		configService.set("lots", lots.toString());
 		configService.set("trap_width", trapWidth.toString());
 		configService.set("tp_width", tpWidth.toString());
-		configService.set("base_offset", baseOffset.toString());
-		configService.set("long_shift", longShift == null ? "0.0" : longShift.toString());
+		configService.set("base_offset", baseOffset == null ? "0" : baseOffset.toString());
 		actionContext.getFlashMap().put(
 				"notice", "更新しました。");
 		return new Redirect("./");
