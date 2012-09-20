@@ -73,7 +73,7 @@ function unReserve(form, id) {
 <tr>
 <td>${p.openPrice}</td>
 <td>${p.lots}</td>
-<td>${p.profit}</td>
+<td>${my:roundCommaSep(p.profit)}</td>
 </tr>
 </c:forEach>
 </table>

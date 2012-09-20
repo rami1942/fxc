@@ -39,4 +39,9 @@ public class PriceUtil {
 	public static Integer size(List<?> list) {
 		return list.size();
 	}
+
+	public static String roundCommaSep(Double d) {
+		int n = (int)Math.round(d);
+		return separateComma(Integer.toString(n));
+	}
 }

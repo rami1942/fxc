@@ -14,4 +14,9 @@
   	<function-class>org.dyndns.bluefield.fxc.util.PriceUtil</function-class>
   	<function-signature>java.lang.Integere size(java.util.List)</function-signature>
   </function>
+  <function>
+  	<name>roundCommaSep</name>
+  	<function-class>org.dyndns.bluefield.fxc.util.PriceUtil</function-class>
+  	<function-signature>java.lang.String roundCommaSep(java.lang.Double)</function-signature>
+  </function>
 </taglib>
