@@ -58,7 +58,7 @@ function unReserve(form, id) {
 <td>仮想建値割振り額:</td>
 <td>
 <t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setVirtualPriceReservation" value="${action}" method="POST" >
-<t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" />
+<t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" /> (￥${my:commaSep(oneLinePrice)}/1段)
 </t:form>
 </td>
 </tr>

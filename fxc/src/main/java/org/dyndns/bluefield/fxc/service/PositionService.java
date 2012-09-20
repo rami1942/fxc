@@ -160,4 +160,13 @@ public class PositionService {
 		return total;
 	}
 
+	public int calcOneLinePrice() {
+		List<Position> longs = getLongPositions();
+		int amount = 0;
+		for (Position p : longs) {
+			amount += p.lots * 100000;
+		}
+		Double height = configService.getByDouble("trap_width");
+		return (int)Math.round(amount * height);
+	}
 }

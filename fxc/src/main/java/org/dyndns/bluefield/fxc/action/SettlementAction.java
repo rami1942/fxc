@@ -51,11 +51,11 @@ public class SettlementAction {
 	public List<ReservedProfit> reservedProfits;
 	public Integer remain;
 
-	public String exitProfit;
-
 	public String shAmount;
 	public Double hedgeLots;
 
+	public Integer oneLinePrice;
+	
 	@RequestParameter
 	public Integer reserveAmount;
 	@RequestParameter
@@ -78,18 +78,17 @@ public class SettlementAction {
 		public void initialize() {
 			add("reserveAmount", new RequiredValidator(), new NumberValidator());
 			add("reserveDesc", new RequiredValidator());
-			add("baseDt", new RequiredValidator());
 		}
 	};
 
 	private double calcHedgeLots(int reserve) {
 		double exitPrice = positionService.getMaxShortPosition().openPrice;
 		double curPrice = configService.getByDouble("current_price");
-		System.out.println("exit = " + exitPrice + " cur = " + curPrice);
 		double lots = reserve / (exitPrice - curPrice);
 		lots = Math.floor(lots / 100) / 1000;
 		return lots;
 	}
+	
 
 	public ActionResult index() {
 		accessKey = configService.getByString("auth_key");
@@ -102,6 +101,7 @@ public class SettlementAction {
 		numRepeat = diff.numRepeat;
 		kkwProfit = PriceUtil.separateComma(diff.kkwProfit.toString());
 
+		oneLinePrice = positionService.calcOneLinePrice();
 
 		balanceDiff = PriceUtil.separateComma(diff.balanceDiff.toString());
 		if (diff.balanceDiff >= 0) balanceDiff = "+" + balanceDiff;
@@ -109,11 +109,9 @@ public class SettlementAction {
 		if (diff.profitDiff >= 0) profitDiff = "+" + profitDiff;
 
 		int exp = positionService.exitProfit();
-		exitProfit = PriceUtil.separateComma(Integer.toString(exp));
-
 		virtualPriceReservation = configService.getByInteger("vp_reserve");
-
 		shAmount = PriceUtil.separateComma(Integer.toString(exp + virtualPriceReservation));
+		
 		// ヘッジ可能量の計算
 		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
 
