@@ -50,7 +50,6 @@ public class SettlementAction {
 
 	public List<ReservedProfit> reservedProfits;
 	public Integer remain;
-	public Integer remain2;
 
 	public String exitProfit;
 
@@ -67,12 +66,16 @@ public class SettlementAction {
 
 	@RequestParameter
 	public Integer virtualPriceReservation;
+	
+	@RequestParameter
+	public String baseDt;
 
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
 		public void initialize() {
 			add("reserveAmount", new RequiredValidator(), new NumberValidator());
 			add("reserveDesc", new RequiredValidator());
+			add("baseDt", new RequiredValidator());
 		}
 	};
 
@@ -118,9 +121,9 @@ public class SettlementAction {
 			remain += rp.amount;
 		}
 		remain -= virtualPriceReservation;
-		remain2 = remain;
-		remain += exp;
 
+		baseDt = configService.getByString("baseDt");
+		
 		return new Forward("index.jsp");
 	}
 
@@ -146,11 +149,15 @@ public class SettlementAction {
 
 	public ActionResult setVirtualPriceReservation() {
 		accessKey = configService.getByString("auth_key");
-
 		if (virtualPriceReservation != null) {
 			configService.set("vp_reserve", virtualPriceReservation.toString());
 		}
-
+		return new Redirect("./?ak=" + accessKey);
+	}
+	
+	public ActionResult setBaseDt() {
+		accessKey = configService.getByString("auth_key");
+		configService.set("baseDt", baseDt);
 		return new Redirect("./?ak=" + accessKey);
 	}
 }

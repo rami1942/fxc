@@ -8,4 +8,5 @@ insert into configuration (conf_key, conf_value) values
 ('base_offset', 0),
 ('balance', 0),
 ('margin', 0),
-('vp_reserve', 0);
+('vp_reserve', 0),
+('base_dt', '2012-09-20 11:32:00');

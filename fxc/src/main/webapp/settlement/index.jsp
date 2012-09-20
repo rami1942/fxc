@@ -36,15 +36,25 @@ function unReserve(form, id) {
 
 <hr />
 
-<p>
-累積利益: ¥${kkwProfit}
-</p>
-
-<p>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setVirtualPriceReservation" value="${action}" method="POST" >
-仮想建値割振り額: <t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" /><br/>
+<table>
+<tr><td>累積利益</td><td>¥${kkwProfit}</td></tr>
+<tr>
+<td>基準日時:</td>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setBaseDt" value="${action}" method="POST">
+<t:input type="text" name="baseDt" /> <input type="submit" value="変更" />
 </t:form>
-</p>
+</td>
+</tr>
+<tr>
+<td>仮想建値割振り額:</td>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setVirtualPriceReservation" value="${action}" method="POST" >
+<t:input type="text" name="virtualPriceReservation"/> <input type="submit" value="変更" />
+</t:form>
+</td>
+</tr>
+</table>
 
 <table border="1">
 <tr>
@@ -70,7 +80,7 @@ function unReserve(form, id) {
 </tr>
 </t:form>
 </table>
-<p>残額: ¥${my:commaSep(remain2)}</p>
+<p>残額: ¥${my:commaSep(remain)}</p>
 
 <hr />
 <p>
