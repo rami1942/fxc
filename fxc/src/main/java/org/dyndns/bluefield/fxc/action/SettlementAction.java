@@ -70,6 +70,9 @@ public class SettlementAction {
 	@RequestParameter
 	public String baseDt;
 
+	@RequestParameter
+	public Integer profitReservation;
+	
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
 		public void initialize() {
@@ -114,6 +117,8 @@ public class SettlementAction {
 		// ヘッジ可能量の計算
 		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
 
+		profitReservation = configService.getByInteger("profit_reservation");
+
 		// 余裕額の計算
 		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
@@ -121,9 +126,9 @@ public class SettlementAction {
 			remain += rp.amount;
 		}
 		remain -= virtualPriceReservation;
+		remain -= profitReservation;
 
-		baseDt = configService.getByString("baseDt");
-		
+		baseDt = configService.getByString("base_dt");
 		return new Forward("index.jsp");
 	}
 
@@ -157,7 +162,13 @@ public class SettlementAction {
 	
 	public ActionResult setBaseDt() {
 		accessKey = configService.getByString("auth_key");
-		configService.set("baseDt", baseDt);
+		configService.set("base_dt", baseDt);
 		return new Redirect("./?ak=" + accessKey);
+	}
+	
+	public ActionResult setProfitReservation() {
+		accessKey = configService.getByString("auth_key");
+		configService.set("profit_reservation", profitReservation.toString());
+		return new Redirect("./?ak=" + accessKey);		
 	}
 }

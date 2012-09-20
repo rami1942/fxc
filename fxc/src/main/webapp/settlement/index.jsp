@@ -24,8 +24,8 @@ function unReserve(form, id) {
 <p>
 前回: ${f:dateFormat(fromDt, "yyyy-MM-dd HH:mm:ss")}<br/>
 <br/>
-口座残高: ¥${my:commaSep(balance)}(${balanceDiff})<br/>
-含み損益: ¥${my:commaSep(profit)}(${profitDiff})<br/>
+口座残高: ￥${my:commaSep(balance)}(${balanceDiff})<br/>
+含み損益: ￥${my:commaSep(profit)}(${profitDiff})<br/>
 スワップ: ${my:commaSep(swapPoint)}<br/>
 リピート: ${numRepeat}回
 </p>
@@ -43,6 +43,14 @@ function unReserve(form, id) {
 <td>
 <t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setBaseDt" value="${action}" method="POST">
 <t:input type="text" name="baseDt" /> <input type="submit" value="変更" />
+</t:form>
+</td>
+</tr>
+<tr>
+<td>確保分:</td>
+<td>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setProfitReservation" value="${action}" method="POST" >
+<t:input type="text" name="profitReservation"/> <input type="submit" value="変更" />
 </t:form>
 </td>
 </tr>
