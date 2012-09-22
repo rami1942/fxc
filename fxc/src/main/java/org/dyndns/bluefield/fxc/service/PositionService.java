@@ -219,7 +219,7 @@ public class PositionService {
 	}
 
 	public List<DiscPosition> discPositions(Double currentPrice) {
-		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0 and isWideBody=0").getResultList();
+		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and (pos_type = 1 and magicNo=0) or isWideBody=0").getResultList();
 		List<DiscPosition> result = new ArrayList<DiscPosition>(discs.size());
 		for (Position p : discs) {
 			DiscPosition dp = new DiscPosition();
