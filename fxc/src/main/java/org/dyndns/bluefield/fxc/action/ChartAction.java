@@ -45,6 +45,7 @@ public class ChartAction {
 	public String discPosType;
 	public String discPosOP;
 	public String discPosSL;
+	public String discPosPrice;
 
 	public String accessKey;
 
@@ -118,6 +119,7 @@ public class ChartAction {
 		buf = new StringBuilder();
 		StringBuilder buf2 = new StringBuilder();
 		StringBuilder buf3 = new StringBuilder();
+		StringBuilder buf4 = new StringBuilder();
 		List<DiscPosition> discs = positionService.discPositions(curPrice);
 		for (DiscPosition p : discs) {
 			if (p.isLong) {
@@ -140,10 +142,14 @@ public class ChartAction {
 			}
 			buf3.append(',');
 
+			buf4.append(String.format("'%3.3f'", p.openPrice));
+			buf4.append(',');
+
 		}
 		discPosType = buf.toString();
 		discPosOP = buf2.toString();
 		discPosSL = buf3.toString();
+		discPosPrice = buf4.toString();
 
 		accessKey = configService.getByString("auth_key");
 

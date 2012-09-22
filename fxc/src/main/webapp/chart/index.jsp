@@ -24,6 +24,7 @@ var longPos = [${longPositions}];
 var discPosType = new Array(${discPosType} null);
 var discPosOP = new Array(${discPosOP} null);
 var discPosSL = new Array(${discPosSL} null);
+var discPosPrice = new Array(${discPosPrice} null);
 
 var under = Math.round(baseLine + 0.5) ;
 
@@ -108,6 +109,25 @@ window.onload=function() {
 		} else {
 			drawShortDiscPosition(ctx, i, discPosOP[i], discPosSL[i]);
 		}
+		ctx.font="12px 'Times New Roman'";
+		ctx.fillStyle = 'black';
+		ctx.textAlign = 'center';
+		var offset;
+		if (currentPrice < discPosOP[i]) {
+			offset = 15;
+		} else {
+			offset = -10;
+		}
+		ctx.fillText(discPosPrice[i], bx + (width + 2 + i) * boxSize, by + offset + boxSize * (discPosOP[i] + 1));
+	}
+
+	if (discPosType.length > 1) {
+		ctx.strokeStyle = 'darkgray';
+		ctx.beginPath();
+		ctx.moveTo(bx + (width + 2) * boxSize - boxSize / 2, by + boxSize * (currentPrice + 1));
+		ctx.lineTo(bx + (width + discPosType.length) * boxSize + boxSize / 2, by + boxSize * (currentPrice + 1));
+		ctx.closePath();
+		ctx.stroke();
 	}
 }
 
