@@ -112,7 +112,8 @@ function unReserve(form, id) {
 </p>
 
 <p>
-<a href="../?ak=${accessKey}">戻る</a>
+<a href="../chart?ak=${accessKey}">チャート</a><br/>
+<a href="../?ak=${accessKey}">ポジション</a><br/>
 </p>
 </body>
 </html>
