@@ -1,10 +1,16 @@
 package org.dyndns.bluefield.fxc.service;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.seasar.extension.jdbc.JdbcManager;
@@ -168,5 +174,64 @@ public class PositionService {
 		}
 		Double height = configService.getByDouble("trap_width");
 		return (int)Math.round(amount * height);
+	}
+
+	static class AbsComparator implements Comparator<DiscPosition> {
+		public Double currentPrice;
+
+		public AbsComparator(Double currentPrice) {
+			this.currentPrice = currentPrice;
+		}
+
+		// 赤の条件:
+		//  利益が出ていて、(SLがかかっていない || SLがOPの後ろに指してある)
+		boolean isRed(DiscPosition p) {
+			if (p.isLong) {
+				if (p.openPrice < currentPrice && (p.slPrice == 0.0 || p.slPrice < p.openPrice)) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (p.openPrice > currentPrice && (p.slPrice == 0.0 || p.slPrice > p.openPrice)) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		// まず赤優先。次にcurrentPriceに近いもの。
+		public int compare(DiscPosition p0, DiscPosition p1) {
+			boolean red0 = isRed(p0);
+			boolean red1 = isRed(p1);
+
+			if (red0 == red1) {
+				return (Math.abs(currentPrice - p0.openPrice) - Math.abs(currentPrice - p1.openPrice) < 0) ? 0 : 1;
+			} else {
+				if (red0) {
+					return -1;
+				} else {
+					return 1;
+				}
+			}
+		}
+	}
+
+	public List<DiscPosition> discPositions(Double currentPrice) {
+		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0 and isWideBody=0").getResultList();
+		List<DiscPosition> result = new ArrayList<DiscPosition>(discs.size());
+		for (Position p : discs) {
+			DiscPosition dp = new DiscPosition();
+			dp.isLong = (p.posType == 0);
+			dp.openPrice = p.openPrice;
+			dp.slPrice = p.slPrice;
+
+			result.add(dp);
+		}
+
+		Collections.sort(result, new AbsComparator(currentPrice));
+
+		return result;
 	}
 }

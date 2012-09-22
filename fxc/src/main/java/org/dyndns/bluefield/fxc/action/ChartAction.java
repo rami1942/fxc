@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
@@ -39,7 +40,11 @@ public class ChartAction {
 
 	public String positions;
 	public String longPositions;
-	public String freezePositions;
+//	public String freezePositions;
+
+	public String discPosType;
+	public String discPosOP;
+	public String discPosSL;
 
 	public String accessKey;
 
@@ -109,14 +114,36 @@ public class ChartAction {
 		}
 		longPositions = buf.toString();
 
-		// 凍結分
+		// 裁量ポジション
 		buf = new StringBuilder();
-		for (Position lp : positionService.getFreezeLongs()) {
-			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
-			buf.append(d);
+		StringBuilder buf2 = new StringBuilder();
+		StringBuilder buf3 = new StringBuilder();
+		List<DiscPosition> discs = positionService.discPositions(curPrice);
+		for (DiscPosition p : discs) {
+			if (p.isLong) {
+				buf.append("true");
+			} else {
+				buf.append("false");
+			}
 			buf.append(',');
+
+			double d;
+			d = (shorts.get(0).openPrice - p.openPrice) / trapWidth;
+			buf2.append(d);
+			buf2.append(',');
+
+			if (p.slPrice == null || p.slPrice == 0.0) {
+				buf3.append("null");
+			} else {
+				d = (shorts.get(0).openPrice - p.slPrice) / trapWidth;
+				buf3.append(d);
+			}
+			buf3.append(',');
+
 		}
-		freezePositions = buf.toString();
+		discPosType = buf.toString();
+		discPosOP = buf2.toString();
+		discPosSL = buf3.toString();
 
 		accessKey = configService.getByString("auth_key");
 
