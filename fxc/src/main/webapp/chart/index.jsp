@@ -22,6 +22,9 @@ var ispos = [${positions}];
 var longPos = [${longPositions}];
 var freezePos = [${freezePositions}];
 
+//var discPosOP = new Array(7.0, 1.5, 3.0, 1.5);
+//var discPosSL = new Array(1.0, null, 0.0, 2.5);
+
 var under = Math.round(baseLine + 0.5) ;
 
 var bx = 150;
@@ -64,6 +67,7 @@ window.onload=function() {
 
 	drawBlocks(ctx, width, under);
 
+	// トラップライン
 	ctx.lineWidth=4;
 	for (var i = 0; i < width; i++) {
 		if (ispos[i] == 0) {
@@ -95,12 +99,93 @@ window.onload=function() {
 	}
 
 	drawPriceArrow(ctx, currentPrice);
-	drawLongMarker(ctx);
+	drawSideMarker(ctx);
 	drawFreezeMarker(ctx);
+
+	var discPosType = new Array(false, false, false, false);
+	var discPosOP = new Array(7.0, 1.5, 3.0, 1.5);
+	var discPosSL = new Array(1.0, null, 0.0, 2.5);
+
+	// 裁量ポジション(ショート)
+	for (var i = 0; i < discPosType.length; i++) {
+		if (discPosType[i]) {
+		} else {
+			drawShortDiscPosition(ctx, i, discPosOP[i], discPosSL[i]);
+		}
+	}
+}
+
+function drawShortDiscPosition(ctx, xp, openPrice, slPrice) {
+	var color;
+	var slTo;
+	if (slPrice != null && currentPrice > openPrice && currentPrice > slPrice) {
+		color = 'chocolate';
+		slTo = openPrice;
+	} else {
+		color = 'black';
+		slTo = currentPrice;
+	}
+
+	var xpos = bx + (width + 2 + xp) * boxSize;
+	var ypos = by + (openPrice + 1) * boxSize;
+
+	// 矢印本体(SL〜建値 or 現在値)
+	if (slPrice != null) {
+		var lineStyle = {
+			color: "darkgray",
+			pattern: "*-",
+			scale: 10,
+			width: 1,
+			cap: "butt", // butt, round, square
+			join: "bevel" // round, bevel, miter
+		};
+		var adl = new AnbtDashedLine();
+		var slY = by + (slPrice + 1) * boxSize;
+		var v = [[xpos, slY], [xpos, ypos]];
+		adl.drawDashedPolyLine(ctx, v, lineStyle);
+		ctx.strokeStyle = 'darkgray';
+		ctx.beginPath();
+		ctx.moveTo(xpos - 5, slY - 5);
+		ctx.lineTo(xpos + 5, slY + 5);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(xpos + 5, slY - 5);
+		ctx.lineTo(xpos - 5, slY + 5);
+		ctx.closePath();
+		ctx.stroke();
+	}
+
+	// 矢印本体(建値〜現在値)
+	ctx.strokeStyle = color;
+	ctx.lineWidth = 1;
+
+	ctx.beginPath();
+	ctx.moveTo(xpos, ypos);
+	ctx.lineTo(xpos, by + (currentPrice + 1) * boxSize - 5);
+	ctx.closePath();
+	ctx.stroke();
+
+	ctx.beginPath();
+	ctx.moveTo(xpos - 7 , ypos);
+	ctx.lineTo(xpos + 7, ypos);
+	ctx.closePath();
+	ctx.stroke();
+
+	// 矢印頭
+	var curYPos = by + (currentPrice + 1) * boxSize;
+	ctx.fillStyle = color;
+	ctx.lineWidth=1;
+	ctx.beginPath();
+	ctx.moveTo(xpos, curYPos);
+	ctx.lineTo(xpos - 5, curYPos - 20);
+	ctx.lineTo(xpos + 5, curYPos - 20);
+	ctx.closePath();
+	ctx.fill();
 }
 
 // ロングを示すマーカー
-function drawLongMarker(ctx) {
+function drawSideMarker(ctx) {
 	ctx.fillStyle = 'black';
 	ctx.lineWidth = 1;
 	for (var i = 0; i < longPos.length; i++) {
