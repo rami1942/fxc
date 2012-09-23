@@ -67,13 +67,27 @@ function unReserve(form, id) {
 <p>SL確定益</p>
 <table border="1">
 <tr>
-<th>建値</th><th>ロット</th><th>確定益</th>
+<th>建値</th><th>SL</th><th>ロット</th><th>証拠金</th><th>SL損益</th>
 </tr>
-<c:forEach var="p" items="${hedges}">
+<c:forEach var="d" items="${discs}">
 <tr>
-<td>${p.openPrice}</td>
-<td>${p.lots}</td>
-<td>${my:roundCommaSep(p.profit)}</td>
+<td>
+	<c:if test="${d.isLong}">L</c:if>
+	<c:if test="${!d.isLong}">S</c:if>
+	${d.openPrice}
+</td>
+<td>
+	<c:if test="${d.slPrice != null}">${d.slPrice}</c:if>
+	<c:if test="${d.slPrice == null}">-</c:if>
+</td>
+<td>${d.lots}</td>
+<td>
+	<c:if test="${d.margin != null}">
+		${my:commaSep(d.margin)}
+	</c:if>
+	<c:if test="${d.margin == null}">-</c:if>
+</td>
+<td>${my:commaSep(d.profit)}</td>
 </tr>
 </c:forEach>
 </table>
@@ -106,10 +120,28 @@ function unReserve(form, id) {
 <p>残額: ¥${my:commaSep(remain)}</p>
 
 <hr />
-<p>
-ショートヘッジ可能額: ${shAmount}<br/>
-ヘッジ可能量(Lot): ${hedgeLots}
-</p>
+<table border="1">
+<tr>
+	<th>出口益S</th>
+	<th>確保益L</th>
+	<th>確保益S(SL出口)</th>
+	<th>確保益S(SL建値)</th>
+</tr>
+<tr>
+<td>
+可能額: ${shAmount}<br/>
+可能量(Lot): ${hedgeLots}
+</td>
+<td>&nbsp;</td>
+<td>
+<c:if test="${lotsShortExit != null}">
+可能量(Lot): ${lotsShortExit}
+</c:if>
+<c:if test="${lotsShortExit == null}">-</c:if>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table>
 
 <p>
 <a href="../chart?ak=${accessKey}">チャート</a><br/>

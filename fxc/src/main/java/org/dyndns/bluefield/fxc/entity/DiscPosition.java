@@ -6,4 +6,7 @@ public class DiscPosition {
 	public Double openPrice;
 	public Double slPrice;
 	public Double lots;
+
+	public Integer margin;
+	public Integer profit;
 }

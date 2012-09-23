@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.service.ConfigService;
@@ -56,9 +57,12 @@ public class SettlementAction {
 	public Double hedgeLots;
 
 	public Integer oneLinePrice;
-	
-	public List<Position> hedges;
-	
+
+	public List<DiscPosition> discs;
+
+	public Double lotsShortExit;
+	public Double lotsShortVOpenPrice;
+
 	@RequestParameter
 	public Integer reserveAmount;
 	@RequestParameter
@@ -69,13 +73,13 @@ public class SettlementAction {
 
 	@RequestParameter
 	public Integer virtualPriceReservation;
-	
+
 	@RequestParameter
 	public String baseDt;
 
 	@RequestParameter
 	public Integer profitReservation;
-	
+
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
 		public void initialize() {
@@ -91,10 +95,12 @@ public class SettlementAction {
 		lots = Math.floor(lots / 100) / 1000;
 		return lots;
 	}
-	
+
 
 	public ActionResult index() {
 		accessKey = configService.getByString("auth_key");
+
+		Double currentPrice = configService.getByDouble("current_price");
 
 		// 前回差分
 		SettleResult diff = settlementService.getDiffUntilNow();
@@ -114,28 +120,58 @@ public class SettlementAction {
 		virtualPriceReservation = configService.getByInteger("vp_reserve");
 		profitReservation = configService.getByInteger("profit_reservation");
 		oneLinePrice = positionService.calcOneLinePrice();
-		
+
 		// ヘッジ可能量
 		int exp = positionService.exitProfit();
 		shAmount = PriceUtil.separateComma(Integer.toString(exp + virtualPriceReservation));
 		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
 
-		// SLによる確保益
-		hedges = settlementService.calcHedgedFixedProfit();
-		
+		// 確保益
+
+		discs = positionService.discPositions(currentPrice);
+		for (DiscPosition d : discs) {
+			if (d.slPrice == 0.0) d.slPrice = null;
+			if (d.isLong) {
+				if (d.slPrice != null && d.slPrice > d.openPrice) {
+					d.margin = null;
+					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000);
+				} else if (d.slPrice != null) {
+					d.margin = (int)Math.round(d.openPrice * 0.04 * d.lots * 100000);
+					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000);
+				}
+
+			} else {
+				d.margin = null;
+				if (d.slPrice != null) {
+					d.profit = (int)Math.round((d.openPrice - d.slPrice) * d.lots * 100000);
+				} else {
+					d.profit = 0;
+				}
+			}
+		}
+
 		// 余裕額
-		reservedProfits = settlementService.reservedProfits();
 		remain = diff.kkwProfit;
+		reservedProfits = settlementService.reservedProfits();
 		for (ReservedProfit rp : reservedProfits) {
 			remain += rp.amount;
 		}
-		for (Position p : hedges) {
-			remain += (int)Math.round(p.profit);
+
+		for (DiscPosition d : discs) {
+			remain += (d.profit - ((d.margin == null) ? 0 : d.margin));
 		}
 		remain -= virtualPriceReservation;
 		remain -= profitReservation;
 
 		baseDt = configService.getByString("base_dt");
+
+		lotsShortExit = remain / (positionService.getMaxShortPosition().openPrice - currentPrice ) / 100000;
+		if (lotsShortExit < 0.0) {
+			lotsShortExit = null;
+		} else {
+			lotsShortExit = Math.round(lotsShortExit * 1000.0) / 1000.0;
+		}
+
 		return new Forward("index.jsp");
 	}
 
@@ -166,16 +202,16 @@ public class SettlementAction {
 		}
 		return new Redirect("./?ak=" + accessKey);
 	}
-	
+
 	public ActionResult setBaseDt() {
 		accessKey = configService.getByString("auth_key");
 		configService.set("base_dt", baseDt);
 		return new Redirect("./?ak=" + accessKey);
 	}
-	
+
 	public ActionResult setProfitReservation() {
 		accessKey = configService.getByString("auth_key");
 		configService.set("profit_reservation", profitReservation.toString());
-		return new Redirect("./?ak=" + accessKey);		
+		return new Redirect("./?ak=" + accessKey);
 	}
 }
