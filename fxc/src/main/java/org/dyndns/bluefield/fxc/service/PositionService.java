@@ -93,8 +93,7 @@ public class PositionService {
 
 		info.numTraps = l / eachLots;
 		info.avg = longAverage;
-		info.virtualPriceOffset = Math.round(configService.getVpReserve() / l * 1000.0) / 1000.0;
-
+		info.virtualPriceOffset = Math.round(configService.getVpReserve() / (double)l * 1000.0) / 1000.0;
 		return info;
 	}
 
