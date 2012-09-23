@@ -30,6 +30,8 @@ public class ConfigAction {
 	public Double tpWidth;
 	@RequestParameter
 	public Double baseOffset;
+	@RequestParameter
+	public Double discLongBasePrice;
 
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
@@ -38,6 +40,7 @@ public class ConfigAction {
 			add("trapWidth", new RequiredValidator(), new NumberValidator());
 			add("tpWidth", new RequiredValidator(), new NumberValidator());
 			add("baseOffset", new RequiredValidator(), new NumberValidator());
+			add("discLongBasePrice", new RequiredValidator(), new NumberValidator());
 		}
 	};
 
@@ -46,6 +49,7 @@ public class ConfigAction {
 		trapWidth = configService.getTrapWidth();
 		tpWidth = configService.getTpWidth();
 		baseOffset = configService.getBaseOffset();
+		discLongBasePrice = configService.getDiscLongBasePrice();
 		return new Forward("index.jsp");
 	}
 
@@ -55,6 +59,7 @@ public class ConfigAction {
 		configService.setTrapWidth(trapWidth);
 		configService.setTpWidth(tpWidth);
 		configService.setBaseOffset(baseOffset == null ? 0.0 : baseOffset);
+		configService.setDiscLongBasePrice(discLongBasePrice == null ? 0.0 : discLongBasePrice);
 		actionContext.getFlashMap().put(
 				"notice", "更新しました。");
 		return new Redirect("./");

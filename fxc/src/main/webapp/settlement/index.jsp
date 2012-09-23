@@ -128,18 +128,30 @@ function unReserve(form, id) {
 	<th>確保益S(SL建値)</th>
 </tr>
 <tr>
-<td>
-可能額: ${shAmount}<br/>
-可能量(Lot): ${hedgeLots}
-</td>
-<td>&nbsp;</td>
-<td>
-<c:if test="${lotsShortExit != null}">
-可能量(Lot): ${lotsShortExit}
-</c:if>
-<c:if test="${lotsShortExit == null}">-</c:if>
-</td>
-<td>&nbsp;</td>
+	<td>
+		可能額: ${shAmount}<br/>
+		可能量(Lot): ${hedgeLots}
+	</td>
+	<td>
+		<c:if test="${lotsLong != null}">
+		目安: ${discLongBasePrice}<br/>
+		可能量(Lot): ${lotsLong}
+		</c:if>
+		<c:if test="${lotsLong == null}">-</c:if>
+	</td>
+	<td>
+		<c:if test="${lotsShortExit != null}">
+		可能量(Lot): ${lotsShortExit}
+		</c:if>
+		<c:if test="${lotsShortExit == null}">-</c:if>
+	</td>
+	<td>
+		<c:if test="${lotsShortVOpenPrice != null}">
+		仮想建値:${virtualOpenPrice}<br/>
+		可能量(Lot): ${lotsShortVOpenPrice}
+		</c:if>
+		<c:if test="${lotsShortVOpenPrice == null}">-</c:if>
+	</td>
 </tr>
 </table>
 

@@ -17,6 +17,7 @@ public class PositionService {
 	public static class LongInfo {
 		public Double avg;
 		public Integer numTraps;
+		public Double virtualPriceOffset;
 	}
 
 	public static class LosscutInfo {
@@ -72,6 +73,11 @@ public class PositionService {
 		jdbcManager.delete(sp).execute();
 	}
 
+	public LongInfo calcTraps() {
+		List<Position> longs = getLongPositions();
+		return calcTraps(longs);
+	}
+
 	public LongInfo calcTraps(List<Position> longs) {
 		LongInfo info = new LongInfo();
 		Integer eachLots = configService.getLotsByTrap();
@@ -87,6 +93,7 @@ public class PositionService {
 
 		info.numTraps = l / eachLots;
 		info.avg = longAverage;
+		info.virtualPriceOffset = Math.round(configService.getVpReserve() / l * 1000.0) / 1000.0;
 
 		return info;
 	}

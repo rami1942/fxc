@@ -10,6 +10,7 @@ import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
 import org.dyndns.bluefield.fxc.service.SettlementService;
+import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
 import org.dyndns.bluefield.fxc.service.SettlementService.SettleResult;
 import org.dyndns.bluefield.fxc.util.PriceUtil;
 import org.seasar.cubby.action.ActionClass;
@@ -61,6 +62,9 @@ public class SettlementAction {
 
 	public Double lotsShortExit;
 	public Double lotsShortVOpenPrice;
+	public Double virtualOpenPrice;
+	public Double discLongBasePrice;
+	public Double lotsLong;
 
 	@RequestParameter
 	public Integer reserveAmount;
@@ -164,12 +168,31 @@ public class SettlementAction {
 
 		baseDt = configService.getBaseDt();
 
-		//手口建て量
+		//出口建て量
 		lotsShortExit = remain / (positionService.getMaxShortPosition().openPrice - currentPrice ) / 100000;
 		if (lotsShortExit < 0.0) {
 			lotsShortExit = null;
 		} else {
 			lotsShortExit = Math.round(lotsShortExit * 1000.0) / 1000.0;
+		}
+
+		// 本体まで建て量
+		LongInfo info = positionService.calcTraps();
+		lotsShortVOpenPrice = remain / (info.avg - info.virtualPriceOffset - currentPrice) / 100000;
+		if (lotsShortVOpenPrice < 0.0) {
+			lotsShortVOpenPrice = null;
+		} else {
+			lotsShortVOpenPrice = Math.round(lotsShortVOpenPrice * 1000.0) / 1000.0;
+			virtualOpenPrice = Math.round((info.avg - info.virtualPriceOffset) * 1000.0) / 1000.0;
+		}
+
+		// ロング建て量
+		discLongBasePrice = configService.getDiscLongBasePrice();
+		lotsLong = remain / (currentPrice * 0.04 + currentPrice - discLongBasePrice) / 100000;
+		if (lotsLong < 0.0) {
+			lotsLong = null;
+		} else {
+			lotsLong = Math.round(lotsLong * 1000.0) / 1000.0;
 		}
 
 		return new Forward("index.jsp");

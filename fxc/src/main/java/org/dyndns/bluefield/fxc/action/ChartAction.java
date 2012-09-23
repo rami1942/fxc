@@ -56,18 +56,12 @@ public class ChartAction {
 		Double trapWidth = configService.getTrapWidth();
 		Double baseOffset = configService.getBaseOffset();
 
-		Double lots = 0.0;
-		for (Position p : longs) {
-			if (p.isWideBody == 1) lots += p.lots;
-		}
-		double longShift = configService.getVpReserve() / (lots * 100000);
-
-
 		// 平均建値・トラップ本数の算出
 		LongInfo info = positionService.calcTraps(longs);
 		numTraps = info.numTraps;
 
 		// 建値・仮想建値
+		double longShift = info.virtualPriceOffset;
 		double vp = info.avg - longShift;
 		vp = Math.round(vp * 1000.0) / 1000.0;
 		basePrice = Double.toString(vp);

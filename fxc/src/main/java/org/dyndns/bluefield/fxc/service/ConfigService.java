@@ -77,6 +77,10 @@ public class ConfigService {
 		return getByDouble("tp_width");
 	}
 
+	public Double getDiscLongBasePrice() {
+		return getByDouble("disc_long_base_price");
+	}
+
 	public void setLots(Integer lots) {
 		set("lots", lots.toString());
 	}
@@ -103,5 +107,9 @@ public class ConfigService {
 
 	public void setProfitReservation(Integer profit) {
 		set("profit_reservation", profit.toString());
+	}
+
+	public void setDiscLongBasePrice(Double basePrice) {
+		set("disc_long_base_price", basePrice.toString());
 	}
 }
