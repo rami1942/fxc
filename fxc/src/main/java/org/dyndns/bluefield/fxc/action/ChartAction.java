@@ -53,14 +53,14 @@ public class ChartAction {
 		List<ShortTrap> shorts = positionService.getShortTraps();
 		List<Position> longs = positionService.getLongPositions();
 
-		Double trapWidth = configService.getByDouble("trap_width");
-		Double baseOffset = configService.getByDouble("base_offset");
+		Double trapWidth = configService.getTrapWidth();
+		Double baseOffset = configService.getBaseOffset();
 
 		Double lots = 0.0;
 		for (Position p : longs) {
 			if (p.isWideBody == 1) lots += p.lots;
 		}
-		double longShift = configService.getByDouble("vp_reserve") / (lots * 100000);
+		double longShift = configService.getVpReserve() / (lots * 100000);
 
 
 		// 平均建値・トラップ本数の算出
@@ -77,7 +77,7 @@ public class ChartAction {
 		trueLine = (shorts.get(0).openPrice - info.avg) / trapWidth + baseOffset;
 
 		// 現在価格位置の算出
-		Double curPrice = configService.getByDouble("current_price");
+		Double curPrice = configService.getCurrentPrice();
 		currentPricePos = (shorts.get(0).openPrice - curPrice) / trapWidth;
 		currentPrice = String.format("%3.3f", curPrice);
 
@@ -149,7 +149,7 @@ public class ChartAction {
 			int boxSize = 40;
 			int w = (int)Math.round(p.lots * (boxSize / 2) / 0.5);
 			if (w < 3) w = 3;
-			if (w > 20) w = boxSize;
+			if (w > boxSize / 2) w = boxSize / 2;
 
 			buf5.append(w);
 			buf5.append(',');
@@ -160,7 +160,7 @@ public class ChartAction {
 		discPosPrice = buf4.toString();
 		discPosWidth = buf5.toString();
 
-		accessKey = configService.getByString("auth_key");
+		accessKey = configService.getAuthKey();
 
 		return new Forward("index.jsp");
 	}

@@ -74,7 +74,7 @@ public class PositionService {
 
 	public LongInfo calcTraps(List<Position> longs) {
 		LongInfo info = new LongInfo();
-		Integer eachLots = configService.getByInteger("lots");
+		Integer eachLots = configService.getLotsByTrap();
 
 		int l = 0;
 		double pr = 0.0;
@@ -121,8 +121,8 @@ public class PositionService {
 	}
 
 	public LosscutInfo calcLosscutRate() {
-		long margin = Math.round(configService.getByDouble("margin"));
-		long balance = Math.round(configService.getByDouble("balance"));
+		long margin = Math.round(configService.getMargin());
+		long balance = Math.round(configService.getBalance());
 		List<Position> pos = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0").getResultList();
 
 		double p;
@@ -150,7 +150,7 @@ public class PositionService {
 		Double exitPrice = traps.get(0).openPrice;
 		int total = 0;
 
-		int lotsPerTrap = configService.getByInteger("lots");
+		int lotsPerTrap = configService.getLotsByTrap();
 
 		for (ShortTrap t : traps) {
 			total += (t.openPrice - exitPrice) * lotsPerTrap;
@@ -170,7 +170,7 @@ public class PositionService {
 		for (Position p : longs) {
 			amount += p.lots * 100000;
 		}
-		Double height = configService.getByDouble("trap_width");
+		Double height = configService.getTrapWidth();
 		return (int)Math.round(amount * height);
 	}
 

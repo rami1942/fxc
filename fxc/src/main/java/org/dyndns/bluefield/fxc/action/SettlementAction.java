@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
-import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
@@ -90,7 +89,7 @@ public class SettlementAction {
 
 	private double calcHedgeLots(int reserve) {
 		double exitPrice = positionService.getMaxShortPosition().openPrice;
-		double curPrice = configService.getByDouble("current_price");
+		double curPrice = configService.getCurrentPrice();
 		double lots = reserve / (exitPrice - curPrice);
 		lots = Math.floor(lots / 100) / 1000;
 		return lots;
@@ -98,9 +97,9 @@ public class SettlementAction {
 
 
 	public ActionResult index() {
-		accessKey = configService.getByString("auth_key");
+		accessKey = configService.getAuthKey();
 
-		Double currentPrice = configService.getByDouble("current_price");
+		Double currentPrice = configService.getCurrentPrice();
 
 		// 前回差分
 		SettleResult diff = settlementService.getDiffUntilNow();
@@ -117,8 +116,8 @@ public class SettlementAction {
 		if (diff.profitDiff >= 0) profitDiff = "+" + profitDiff;
 
 		// 仮想建値・確保益
-		virtualPriceReservation = configService.getByInteger("vp_reserve");
-		profitReservation = configService.getByInteger("profit_reservation");
+		virtualPriceReservation = configService.getVpReserve();
+		profitReservation = configService.getProfitReservation();
 		oneLinePrice = positionService.calcOneLinePrice();
 
 		// ヘッジ可能量
@@ -163,8 +162,9 @@ public class SettlementAction {
 		remain -= virtualPriceReservation;
 		remain -= profitReservation;
 
-		baseDt = configService.getByString("base_dt");
+		baseDt = configService.getBaseDt();
 
+		//手口建て量
 		lotsShortExit = remain / (positionService.getMaxShortPosition().openPrice - currentPrice ) / 100000;
 		if (lotsShortExit < 0.0) {
 			lotsShortExit = null;
@@ -176,42 +176,42 @@ public class SettlementAction {
 	}
 
 	public ActionResult update() {
-		accessKey = configService.getByString("auth_key");
+		accessKey = configService.getAuthKey();
 		settlementService.update();
 		return new Redirect("./?ak=" + accessKey);
 	}
 
 	@Validation(rules="validation", errorPage="index.jsp")
 	public ActionResult reserve() {
-		accessKey = configService.getByString("auth_key");
+		accessKey = configService.getAuthKey();
 		settlementService.reserve(reserveAmount, reserveDesc);
 		return new Redirect("./?ak=" + accessKey);
 	}
 
 	public ActionResult delete() {
-		accessKey = configService.getByString("auth_key");
+		accessKey = configService.getAuthKey();
 		if (id == null) return new Redirect("./");
 		settlementService.unReserve(id);
 		return new Redirect("./?ak=" + accessKey);
 	}
 
 	public ActionResult setVirtualPriceReservation() {
-		accessKey = configService.getByString("auth_key");
+		accessKey = configService.getAuthKey();
 		if (virtualPriceReservation != null) {
-			configService.set("vp_reserve", virtualPriceReservation.toString());
+			configService.setVpReserve(virtualPriceReservation);
 		}
 		return new Redirect("./?ak=" + accessKey);
 	}
 
 	public ActionResult setBaseDt() {
-		accessKey = configService.getByString("auth_key");
-		configService.set("base_dt", baseDt);
+		accessKey = configService.getAuthKey();
+		configService.setBaseDt(baseDt);
 		return new Redirect("./?ak=" + accessKey);
 	}
 
 	public ActionResult setProfitReservation() {
-		accessKey = configService.getByString("auth_key");
-		configService.set("profit_reservation", profitReservation.toString());
+		accessKey = configService.getAuthKey();
+		configService.setProfitReservation(profitReservation);
 		return new Redirect("./?ak=" + accessKey);
 	}
 }

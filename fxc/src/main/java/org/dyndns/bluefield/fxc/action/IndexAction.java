@@ -44,8 +44,8 @@ public class IndexAction {
 		hedgeShorts = positionService.getHedgeShorts();
 		longs = positionService.getLongPositions();
 		freezes = positionService.getFreezeLongs();
-		eachLots = configService.getByInteger("lots");
-		accessKey = configService.getByString("auth_key");
+		eachLots = configService.getLotsByTrap();
+		accessKey = configService.getAuthKey();
 
 		LosscutInfo lc = positionService.calcLosscutRate();
 		lossCutPrice = lc.price;
@@ -60,7 +60,7 @@ public class IndexAction {
 
 	public ActionResult extendUp() {
 		ShortTrap sp = positionService.getMaxShortPosition();
-		Double width = configService.getByDouble("trap_width");
+		Double width = configService.getTrapWidth();
 		positionService.insert(sp.openPrice + width);
 
 		return new Redirect("./");
@@ -74,7 +74,7 @@ public class IndexAction {
 
 	public ActionResult extendDown() {
 		ShortTrap sp = positionService.getMinShortPosition();
-		Double width = configService.getByDouble("trap_width");
+		Double width = configService.getTrapWidth();
 		positionService.insert(sp.openPrice - width);
 
 		return new Redirect("./");

@@ -30,7 +30,7 @@ public class SettlementService {
 
 	@Resource
 	private ConfigService configService;
-	
+
 	@Resource
 	private PositionService positionService;
 
@@ -38,7 +38,7 @@ public class SettlementService {
 		SettleResult result = new SettleResult();
 
 		// 今回
-		result.balance = (int)Math.round(configService.getByDouble("balance"));
+		result.balance = (int)Math.round(configService.getBalance());
 		result.profit = jdbcManager.selectBySql(Integer.class, "select sum(profit) + sum(swap_point) from position").getSingleResult();
 
 		result.swapPoint = jdbcManager.selectBySql(Integer.class, "select sum(swap_point) from position").getSingleResult();
@@ -72,7 +72,7 @@ public class SettlementService {
 		SettlementHistory hist = new SettlementHistory();
 		hist.settleType = 0;
 		hist.settleDt = new Date();
-		hist.balance = configService.getByDouble("balance");
+		hist.balance = configService.getBalance();
 		hist.profit = jdbcManager.selectBySql(Double.class, "select sum(profit) + sum(swap_point) from position").getSingleResult();
 		jdbcManager.insert(hist).execute();
 	}
@@ -93,18 +93,18 @@ public class SettlementService {
 		ReservedProfit profit = jdbcManager.from(ReservedProfit.class).where("id=?", id).getSingleResult();
 		jdbcManager.delete(profit).execute();
 	}
-	
+
 	public List<Position> calcHedgedFixedProfit() {
 		List<Position> hedges = positionService.getHedgeShorts();
 		List<Position> hedgedFixed = new LinkedList<Position>();
-		
+
 		for (Position p : hedges) {
 			if (p.slPrice == null || p.slPrice == 0) continue;
 			if (p.openPrice < p.slPrice) continue;
 			p.profit = p.swapPoint + (p.openPrice - p.slPrice) * p.lots * 100000;
 			hedgedFixed.add(p);
 		}
-		
+
 		return hedgedFixed;
 	}
 
