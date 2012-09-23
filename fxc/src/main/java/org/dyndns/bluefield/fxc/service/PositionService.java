@@ -224,6 +224,7 @@ public class PositionService {
 			dp.isLong = (p.posType == 0);
 			dp.openPrice = p.openPrice;
 			dp.slPrice = p.slPrice;
+			dp.lots = p.lots;
 
 			result.add(dp);
 		}

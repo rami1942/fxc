@@ -25,6 +25,7 @@ var discPosType = new Array(${discPosType} null);
 var discPosOP = new Array(${discPosOP} null);
 var discPosSL = new Array(${discPosSL} null);
 var discPosPrice = new Array(${discPosPrice} null);
+var discPosWidth = new Array(${discPosWidth} null);
 
 var under = Math.round(baseLine + 0.5) ;
 
@@ -105,9 +106,9 @@ window.onload=function() {
 	// 裁量ポジション(ショート)
 	for (var i = 0; i < discPosType.length - 1; i++) {
 		if (discPosType[i]) {
-			drawLongDiscPosition(ctx, i, discPosOP[i], discPosSL[i]);
+			drawLongDiscPosition(ctx, i, discPosOP[i], discPosSL[i], discPosWidth[i]);
 		} else {
-			drawShortDiscPosition(ctx, i, discPosOP[i], discPosSL[i]);
+			drawShortDiscPosition(ctx, i, discPosOP[i], discPosSL[i], discPosWidth[i]);
 		}
 		ctx.font="12px 'Times New Roman'";
 		ctx.fillStyle = 'black';
@@ -131,7 +132,7 @@ window.onload=function() {
 	}
 }
 
-function drawLongDiscPosition(ctx, xp, openPrice, slPrice) {
+function drawLongDiscPosition(ctx, xp, openPrice, slPrice, arrowWidth) {
 	var color;
 	var slTo;
 	if (slPrice != null && currentPrice < openPrice && currentPrice < slPrice) {
@@ -197,13 +198,13 @@ function drawLongDiscPosition(ctx, xp, openPrice, slPrice) {
 	ctx.lineWidth=1;
 	ctx.beginPath();
 	ctx.moveTo(xpos, curYPos);
-	ctx.lineTo(xpos - 5, curYPos + 20);
-	ctx.lineTo(xpos + 5, curYPos + 20);
+	ctx.lineTo(xpos - arrowWidth, curYPos + 20);
+	ctx.lineTo(xpos + arrowWidth, curYPos + 20);
 	ctx.closePath();
 	ctx.fill();
 }
 
-function drawShortDiscPosition(ctx, xp, openPrice, slPrice) {
+function drawShortDiscPosition(ctx, xp, openPrice, slPrice, arrowWidth) {
 	var color;
 	var slTo;
 	if (slPrice != null && currentPrice > openPrice && currentPrice > slPrice) {
@@ -269,8 +270,8 @@ function drawShortDiscPosition(ctx, xp, openPrice, slPrice) {
 	ctx.lineWidth=1;
 	ctx.beginPath();
 	ctx.moveTo(xpos, curYPos);
-	ctx.lineTo(xpos - 5, curYPos - 20);
-	ctx.lineTo(xpos + 5, curYPos - 20);
+	ctx.lineTo(xpos - arrowWidth, curYPos - 20);
+	ctx.lineTo(xpos + arrowWidth, curYPos - 20);
 	ctx.closePath();
 	ctx.fill();
 }
