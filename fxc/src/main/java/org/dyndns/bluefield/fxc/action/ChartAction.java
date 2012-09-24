@@ -52,6 +52,7 @@ public class ChartAction {
 	public ActionResult index() {
 		List<ShortTrap> shorts = positionService.getShortTraps();
 		List<Position> longs = positionService.getLongPositions();
+		Double exitPrice = shorts.get(0).openPrice;
 
 		Double trapWidth = configService.getTrapWidth();
 		Double baseOffset = configService.getBaseOffset();
@@ -65,14 +66,14 @@ public class ChartAction {
 		double vp = info.avg - longShift;
 		vp = Math.round(vp * 1000.0) / 1000.0;
 		basePrice = Double.toString(vp);
-		baseLine = (shorts.get(0).openPrice - info.avg + longShift) / trapWidth + baseOffset;
+		baseLine = (exitPrice - info.avg + longShift) / trapWidth + baseOffset;
 
 		truePrice = Double.toString(info.avg);
-		trueLine = (shorts.get(0).openPrice - info.avg) / trapWidth + baseOffset;
+		trueLine = (exitPrice - info.avg) / trapWidth + baseOffset;
 
 		// 現在価格位置の算出
 		Double curPrice = configService.getCurrentPrice();
-		currentPricePos = (shorts.get(0).openPrice - curPrice) / trapWidth;
+		currentPricePos = (exitPrice - curPrice) / trapWidth;
 		currentPrice = String.format("%3.3f", curPrice);
 
 		// 現在時刻
@@ -103,7 +104,7 @@ public class ChartAction {
 		// ロングポジション
 		buf = new StringBuilder();
 		for (Position lp : longs) {
-			double d = (shorts.get(0).openPrice - lp.openPrice) / trapWidth;
+			double d = (exitPrice - lp.openPrice) / trapWidth;
 			buf.append(d);
 			buf.append(',');
 		}
@@ -125,14 +126,14 @@ public class ChartAction {
 			buf.append(',');
 
 			double d;
-			d = (shorts.get(0).openPrice - p.openPrice) / trapWidth;
+			d = (exitPrice - p.openPrice) / trapWidth;
 			buf2.append(d);
 			buf2.append(',');
 
 			if (p.slPrice == null || p.slPrice == 0.0) {
 				buf3.append("null");
 			} else {
-				d = (shorts.get(0).openPrice - p.slPrice) / trapWidth;
+				d = (exitPrice - p.slPrice) / trapWidth;
 				buf3.append(d);
 			}
 			buf3.append(',');
