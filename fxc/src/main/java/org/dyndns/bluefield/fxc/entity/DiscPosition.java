@@ -9,4 +9,5 @@ public class DiscPosition {
 
 	public Integer margin;
 	public Integer profit;
+	public Integer swapPoint;
 }

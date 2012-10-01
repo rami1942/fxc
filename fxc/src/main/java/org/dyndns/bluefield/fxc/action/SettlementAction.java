@@ -130,17 +130,16 @@ public class SettlementAction {
 		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
 
 		// 確保益
-
 		discs = positionService.discPositions(currentPrice);
 		for (DiscPosition d : discs) {
 			if (d.slPrice == 0.0) d.slPrice = null;
 			if (d.isLong) {
 				if (d.slPrice != null && d.slPrice > d.openPrice) {
 					d.margin = null;
-					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000);
+					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
 				} else if (d.slPrice != null) {
 					d.margin = (int)Math.round(d.openPrice * 0.04 * d.lots * 100000);
-					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000);
+					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
 				}
 
 			} else {

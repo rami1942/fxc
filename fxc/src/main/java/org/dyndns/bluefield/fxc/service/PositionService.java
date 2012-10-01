@@ -231,7 +231,7 @@ public class PositionService {
 			dp.openPrice = p.openPrice;
 			dp.slPrice = p.slPrice;
 			dp.lots = p.lots;
-
+			dp.swapPoint = p.swapPoint;
 			result.add(dp);
 		}
 
