@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.service.ConfigService;
+import org.dyndns.bluefield.fxc.service.HistoryService;
 import org.dyndns.bluefield.fxc.service.PositionService;
 import org.dyndns.bluefield.fxc.service.SettlementService;
 import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
@@ -37,6 +38,9 @@ public class SettlementAction {
 
 	@Resource
 	private PositionService positionService;
+
+	@Resource
+	private HistoryService historyService;
 
 	public Date fromDt;
 	public Integer balance;
@@ -221,6 +225,7 @@ public class SettlementAction {
 		accessKey = configService.getAuthKey();
 		if (virtualPriceReservation != null) {
 			configService.setVpReserve(virtualPriceReservation);
+			historyService.insertVirtualPrice(virtualPriceReservation);
 		}
 		return new Redirect("./?ak=" + accessKey);
 	}
