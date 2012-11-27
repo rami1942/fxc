@@ -164,6 +164,7 @@ public class SettlementAction {
 		}
 
 		for (DiscPosition d : discs) {
+			if (d.profit == null) continue;
 			remain += (d.profit - ((d.margin == null) ? 0 : d.margin));
 		}
 		remain -= virtualPriceReservation;
