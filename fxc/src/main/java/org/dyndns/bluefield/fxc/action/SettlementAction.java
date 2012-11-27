@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
+import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.HistoryService;
 import org.dyndns.bluefield.fxc.service.PositionService;
@@ -96,7 +97,9 @@ public class SettlementAction {
 	};
 
 	private double calcHedgeLots(int reserve) {
-		double exitPrice = positionService.getMaxShortPosition().openPrice;
+		ShortTrap st = positionService.getMaxShortPosition();
+		if (st == null) return 0;
+		double exitPrice = st.openPrice;
 		double curPrice = configService.getCurrentPrice();
 		double lots = reserve / (exitPrice - curPrice);
 		lots = Math.floor(lots / 100) / 1000;
@@ -173,11 +176,16 @@ public class SettlementAction {
 		baseDt = configService.getBaseDt();
 
 		//出口建て量
-		lotsShortExit = remain / (positionService.getMaxShortPosition().openPrice - currentPrice ) / 100000;
-		if (lotsShortExit < 0.0) {
+		ShortTrap st = positionService.getMaxShortPosition();
+		if (st == null) {
 			lotsShortExit = null;
 		} else {
-			lotsShortExit = Math.round(lotsShortExit * 1000.0) / 1000.0;
+			lotsShortExit = remain / (st.openPrice - currentPrice ) / 100000;
+			if (lotsShortExit < 0.0) {
+				lotsShortExit = null;
+			} else {
+				lotsShortExit = Math.round(lotsShortExit * 1000.0) / 1000.0;
+			}
 		}
 
 		// 本体まで建て量

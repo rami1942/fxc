@@ -54,7 +54,8 @@ public class PositionService {
 
 	public ShortTrap getMaxShortPosition() {
 		List<ShortTrap> s = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").limit(1).getResultList();
-		return s.get(0);
+		if (s.size() > 0) return s.get(0);
+		return null;
 	}
 
 	public ShortTrap getMinShortPosition() {
@@ -153,6 +154,8 @@ public class PositionService {
 
 	public Integer exitProfit() {
 		List<ShortTrap> traps = getShortTraps();
+		if (traps.size() == 0) return 0;
+
 		Double exitPrice = traps.get(0).openPrice;
 		int total = 0;
 
