@@ -120,6 +120,7 @@ function unReserve(form, id) {
 <p>残額: ¥${my:commaSep(remain)}</p>
 
 <hr />
+<p>現在レート: ${currentRate}</p>
 <table border="1">
 <tr>
 	<th>出口益S</th>
@@ -154,7 +155,7 @@ function unReserve(form, id) {
 	</td>
 </tr>
 </table>
-
+<hr/>
 <p>
 <a href="../chart?ak=${accessKey}">チャート</a><br/>
 <a href="../?ak=${accessKey}">ポジション</a><br/>

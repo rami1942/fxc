@@ -363,6 +363,6 @@ function drawBlock(ctx, x, y, typ) {
     <a href="../settlement/?ak=${accessKey}">計算</a><br/>
     <a href="../?ak=${accessKey}">ポジション</a><br/>
     </p>
-    <canvas id="cvs" width="1000" height="1000"></canvas>
+    <canvas id="cvs" width="1500" height="1000"></canvas>
   </body>
 </html>

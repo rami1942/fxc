@@ -71,6 +71,8 @@ public class SettlementAction {
 	public Double discLongBasePrice;
 	public Double lotsLong;
 
+	public Double currentRate;
+
 	@RequestParameter
 	public Integer reserveAmount;
 	@RequestParameter
@@ -200,12 +202,14 @@ public class SettlementAction {
 
 		// ロング建て量
 		discLongBasePrice = configService.getDiscLongBasePrice();
-		lotsLong = remain / (currentPrice * 0.04 + currentPrice - discLongBasePrice) / 100000;
+		lotsLong = remain / (currentPrice - discLongBasePrice) / 100000;
 		if (lotsLong < 0.0) {
 			lotsLong = null;
 		} else {
 			lotsLong = Math.round(lotsLong * 1000.0) / 1000.0;
 		}
+
+		currentRate = configService.getCurrentPrice();
 
 		return new Forward("index.jsp");
 	}
