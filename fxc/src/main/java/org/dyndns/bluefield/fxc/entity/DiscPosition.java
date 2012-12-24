@@ -8,6 +8,6 @@ public class DiscPosition {
 	public Double lots;
 
 	public Integer margin;
-	public Integer profit;
+	public Integer slProfit;
 	public Integer swapPoint;
 }

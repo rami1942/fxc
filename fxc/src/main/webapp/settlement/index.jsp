@@ -39,14 +39,6 @@ function unReserve(form, id) {
 <table>
 <tr><td>累積利益</td><td>¥${kkwProfit}</td></tr>
 <tr>
-<td>基準日時:</td>
-<td>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setBaseDt" value="${action}" method="POST">
-<t:input type="text" name="baseDt" /> <input type="submit" value="変更" />
-</t:form>
-</td>
-</tr>
-<tr>
 <td>確保分:</td>
 <td>
 <t:form actionClass="org.dyndns.bluefield.fxc.action.SettlementAction" actionMethod="setProfitReservation" value="${action}" method="POST" >
@@ -87,7 +79,7 @@ function unReserve(form, id) {
 	</c:if>
 	<c:if test="${d.margin == null}">-</c:if>
 </td>
-<td>${my:commaSep(d.profit)}</td>
+<td>${my:commaSep(d.slProfit)}</td>
 </tr>
 </c:forEach>
 </table>

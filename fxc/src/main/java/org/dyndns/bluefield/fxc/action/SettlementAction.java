@@ -143,20 +143,16 @@ public class SettlementAction {
 		for (DiscPosition d : discs) {
 			if (d.slPrice == 0.0) d.slPrice = null;
 			if (d.isLong) {
-				if (d.slPrice != null && d.slPrice > d.openPrice) {
-					d.margin = null;
-					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
-				} else if (d.slPrice != null) {
+				if (d.slPrice != null) {
 					d.margin = (int)Math.round(d.openPrice * 0.04 * d.lots * 100000);
-					d.profit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
+					d.slProfit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
 				}
-
 			} else {
 				d.margin = null;
 				if (d.slPrice != null) {
-					d.profit = (int)Math.round((d.openPrice - d.slPrice) * d.lots * 100000);
+					d.slProfit = (int)Math.round((d.openPrice - d.slPrice) * d.lots * 100000);
 				} else {
-					d.profit = 0;
+					d.slProfit = 0;
 				}
 			}
 		}
@@ -168,12 +164,12 @@ public class SettlementAction {
 			remain += rp.amount;
 		}
 
-		for (DiscPosition d : discs) {
-			if (d.profit == null) continue;
-			remain += (d.profit - ((d.margin == null) ? 0 : d.margin));
-		}
 		remain -= virtualPriceReservation;
 		remain -= profitReservation;
+
+		for (DiscPosition d : discs) {
+			remain += d.slProfit;
+		}
 
 		baseDt = configService.getBaseDt();
 
