@@ -59,7 +59,7 @@ function unReserve(form, id) {
 <p>SL確定益</p>
 <table border="1">
 <tr>
-<th>建値</th><th>SL</th><th>ロット</th><th>証拠金</th><th>SL損益</th>
+<th>建値</th><th>SL</th><th>ロット</th><th>証拠金</th><th>SL損益</th><th>現損益</th>
 </tr>
 <c:forEach var="d" items="${discs}">
 <tr>
@@ -73,13 +73,14 @@ function unReserve(form, id) {
 	<c:if test="${d.slPrice == null}">-</c:if>
 </td>
 <td>${d.lots}</td>
-<td>
+<td align="right">
 	<c:if test="${d.margin != null}">
 		${my:commaSep(d.margin)}
 	</c:if>
 	<c:if test="${d.margin == null}">-</c:if>
 </td>
-<td>${my:commaSep(d.slProfit)}</td>
+<td align="right">${my:commaSep(d.slProfit)}</td>
+<td align="right">${my:commaSep(d.realProfit)}</td>
 </tr>
 </c:forEach>
 </table>

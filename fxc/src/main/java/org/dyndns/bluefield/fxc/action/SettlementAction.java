@@ -112,7 +112,7 @@ public class SettlementAction {
 	public ActionResult index() {
 		accessKey = configService.getAuthKey();
 
-		Double currentPrice = configService.getCurrentPrice();
+		currentRate = configService.getCurrentPrice();
 
 		// 前回差分
 		SettleResult diff = settlementService.getDiffUntilNow();
@@ -139,7 +139,7 @@ public class SettlementAction {
 		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
 
 		// 確保益
-		discs = positionService.discPositions(currentPrice);
+		discs = positionService.discPositions(currentRate);
 		for (DiscPosition d : discs) {
 			if (d.slPrice == 0.0) d.slPrice = null;
 			if (d.isLong) {
@@ -155,6 +155,12 @@ public class SettlementAction {
 					d.slProfit = 0;
 				}
 			}
+
+			if (d.isLong) {
+				d.realProfit = (int)Math.round((currentRate - d.openPrice) * d.lots * 100000 + d.swapPoint);
+			} else {
+				d.realProfit = (int)Math.round((d.openPrice - currentRate) * d.lots * 100000 + d.swapPoint);
+			}
 		}
 
 		// 余裕額
@@ -168,17 +174,15 @@ public class SettlementAction {
 		remain -= profitReservation;
 
 		for (DiscPosition d : discs) {
-			remain += d.slProfit;
+			if (d.slProfit != null) remain += d.slProfit;
 		}
-
-		baseDt = configService.getBaseDt();
 
 		//出口建て量
 		ShortTrap st = positionService.getMaxShortPosition();
 		if (st == null) {
 			lotsShortExit = null;
 		} else {
-			lotsShortExit = remain / (st.openPrice - currentPrice ) / 100000;
+			lotsShortExit = remain / (st.openPrice - currentRate ) / 100000;
 			if (lotsShortExit < 0.0) {
 				lotsShortExit = null;
 			} else {
@@ -188,7 +192,7 @@ public class SettlementAction {
 
 		// 本体まで建て量
 		LongInfo info = positionService.calcTraps();
-		lotsShortVOpenPrice = remain / (info.avg - info.virtualPriceOffset - currentPrice) / 100000;
+		lotsShortVOpenPrice = remain / (info.avg - info.virtualPriceOffset - currentRate) / 100000;
 		if (lotsShortVOpenPrice < 0.0) {
 			lotsShortVOpenPrice = null;
 		} else {
@@ -198,14 +202,12 @@ public class SettlementAction {
 
 		// ロング建て量
 		discLongBasePrice = configService.getDiscLongBasePrice();
-		lotsLong = remain / (currentPrice - discLongBasePrice) / 100000;
+		lotsLong = remain / (currentRate - discLongBasePrice) / 100000;
 		if (lotsLong < 0.0) {
 			lotsLong = null;
 		} else {
 			lotsLong = Math.round(lotsLong * 1000.0) / 1000.0;
 		}
-
-		currentRate = configService.getCurrentPrice();
 
 		return new Forward("index.jsp");
 	}
