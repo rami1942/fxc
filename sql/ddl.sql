@@ -114,6 +114,3 @@ create table reserved_profit (
   description text
 );
 
----
-
-alter table position modify column is_wide_body char(1) default 0;
