@@ -237,7 +237,7 @@ public class PositionAction {
 		accessKey = configService.getAuthKey();
 		if (virtualPriceReservation != null) {
 			configService.setVpReserve(virtualPriceReservation);
-			historyService.insertVirtualPrice(virtualPriceReservation);
+//			historyService.insertVirtualPrice(virtualPriceReservation);
 		}
 		return new Redirect("./?ak=" + accessKey);
 	}
