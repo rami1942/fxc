@@ -29,6 +29,10 @@
 	<th>平均建値オフセット</th>
 	<td><t:input type="text" name="baseOffset" /></td>
 </tr>
+<tr>
+	<th>複利ロング目安</th>
+	<td><t:input type="text" name="discLongBasePrice" /></td>
+</tr>
 </table>
 <input type="submit" value="設定" />
 </t:form>

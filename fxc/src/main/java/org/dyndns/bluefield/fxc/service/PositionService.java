@@ -1,10 +1,14 @@
 package org.dyndns.bluefield.fxc.service;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.seasar.extension.jdbc.JdbcManager;
@@ -13,6 +17,7 @@ public class PositionService {
 	public static class LongInfo {
 		public Double avg;
 		public Integer numTraps;
+		public Double virtualPriceOffset;
 	}
 
 	public static class LosscutInfo {
@@ -49,7 +54,8 @@ public class PositionService {
 
 	public ShortTrap getMaxShortPosition() {
 		List<ShortTrap> s = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").limit(1).getResultList();
-		return s.get(0);
+		if (s.size() > 0) return s.get(0);
+		return null;
 	}
 
 	public ShortTrap getMinShortPosition() {
@@ -68,9 +74,14 @@ public class PositionService {
 		jdbcManager.delete(sp).execute();
 	}
 
+	public LongInfo calcTraps() {
+		List<Position> longs = getLongPositions();
+		return calcTraps(longs);
+	}
+
 	public LongInfo calcTraps(List<Position> longs) {
 		LongInfo info = new LongInfo();
-		Integer eachLots = configService.getByInteger("lots");
+		Integer eachLots = configService.getLotsByTrap();
 
 		int l = 0;
 		double pr = 0.0;
@@ -83,7 +94,7 @@ public class PositionService {
 
 		info.numTraps = l / eachLots;
 		info.avg = longAverage;
-
+		info.virtualPriceOffset = Math.round(configService.getVpReserve() / (double)l * 1000.0) / 1000.0;
 		return info;
 	}
 
@@ -105,8 +116,11 @@ public class PositionService {
 		long total = 0L;
 		for (Position p : pos) {
 			if (p.posType == 0) {
+				// long
+				if (p.slPrice != null && p.slPrice != 0 && p.slPrice > price) continue;
 				total += (price - p.openPrice) * p.lots * 100000;
 			} else {
+				// short
 				total += (p.openPrice - price) * p.lots * 100000;
 			}
 		}
@@ -114,13 +128,13 @@ public class PositionService {
 	}
 
 	public LosscutInfo calcLosscutRate() {
-		long margin = Math.round(configService.getByDouble("margin"));
-		long balance = Math.round(configService.getByDouble("balance"));
+		long margin = Math.round(configService.getMargin());
+		long balance = Math.round(configService.getBalance());
 		List<Position> pos = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0").getResultList();
 
 		double p;
 		double pMp = 0.0;
-		for (p = 100; p > 40; p-=0.5) {
+		for (p = 100; p > 30.5; p-=0.5) {
 			long d = calcRate(pos, p);
 
 			double mp = (double)(balance+d) / (double)margin;
@@ -130,7 +144,6 @@ public class PositionService {
 		}
 		p += 0.5;
 		pMp = Math.round(pMp * 10000.0) / 100.0;
-		System.out.println("P=" + p + " MP=" + pMp);
 
 		LosscutInfo lc = new LosscutInfo();
 		lc.price = p;
@@ -139,4 +152,94 @@ public class PositionService {
 		return lc;
 	}
 
+	public Integer exitProfit() {
+		List<ShortTrap> traps = getShortTraps();
+		if (traps.size() == 0) return 0;
+
+		Double exitPrice = traps.get(0).openPrice;
+		int total = 0;
+
+		int lotsPerTrap = configService.getLotsByTrap();
+
+		for (ShortTrap t : traps) {
+			total += (t.openPrice - exitPrice) * lotsPerTrap;
+		}
+
+		List<Position> longs = getLongPositions();
+		for (Position p : longs) {
+			total += (exitPrice - p.openPrice) * p.lots * 100000;
+		}
+
+		return total;
+	}
+
+	public int calcOneLinePrice() {
+		List<Position> longs = getLongPositions();
+		int amount = 0;
+		for (Position p : longs) {
+			amount += p.lots * 100000;
+		}
+		Double height = configService.getTrapWidth();
+		return (int)Math.round(amount * height);
+	}
+
+	static class AbsComparator implements Comparator<DiscPosition> {
+		public Double currentPrice;
+
+		public AbsComparator(Double currentPrice) {
+			this.currentPrice = currentPrice;
+		}
+
+		// 赤の条件:
+		//  利益が出ていて、(SLがかかっていない || SLがOPの後ろに指してある)
+		boolean isRed(DiscPosition p) {
+			if (p.isLong) {
+				if (p.openPrice < currentPrice && (p.slPrice == 0.0 || p.slPrice < p.openPrice)) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (p.openPrice > currentPrice && (p.slPrice == 0.0 || p.slPrice > p.openPrice)) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		// まず赤優先。次にcurrentPriceに近いもの。
+		public int compare(DiscPosition p0, DiscPosition p1) {
+			boolean red0 = isRed(p0);
+			boolean red1 = isRed(p1);
+
+			if (red0 == red1) {
+				return (Math.abs(currentPrice - p0.openPrice) - Math.abs(currentPrice - p1.openPrice) < 0) ? 0 : 1;
+			} else {
+				if (red0) {
+					return -1;
+				} else {
+					return 1;
+				}
+			}
+		}
+	}
+
+	public List<DiscPosition> discPositions(Double currentPrice) {
+		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and (pos_type = 1 and magicNo=0) or isWideBody=0").getResultList();
+		List<DiscPosition> result = new ArrayList<DiscPosition>(discs.size());
+		for (Position p : discs) {
+			DiscPosition dp = new DiscPosition();
+			dp.isLong = (p.posType == 0);
+			dp.openPrice = p.openPrice;
+			dp.slPrice = p.slPrice;
+			dp.lots = p.lots;
+			dp.swapPoint = p.swapPoint;
+			result.add(dp);
+		}
+
+		Collections.sort(result, new AbsComparator(currentPrice));
+
+		return result;
+	}
 }

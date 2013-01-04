@@ -5,22 +5,31 @@ import java.util.List;
 public class PriceUtil {
 
 	public static String separateComma(String orig) {
+		if (orig == null || orig.equals("")) return "";
+
 		StringBuilder buf = new StringBuilder();
+		String s;
+		if (orig.charAt(0) == '-') {
+			s = orig.substring(1);
+			buf.append('-');
+		} else {
+			s = orig;
+		}
 
 		boolean isFirst = true;
-		int fp = orig.length() % 3;
+		int fp = s.length() % 3;
 		if (fp > 0) {
-			buf.append(orig.substring(0, fp));
+			buf.append(s.substring(0, fp));
 			isFirst = false;
 		}
 		int p = fp;
-		while (p < orig.length()) {
+		while (p < s.length()) {
 			if (isFirst) {
 				isFirst = false;
 			} else {
 				buf.append(',');
 			}
-			buf.append(orig.substring(p, p+3));
+			buf.append(s.substring(p, p+3));
 			p += 3;
 		}
 
@@ -29,5 +38,10 @@ public class PriceUtil {
 
 	public static Integer size(List<?> list) {
 		return list.size();
+	}
+
+	public static String roundCommaSep(Double d) {
+		int n = (int)Math.round(d);
+		return separateComma(Integer.toString(n));
 	}
 }

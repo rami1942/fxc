@@ -30,6 +30,8 @@ public class ConfigAction {
 	public Double tpWidth;
 	@RequestParameter
 	public Double baseOffset;
+	@RequestParameter
+	public Double discLongBasePrice;
 
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
@@ -38,23 +40,26 @@ public class ConfigAction {
 			add("trapWidth", new RequiredValidator(), new NumberValidator());
 			add("tpWidth", new RequiredValidator(), new NumberValidator());
 			add("baseOffset", new RequiredValidator(), new NumberValidator());
+			add("discLongBasePrice", new RequiredValidator(), new NumberValidator());
 		}
 	};
 
 	public ActionResult index() {
-		lots = configService.getByInteger("lots");
-		trapWidth = configService.getByDouble("trap_width");
-		tpWidth = configService.getByDouble("tp_width");
-		baseOffset = configService.getByDouble("base_offset");
+		lots = configService.getLotsByTrap();
+		trapWidth = configService.getTrapWidth();
+		tpWidth = configService.getTpWidth();
+		baseOffset = configService.getBaseOffset();
+		discLongBasePrice = configService.getDiscLongBasePrice();
 		return new Forward("index.jsp");
 	}
 
 	@Validation(rules="validation", errorPage="index.jsp")
 	public ActionResult update() {
-		configService.set("lots", lots.toString());
-		configService.set("trap_width", trapWidth.toString());
-		configService.set("tp_width", tpWidth.toString());
-		configService.set("base_offset", baseOffset.toString());
+		configService.setLots(lots);
+		configService.setTrapWidth(trapWidth);
+		configService.setTpWidth(tpWidth);
+		configService.setBaseOffset(baseOffset == null ? 0.0 : baseOffset);
+		configService.setDiscLongBasePrice(discLongBasePrice == null ? 0.0 : discLongBasePrice);
 		actionContext.getFlashMap().put(
 				"notice", "更新しました。");
 		return new Redirect("./");

@@ -1,7 +1,6 @@
 create table short_trap (
   id int auto_increment primary key,
-  open_price double not null,
-  is_real char(1) not null default '0'
+  open_price double not null
 );
 
 create table configuration (
@@ -79,6 +78,15 @@ begin
 end;//
 delimiter ;
 
+create table settlement_history (
+  id int auto_increment primary key,
+  settle_type char(1) default 0 not null,
+  settle_dt datetime not null,
+
+  balance double not null,
+  profit  double not null
+);
+
 delimiter //
 create trigger position_delete after delete on position
 for each row
@@ -98,4 +106,14 @@ begin
 end;//
 delimiter ;
 
+create table reserved_profit (
+  id int auto_increment primary key,
+  reserve_dt datetime,
+
+  amount int,
+  description text
+);
+
 ---
+
+alter table position modify column is_wide_body char(1) default 0;
