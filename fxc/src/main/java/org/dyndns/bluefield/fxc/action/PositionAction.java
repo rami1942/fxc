@@ -28,8 +28,8 @@ import org.seasar.cubby.validator.validators.NumberValidator;
 import org.seasar.cubby.validator.validators.RequiredValidator;
 
 @ActionClass
-@Path("settlement")
-public class SettlementAction {
+@Path("position")
+public class PositionAction {
 
 	@Resource
 	private SettlementService settlementService;

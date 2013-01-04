@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta http-equiv="Content-Script-Type" content="text/JavaScript" />
   <link href="${contextPath}/css/default.css" rel="stylesheet" type="text/css" media="screen,projection"/>
-  <title>Position</title>
+  <title>トラップ</title>
 
 <script type="text/javascript">
 
@@ -17,6 +17,13 @@ function freeze(form, price) {
 </script>
 </head>
 <body>
+
+<ul>
+<li><a href="chart?ak=${accessKey}">チャート</a></li>
+<li><a href="position?ak=${accessKey}">ポジション</a></li>
+<li><a href="config?ak=${accessKey}">設定</a></li>
+</ul>
+
 
 <c:if test="${my:size(shorts) != numTraps }">
 <font color="red">
@@ -105,21 +112,5 @@ function freeze(form, price) {
 </form>
 </c:if>
 
-<p>ヘッジショート</p>
-<table border="1">
-<c:forEach var="p" items="${hedgeShorts}" varStatus="stat">
-<tr>
-	<td>${stat.count}</td>
-	<td>${p.openPrice}</td>
-	<td align="right">${p.lots}</td>
-</tr>
-</c:forEach>
-</table>
-
-<ul>
-<li><a href="chart?ak=${accessKey}">チャート</a></li>
-<li><a href="settlement?ak=${accessKey}">計算</a></li>
-<li><a href="config?ak=${accessKey}">設定</a></li>
-</ul>
 </body>
 </html>
