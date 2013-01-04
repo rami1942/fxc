@@ -8,7 +8,6 @@ EXPORTS
 	GetTrapList
 	UpdatePrice
 	GetTrapLots
-	UpdateShortTrap
 	GetTakeProfitWidth
 	GetDeleteRequest
 	SetMark
