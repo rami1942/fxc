@@ -173,6 +173,12 @@ public class PositionService {
 		return total;
 	}
 
+	public Double exitRate() {
+		List<ShortTrap> traps = getShortTraps();
+		if (traps.size() == 0) return null;
+		return traps.get(0).openPrice;
+	}
+
 	public int calcOneLinePrice() {
 		List<Position> longs = getLongPositions();
 		int amount = 0;

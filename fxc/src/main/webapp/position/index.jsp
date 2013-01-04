@@ -134,10 +134,13 @@ function unReserve(form, id) {
 		<c:if test="${lotsLong == null}">-</c:if>
 	</td>
 	<td>
-		<c:if test="${lotsShortExit != null}">
-		可能量(Lot): ${lotsShortExit}
+		<c:if test="${exitRate != null}">
+			出口: ${exitRate}<br/>
+			<c:if test="${lotsShortExit != null}">
+			可能量(Lot): ${lotsShortExit}
+			</c:if>
+			<c:if test="${lotsShortExit == null}">-</c:if>
 		</c:if>
-		<c:if test="${lotsShortExit == null}">-</c:if>
 	</td>
 	<td>
 		<c:if test="${lotsShortVOpenPrice != null}">

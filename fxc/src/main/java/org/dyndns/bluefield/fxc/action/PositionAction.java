@@ -72,6 +72,7 @@ public class PositionAction {
 	public Double lotsLong;
 
 	public Double currentRate;
+	public Double exitRate;
 
 	@RequestParameter
 	public Integer reserveAmount;
@@ -111,8 +112,8 @@ public class PositionAction {
 
 	public ActionResult index() {
 		accessKey = configService.getAuthKey();
-
 		currentRate = configService.getCurrentPrice();
+		exitRate = positionService.exitRate();
 
 		// 前回差分
 		SettleResult diff = settlementService.getDiffUntilNow();
