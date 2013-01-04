@@ -60,24 +60,6 @@ create table position (
   is_wide_body char(1) default 1
 );
 
-
-
-delimiter //
-create trigger position_insert after insert on position
-for each row
-begin
-  if NEW.magic_no = 0 then
-    if NEW.pos_type = 0 then
-      insert into history (ticket_no, event_type, event_dt, price, lots)
-            values (NEW.ticket_no, 3, now(), NEW.open_price, NEW.lots);
-    else
-      insert into history (ticket_no, event_type, event_dt, price, lots)
-            values (NEW.ticket_no, 5, now(), NEW.open_price, NEW.lots);
-    end if;
-  end if;
-end;//
-delimiter ;
-
 create table settlement_history (
   id int auto_increment primary key,
   settle_type char(1) default 0 not null,
@@ -86,6 +68,17 @@ create table settlement_history (
   balance double not null,
   profit  double not null
 );
+
+
+create table reserved_profit (
+  id int auto_increment primary key,
+  reserve_dt datetime,
+
+  amount int,
+  description text
+);
+
+---
 
 delimiter //
 create trigger position_delete after delete on position
@@ -105,12 +98,4 @@ begin
   end if;
 end;//
 delimiter ;
-
-create table reserved_profit (
-  id int auto_increment primary key,
-  reserve_dt datetime,
-
-  amount int,
-  description text
-);
 
