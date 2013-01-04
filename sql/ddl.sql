@@ -78,8 +78,6 @@ create table reserved_profit (
   description text
 );
 
----
-
 delimiter //
 create trigger position_delete after delete on position
 for each row
@@ -87,15 +85,8 @@ begin
   if OLD.magic_no <> 0 then
     insert into history (ticket_no, event_type, event_dt, price, lots)
           values (OLD.ticket_no, 0, now(), OLD.open_price, OLD.lots);
-  else
-    if OLD.pos_type = 0 then
-      insert into history(ticket_no, event_type, event_dt, price, lots)
-            values (OLD.ticket_no, 4, now(), OLD.open_price, OLD.lots);
-    else
-      insert into history (ticket_no, event_type, event_dt, price, lots)
-            values (OLD.ticket_no, 6, now(), OLD.open_price, OLD.lots);
-    end if;
   end if;
 end;//
 delimiter ;
 
+---
