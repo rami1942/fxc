@@ -61,17 +61,6 @@ create table reserved_profit (
 );
 
 delimiter //
-create trigger position_delete after delete on position
-for each row
-begin
-  if OLD.magic_no <> 0 then
-    insert into history (ticket_no, event_type, event_dt, price, lots)
-          values (OLD.ticket_no, 0, now(), OLD.open_price, OLD.lots);
-  end if;
-end;//
-delimiter ;
-
-delimiter //
 create trigger short_delete after delete on short_trap
 for each row
 begin
@@ -80,3 +69,47 @@ end;//
 delimiter ;
 
 ---
+
+alter table position add (pos_cd char(1));
+
+create table history_request (
+  ticket_no int primary key,
+  pos_cd char(1)
+);
+
+create table position_history (
+  ticket_no int primary key,
+
+  open_dt datetime,
+  pos_cd char(1),
+
+  lots double,
+  symbol varchar(16),
+
+  open_price double,
+  sl_price double,
+  tp_price double,
+
+  close_dt datetime,
+  close_price double,
+
+  swap_point int,
+  profit double
+);
+
+drop trigger position_delete;
+
+delimiter //
+create trigger position_delete after delete on position
+for each row
+begin
+  if OLD.magic_no <> 0 then
+    insert into history (ticket_no, event_type, event_dt, price, lots)
+          values (OLD.ticket_no, 0, now(), OLD.open_price, OLD.lots);
+  end if;
+
+  insert into history_request (ticket_no, pos_cd) 
+    values (OLD.ticket_no, OLD.pos_cd);
+end;//
+delimiter ;
+
