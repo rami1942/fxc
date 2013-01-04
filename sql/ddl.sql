@@ -23,24 +23,6 @@ create table delete_request (
   price double not null
 );
 
-delimiter //
-create trigger short_delete after delete on short_trap
-for each row
-begin
-  insert into history (event_type, event_dt, price)
-    values (2, now(), OLD.open_price);
-  insert into delete_request (price) values (OLD.open_price);
-end;//
-delimiter ;
-
-delimiter //
-create trigger short_insert after insert on short_trap
-for each row
-begin
-  insert into history (event_type, event_dt, price)
-    values (1, now(), NEW.open_price);
-end;//
-delimiter ;
 
 create table position (
   ticket_no int primary key,
@@ -86,6 +68,14 @@ begin
     insert into history (ticket_no, event_type, event_dt, price, lots)
           values (OLD.ticket_no, 0, now(), OLD.open_price, OLD.lots);
   end if;
+end;//
+delimiter ;
+
+delimiter //
+create trigger short_delete after delete on short_trap
+for each row
+begin
+  insert into delete_request (price) values (OLD.open_price);
 end;//
 delimiter ;
 
