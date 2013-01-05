@@ -14,4 +14,6 @@ EXPORTS
 	ClearMark
 	UpdatePosition
 	SetAccountInfo
+	GetHistoryRequest
+	InsertHistory
 VERSION 1.0

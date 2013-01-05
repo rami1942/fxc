@@ -146,6 +146,44 @@ __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
 	return 1;
 }
 
+__declspec(dllexport) int __stdcall GetHistoryRequest(int *ticketNo, int *posCd) {
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select ticket_no, pos_cd from history_request", false)) {
+		return 0;
+	}
+
+	long ticket;
+	long pos;
+
+	SQLBindCol(hStmt, 1, SQL_C_LONG, &ticket, 0, NULL);
+	SQLBindCol(hStmt, 2, SQL_C_LONG, &pos, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			return 0;
+		}
+		ticketNo[i] = (int)ticket;
+		posCd[i] = (int)pos;
+
+		i++;
+	}
+	DBCloseStmt(hStmt);
+	ticketNo[i] = 0;
+
+	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from history_request", false)) {
+		DBEndTrans(hEnv, hDBC, false);
+		return 0;
+	}
+
+
+	DBEndTrans(hEnv, hDBC, true);
+	return 1;
+}
+
 __declspec(dllexport) int __stdcall SetMark() {
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "update position set is_real = 1", false)) {
@@ -168,6 +206,22 @@ __declspec(dllexport) int __stdcall UpdatePosition(int ticket_no, int magic_no, 
 		"values (%d, %d, %d, %lf, %lf, %lf, %d, %lf, %lf, '%s') on duplicate key update is_real=0,tp_price=%lf,sl_price=%lf,swap_point=%d,profit=%lf",
 			ticket_no, magic_no, pos_type, open_price, take_profit, stop_loss, swap, profit, lots, symbol, take_profit, stop_loss, swap, profit
 		);
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+		return 0;
+	}
+	return 1;
+}
+
+__declspec(dllexport) int __stdcall InsertHistory(
+	int ticket_no, int magic_no, int pos_type, int pos_cd, char *open_dt, double lots, char *symbol,
+	double open_price, double sl_price, double tp_price, char *close_dt, double close_price, double swap_point, double profit) {
+	char buf[2048];
+
+	sprintf_s(buf, 2048, "insert into position_history (ticket_no, magic_no, pos_type, open_dt, pos_cd, lots, symbol, open_price, sl_price, tp_price, close_dt, close_price, swap_point, profit) "
+		"values (%d, %d, %d, '%s', %d, %lf, '%s', %lf, %lf, %lf, '%s', %lf, %lf, %lf)",
+		ticket_no, magic_no, pos_type, open_dt, pos_cd, lots, symbol, open_price, sl_price, tp_price, close_dt, close_price, swap_point, profit);
+
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 		return 0;
