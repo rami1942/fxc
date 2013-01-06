@@ -236,16 +236,26 @@ public class PositionService {
 		List<DiscPosition> result = new ArrayList<DiscPosition>(discs.size());
 		for (Position p : discs) {
 			DiscPosition dp = new DiscPosition();
+			dp.ticketNo = p.ticketNo;
 			dp.isLong = (p.posType == 0);
 			dp.openPrice = p.openPrice;
 			dp.slPrice = p.slPrice;
 			dp.lots = p.lots;
 			dp.swapPoint = p.swapPoint;
+			dp.posType = p.posCd;
 			result.add(dp);
 		}
 
 		Collections.sort(result, new AbsComparator(currentPrice));
 
 		return result;
+	}
+
+	public void setPositionType(Integer ticketNo, Integer posType) {
+		Position pos = jdbcManager.from(Position.class).where("ticketNo=?", ticketNo).getSingleResult();
+		if (pos == null) return;
+
+		pos.posCd = posType;
+		jdbcManager.update(pos).execute();
 	}
 }

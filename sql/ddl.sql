@@ -68,14 +68,15 @@ begin
 end;//
 delimiter ;
 
----
 
-alter table position add (pos_cd char(1));
+alter table position add (pos_cd char(1) default 0);
+
 
 create table history_request (
   ticket_no int primary key,
   pos_cd char(1)
 );
+
 
 create table position_history (
   ticket_no int primary key,
@@ -97,7 +98,6 @@ create table position_history (
   profit double
 );
 
-drop trigger position_delete;
 
 delimiter //
 create trigger position_delete after delete on position
@@ -112,4 +112,9 @@ begin
     values (OLD.ticket_no, OLD.pos_cd);
 end;//
 delimiter ;
+
+---
+
+alter table position_history add (magic_no int);
+alter table position_history add (pos_type char(1));
 

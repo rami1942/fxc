@@ -9,7 +9,6 @@ import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
-import org.dyndns.bluefield.fxc.service.HistoryService;
 import org.dyndns.bluefield.fxc.service.PositionService;
 import org.dyndns.bluefield.fxc.service.SettlementService;
 import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
@@ -39,9 +38,6 @@ public class PositionAction {
 
 	@Resource
 	private PositionService positionService;
-
-	@Resource
-	private HistoryService historyService;
 
 	public Date fromDt;
 	public Integer balance;
@@ -90,6 +86,11 @@ public class PositionAction {
 
 	@RequestParameter
 	public Integer profitReservation;
+
+	@RequestParameter
+	public Integer ticketNo;
+	@RequestParameter
+	public Integer selValue;
 
 	public ValidationRules validation = new DefaultValidationRules() {
 		@Override
@@ -226,6 +227,13 @@ public class PositionAction {
 		return new Redirect("./?ak=" + accessKey);
 	}
 
+	public ActionResult setPositionType() {
+		accessKey = configService.getAuthKey();
+		if (ticketNo == null || selValue == null) return new Redirect("./?ak=" + accessKey);
+		positionService.setPositionType(ticketNo, selValue);
+		return new Redirect("./?ak=" + accessKey);
+	}
+
 	public ActionResult delete() {
 		accessKey = configService.getAuthKey();
 		if (id == null) return new Redirect("./");
@@ -237,7 +245,6 @@ public class PositionAction {
 		accessKey = configService.getAuthKey();
 		if (virtualPriceReservation != null) {
 			configService.setVpReserve(virtualPriceReservation);
-//			historyService.insertVirtualPrice(virtualPriceReservation);
 		}
 		return new Redirect("./?ak=" + accessKey);
 	}
