@@ -9,8 +9,8 @@
 
 <script type="text/javascript">
 
-function freeze(form, price) {
-	form.price.value = price;
+function freeze(form, ticketNo) {
+	form.ticketNo.value = ticketNo;
 	form.submit();
 }
 
@@ -82,6 +82,7 @@ function freeze(form, price) {
 ロスカット: ${lossCutPrice}(${lossCutLevel}%)
 </p>
 <form action="freezePosition">
+<input type="hidden" name="ticketNo" value=""/>
 <input type="hidden" name="price" value="" />
 <table border="1">
 <c:forEach var="lp" items="${longs}" varStatus="stat">
@@ -89,28 +90,11 @@ function freeze(form, price) {
   <td>${stat.count}</td>
   <td>${lp.openPrice}</td>
   <td align="right">${lp.lots}</td>
-  <td><input type="button" value="凍結" onclick="freeze(this.form, ${lp.openPrice})"/></td>
+  <td><input type="button" value="戻す" onclick="freeze(this.form, ${lp.ticketNo})"/></td>
 </tr>
 </c:forEach>
 </table>
 </form>
-
-<c:if test="${my:size(freezes) > 0 }">
-<p>凍結ポジション</p>
-<form action="unfreezePosition">
-<input type="hidden" name="price" />
-<table border="1">
-<c:forEach var="fp" items="${freezes}" varStatus="stat">
-<tr>
-	<td>${stat.count}</td>
-	<td>${fp.openPrice}</td>
-	<td align="right">${fp.lots}</td>
-	<td><input type="button" value="解凍" onclick="freeze(this.form, ${fp.openPrice})"/></td>
-</tr>
-</c:forEach>
-</table>
-</form>
-</c:if>
 
 </body>
 </html>

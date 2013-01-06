@@ -28,9 +28,12 @@ public class IndexAction {
 	@RequestParameter
 	public String price;
 
+	@RequestParameter
+	public Integer ticketNo;
+
+
 	public List<ShortTrap> shorts;
 	public List<Position> longs;
-	public List<Position> freezes;
 	public Integer eachLots;
 	public Integer numTraps;
 	public Double longAverage;
@@ -41,7 +44,6 @@ public class IndexAction {
 	public ActionResult index() {
 		shorts = positionService.getShortTraps();
 		longs = positionService.getLongPositions();
-		freezes = positionService.getFreezeLongs();
 		eachLots = configService.getLotsByTrap();
 		accessKey = configService.getAuthKey();
 
@@ -86,12 +88,7 @@ public class IndexAction {
 	}
 
 	public ActionResult freezePosition() {
-		positionService.setToFreeze(price);
-		return new Redirect("./");
-	}
-
-	public ActionResult unfreezePosition() {
-		positionService.setToUnfreeze(price);
+		positionService.setPositionType(ticketNo, 0);
 		return new Redirect("./");
 	}
 }

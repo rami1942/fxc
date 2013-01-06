@@ -113,8 +113,8 @@ begin
 end;//
 delimiter ;
 
----
-
 alter table position_history add (magic_no int);
 alter table position_history add (pos_type char(1));
+---
+
 
