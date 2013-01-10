@@ -30,6 +30,9 @@ public class SimurationAction {
 	public Integer requiredMargin;
 	public Double marginPer;
 
+	public Double longLots;
+	public Double shortLots;
+
 	public String accessKey;
 
 	public ActionResult index() {
@@ -41,9 +44,17 @@ public class SimurationAction {
 		positions = positionService.filteredPositions(targetRate);
 		accessKey = configService.getAuthKey();
 
+		longLots = shortLots = 0.0;
+
 		proLossTotal = 0;
 		for (SimuratePosition p : positions) {
 			if (p.proLoss != null) proLossTotal += p.proLoss;
+
+			if (p.isActive()) {
+				if (p.isLong()) longLots += p.lots;
+				else shortLots += p.lots;
+			}
+
 		}
 
 		balance = configService.getBalance().intValue();

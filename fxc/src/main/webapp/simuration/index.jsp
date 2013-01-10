@@ -27,6 +27,9 @@
 </table>
 
 <br/>
+<p>
+ロング:ショート = ${longLots}:${shortLots}
+</p>
 
 <table border="1">
 <tr>

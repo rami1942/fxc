@@ -255,10 +255,19 @@ public class PositionService {
 			sp.lots = p.lots;
 
 			if (sp.isLong()) {
-				if (sp.slPrice != null && targetRate < sp.slPrice) sp.active = false;
-				else {
-					sp.active = true;
-					sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000);
+				if (p.posCd == 1) {
+					if (targetRate > sp.openPrice) {
+						sp.active = false;
+					} else {
+						sp.active = true;
+						sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000);
+					}
+				} else {
+					if (sp.slPrice != null && targetRate < sp.slPrice) sp.active = false;
+					else {
+						sp.active = true;
+						sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000);
+					}
 				}
 			} else {
 				if (sp.slPrice != null && targetRate > sp.slPrice) sp.active = false;
@@ -281,12 +290,13 @@ public class PositionService {
 		int shortMargin = 0;
 
 		for (SimuratePosition p : sps) {
+			if (!p.isActive()) continue;
 			if (p.isLong()) {
 				longs += p.lots;
-				if (p.isActive()) longMargin += p.openPrice * p.lots * 100000 * 0.04;
+				longMargin += p.openPrice * p.lots * 100000 * 0.04;
 			} else {
 				shorts += p.lots;
-				if (p.isActive()) shortMargin += p.openPrice * p.lots * 100000 * 0.04;
+				shortMargin += p.openPrice * p.lots * 100000 * 0.04;
 			}
 		}
 
