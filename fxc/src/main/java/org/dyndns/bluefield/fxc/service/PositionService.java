@@ -4,6 +4,7 @@ package org.dyndns.bluefield.fxc.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
+import org.dyndns.bluefield.fxc.entity.SimuratePosition;
 import org.seasar.extension.jdbc.JdbcManager;
 
 public class PositionService {
@@ -240,4 +242,61 @@ public class PositionService {
 		pos.posCd = posType;
 		jdbcManager.update(pos).execute();
 	}
+
+	public List<SimuratePosition> filteredPositions(double targetRate) {
+		List<Position> pos = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0").orderBy("openPrice desc").getResultList();
+
+		LinkedList<SimuratePosition> sps = new LinkedList<SimuratePosition>();
+		for (Position p : pos) {
+			SimuratePosition sp = new SimuratePosition();
+			sp.openPrice = p.openPrice;
+			sp.slPrice = p.slPrice == 0.0 ? null : p.slPrice;
+			sp.posType = p.posType;
+			sp.lots = p.lots;
+
+			if (sp.isLong()) {
+				if (sp.slPrice != null && targetRate < sp.slPrice) sp.active = false;
+				else {
+					sp.active = true;
+					sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000);
+				}
+			} else {
+				if (sp.slPrice != null && targetRate > sp.slPrice) sp.active = false;
+				else {
+					sp.active = true;
+					sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000);
+				}
+			}
+
+			sps.add(sp);
+		}
+		return sps;
+	}
+
+	public Integer getMargin(List<SimuratePosition> sps) {
+		double longs = 0.0;
+		double shorts = 0.0;
+
+		int longMargin = 0;
+		int shortMargin = 0;
+
+		for (SimuratePosition p : sps) {
+			if (p.isLong()) {
+				longs += p.lots;
+				if (p.isActive()) longMargin += p.openPrice * p.lots * 100000 * 0.04;
+			} else {
+				shorts += p.lots;
+				if (p.isActive()) shortMargin += p.openPrice * p.lots * 100000 * 0.04;
+			}
+		}
+
+		if (longs == shorts) {
+			return longMargin > shortMargin ? longMargin : shortMargin;
+		} else if (longs > shorts) {
+			return longMargin;
+		} else {
+			return shortMargin;
+		}
+	}
+
 }

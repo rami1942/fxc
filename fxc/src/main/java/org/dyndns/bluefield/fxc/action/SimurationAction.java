@@ -1,0 +1,58 @@
+package org.dyndns.bluefield.fxc.action;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.dyndns.bluefield.fxc.entity.SimuratePosition;
+import org.dyndns.bluefield.fxc.service.ConfigService;
+import org.dyndns.bluefield.fxc.service.PositionService;
+import org.seasar.cubby.action.ActionClass;
+import org.seasar.cubby.action.ActionResult;
+import org.seasar.cubby.action.Forward;
+import org.seasar.cubby.action.RequestParameter;
+
+@ActionClass
+public class SimurationAction {
+
+	@Resource
+	private PositionService positionService;
+
+	@Resource
+	private ConfigService configService;
+
+	@RequestParameter
+	public Double targetRate;
+
+	public List<SimuratePosition> positions;
+	public Integer balance;
+	public Integer proLossTotal;
+	public Integer requiredMargin;
+	public Double marginPer;
+
+	public String accessKey;
+
+	public ActionResult index() {
+
+		if (targetRate == null) {
+			targetRate = configService.getCurrentPrice();
+		}
+
+		positions = positionService.filteredPositions(targetRate);
+		accessKey = configService.getAuthKey();
+
+		proLossTotal = 0;
+		for (SimuratePosition p : positions) {
+			if (p.proLoss != null) proLossTotal += p.proLoss;
+		}
+
+		balance = configService.getBalance().intValue();
+		requiredMargin = positionService.getMargin(positions);
+
+		marginPer = ((double)balance + (double)proLossTotal) /requiredMargin * 100;
+		marginPer = Math.round(marginPer * 100.0) / 100.0;
+
+
+		return new Forward("index.jsp");
+	}
+}
