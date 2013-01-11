@@ -4,8 +4,11 @@ public class SimuratePosition {
 
 	public Double openPrice;
 	public Double slPrice;
+	public Double tpPrice;
 
 	public Integer posType;
+	public Integer posCd;
+
 	public Double lots;
 
 	public Integer proLoss;
@@ -29,6 +32,9 @@ public class SimuratePosition {
 
 	public boolean isActive() {
 		return active;
+	}
+	public Integer getPosCd() {
+		return posCd;
 	}
 
 }

@@ -10,7 +10,7 @@
 <body>
 
 <p>
-<t:form actionClass="org.dyndns.bluefield.fxc.action.SimurationAction" actionMethod="index" value="${action}" method="POST" >
+<t:form actionClass="org.dyndns.bluefield.fxc.action.SimurationAction" actionMethod="index" value="${action}" method="GET" >
 <input type="hidden" name="ak" value="${accessKey}" />
 想定レート:<input type="text" name="targetRate" value="${targetRate}" />
 <input type="submit" value="計算" />
@@ -23,7 +23,10 @@
 <tr><th>必要証拠金</th><td align="right">${my:commaSep(requiredMargin) }</td></tr>
 <tr><th>有効証拠金</th><td align="right">${my:commaSep(balance + proLossTotal)}</td></tr>
 <tr><th>余剰証拠金</th><td align="right">${my:commaSep(balance + proLossTotal - requiredMargin)}</td></tr>
-<tr><th>証拠金維持率</th><td align="right">${marginPer}%</td></tr>
+<tr><th>証拠金維持率</th><td align="right">
+<c:if test="${requiredMargin > 0}">${marginPer}%</c:if>
+<c:if test="${requiredMargin == 0}">-</c:if>
+</td></tr>
 </table>
 
 <br/>
@@ -33,7 +36,7 @@
 
 <table border="1">
 <tr>
-	<th>POS</th><th>SL</th><th>ロット</th><th>損益</th>
+	<th>POS</th><th>SL</th><th>ロット</th><th>損益</th><th>タイプ</th>
 </tr>
 <c:forEach var="p" items="${positions}">
 <c:if test="${p.active}">
@@ -54,6 +57,18 @@
 </td>
 <td bgcolor="${bgcolor}">${p.lots}</td>
 <td bgcolor="${bgcolor}" align="right">${my:commaSep(p.proLoss)}</td>
+<td bgcolor="${bgcolor}">
+<c:choose>
+<c:when test="${p.posCd ==1}">本体ロング</c:when>
+<c:when test="${p.posCd ==2}">複利ロング</c:when>
+<c:when test="${p.posCd ==3}">裁量ロング</c:when>
+<c:when test="${p.posCd ==4}">ショートトラップ</c:when>
+<c:when test="${p.posCd ==5}">出口益S</c:when>
+<c:when test="${p.posCd ==6}">固定ショート</c:when>
+<c:when test="${p.posCd ==7}">裁量ショート</c:when>
+<c:otherwise>${p.posCd}</c:otherwise>
+</c:choose>
+</td>
 </tr>
 </c:forEach>
 </table>

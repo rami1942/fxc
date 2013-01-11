@@ -246,40 +246,67 @@ public class PositionService {
 	public List<SimuratePosition> filteredPositions(double targetRate) {
 		List<Position> pos = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0").orderBy("openPrice desc").getResultList();
 
+		double exitRate = exitRate();
+
 		LinkedList<SimuratePosition> sps = new LinkedList<SimuratePosition>();
 		for (Position p : pos) {
 			SimuratePosition sp = new SimuratePosition();
 			sp.openPrice = p.openPrice;
 			sp.slPrice = p.slPrice == 0.0 ? null : p.slPrice;
+			sp.tpPrice = p.tpPrice == 0.0 ? null : p.tpPrice;
 			sp.posType = p.posType;
+			sp.posCd = p.posCd;
 			sp.lots = p.lots;
 			sp.swapPoint = p.swapPoint;
 
-			if (sp.isLong()) {
-				if (p.posCd == 1) {
-					if (targetRate > sp.openPrice) {
-						sp.active = false;
-					} else {
-						sp.active = true;
-						sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000);
-					}
+			if (p.posCd == 1) {
+				if (targetRate > exitRate) {
+					sp.active = false;
 				} else {
-					if (sp.slPrice != null && targetRate < sp.slPrice) sp.active = false;
-					else {
-						sp.active = true;
-						sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000);
-					}
+					sp.active = true;
+					sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000) + sp.swapPoint;
+				}
+			} else if (sp.isLong()) {
+				if (sp.slPrice != null && targetRate < sp.slPrice) {
+					sp.active = false;
+				} else {
+					sp.active = true;
+					sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000) + sp.swapPoint;
 				}
 			} else {
-				if (sp.slPrice != null && targetRate > sp.slPrice) sp.active = false;
-				else {
+				if (sp.slPrice != null && targetRate > sp.slPrice) {
+					sp.active = false;
+				} else {
 					sp.active = true;
-					sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000);
+					sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000) + sp.swapPoint;
 				}
+			}
+			sps.add(sp);
+		}
+
+		double tpWidth = configService.getTpWidth();
+		double lots = (double)configService.getLotsByTrap() / 100000;
+
+		List<ShortTrap> traps = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").getResultList();
+		for (ShortTrap t : traps) {
+			SimuratePosition sp = new SimuratePosition();
+			sp.openPrice = t.openPrice;
+			sp.tpPrice = sp.openPrice - tpWidth;
+			sp.posType = 1;
+			sp.posCd = 4;
+			sp.lots = lots;
+			sp.swapPoint = 0;
+
+			if (targetRate >= sp.openPrice && targetRate <= exitRate) {
+				sp.active = true;
+				sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000);
+			} else {
+				sp.active = false;
 			}
 
 			sps.add(sp);
 		}
+
 		return sps;
 	}
 
@@ -294,10 +321,10 @@ public class PositionService {
 			if (!p.isActive()) continue;
 			if (p.isLong()) {
 				longs += p.lots;
-				longMargin += p.openPrice * p.lots * 100000 * 0.04 + p.swapPoint;
+				longMargin += p.openPrice * p.lots * 100000 * 0.04;
 			} else {
 				shorts += p.lots;
-				shortMargin += p.openPrice * p.lots * 100000 * 0.04 + p.swapPoint;
+				shortMargin += p.openPrice * p.lots * 100000 * 0.04;
 			}
 		}
 

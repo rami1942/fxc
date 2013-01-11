@@ -54,8 +54,10 @@ public class SimurationAction {
 				if (p.isLong()) longLots += p.lots;
 				else shortLots += p.lots;
 			}
-
 		}
+		longLots = Math.round(longLots * 100.0) / 100.0;
+		shortLots = Math.round(shortLots * 100.0) / 100.0;
+
 
 		balance = configService.getBalance().intValue();
 		requiredMargin = positionService.getMargin(positions);
