@@ -253,6 +253,7 @@ public class PositionService {
 			sp.slPrice = p.slPrice == 0.0 ? null : p.slPrice;
 			sp.posType = p.posType;
 			sp.lots = p.lots;
+			sp.swapPoint = p.swapPoint;
 
 			if (sp.isLong()) {
 				if (p.posCd == 1) {
@@ -293,10 +294,10 @@ public class PositionService {
 			if (!p.isActive()) continue;
 			if (p.isLong()) {
 				longs += p.lots;
-				longMargin += p.openPrice * p.lots * 100000 * 0.04;
+				longMargin += p.openPrice * p.lots * 100000 * 0.04 + p.swapPoint;
 			} else {
 				shorts += p.lots;
-				shortMargin += p.openPrice * p.lots * 100000 * 0.04;
+				shortMargin += p.openPrice * p.lots * 100000 * 0.04 + p.swapPoint;
 			}
 		}
 

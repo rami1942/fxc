@@ -10,6 +10,7 @@ public class SimuratePosition {
 
 	public Integer proLoss;
 
+	public Integer swapPoint;
 
 	public boolean active;
 

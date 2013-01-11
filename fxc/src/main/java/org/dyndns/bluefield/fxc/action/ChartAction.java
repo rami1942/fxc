@@ -142,7 +142,7 @@ public class ChartAction {
 			buf4.append(',');
 
 			int boxSize = 40;
-			int w = (int)Math.round(p.lots * (boxSize / 2) / 0.5);
+			int w = (int)Math.round(p.lots * (boxSize / 2) / 1);
 			if (w < 3) w = 3;
 			if (w > boxSize / 2) w = boxSize / 2;
 
