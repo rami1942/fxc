@@ -23,8 +23,9 @@ public class Position {
 	public Integer swapPoint;
 	public Double profit;
 
-	public Integer isReal;
 	public Integer isWideBody;
+
+	public Integer posCd;
 
 	public String getLotsDisp() {
 		int l = (int)Math.round(lots * 100000);
@@ -91,16 +92,17 @@ public class Position {
 	public void setProfit(Double profit) {
 		this.profit = profit;
 	}
-	public Integer getIsReal() {
-		return isReal;
-	}
-	public void setIsReal(Integer isReal) {
-		this.isReal = isReal;
-	}
 	public Integer getIsWideBody() {
 		return isWideBody;
 	}
 	public void setIsWideBody(Integer isWideBody) {
 		this.isWideBody = isWideBody;
 	}
+	public Integer getPosCd() {
+		return posCd;
+	}
+	public void setPosCd(Integer posCd) {
+		this.posCd = posCd;
+	}
+
 }

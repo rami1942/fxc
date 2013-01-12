@@ -41,11 +41,7 @@ public class PositionService {
 	}
 
 	public List<Position> getLongPositions() {
-		return jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and magicNo=0 and isWideBody=1").orderBy("openPrice desc").getResultList();
-	}
-
-	public List<Position> getFreezeLongs() {
-		return jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and magicNo=0 and isWideBody=0").orderBy("openPrice desc").getResultList();
+		return jdbcManager.from(Position.class).where("posCd=1").orderBy("openPrice desc").getResultList();
 	}
 
 	public List<Position> getHedgeShorts() {
@@ -56,6 +52,12 @@ public class PositionService {
 		List<ShortTrap> s = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").limit(1).getResultList();
 		if (s.size() > 0) return s.get(0);
 		return null;
+	}
+
+	public Double exitRate() {
+		List<ShortTrap> traps = getShortTraps();
+		if (traps.size() == 0) return null;
+		return traps.get(0).openPrice;
 	}
 
 	public ShortTrap getMinShortPosition() {
@@ -96,20 +98,6 @@ public class PositionService {
 		info.avg = longAverage;
 		info.virtualPriceOffset = Math.round(configService.getVpReserve() / (double)l * 1000.0) / 1000.0;
 		return info;
-	}
-
-	public void setToFreeze(String price) {
-		Position lp = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and openPrice=?", price).getSingleResult();
-		if (lp == null) return;
-		lp.isWideBody = 0;
-		jdbcManager.update(lp).execute();
-	}
-
-	public void setToUnfreeze(String price) {
-		Position lp = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posType=0 and openPrice=?", price).getSingleResult();
-		if (lp == null) return;
-		lp.isWideBody = 1;
-		jdbcManager.update(lp).execute();
 	}
 
 	private long calcRate(List<Position> pos, Double price) {
@@ -173,12 +161,6 @@ public class PositionService {
 		return total;
 	}
 
-	public Double exitRate() {
-		List<ShortTrap> traps = getShortTraps();
-		if (traps.size() == 0) return null;
-		return traps.get(0).openPrice;
-	}
-
 	public int calcOneLinePrice() {
 		List<Position> longs = getLongPositions();
 		int amount = 0;
@@ -232,20 +214,30 @@ public class PositionService {
 	}
 
 	public List<DiscPosition> discPositions(Double currentPrice) {
-		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and (pos_type = 1 and magicNo=0) or isWideBody=0").getResultList();
+		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo = 0 and posCd in (0,2,3,5,6,7)").getResultList();
 		List<DiscPosition> result = new ArrayList<DiscPosition>(discs.size());
 		for (Position p : discs) {
 			DiscPosition dp = new DiscPosition();
+			dp.ticketNo = p.ticketNo;
 			dp.isLong = (p.posType == 0);
 			dp.openPrice = p.openPrice;
 			dp.slPrice = p.slPrice;
 			dp.lots = p.lots;
 			dp.swapPoint = p.swapPoint;
+			dp.posType = p.posCd;
 			result.add(dp);
 		}
 
 		Collections.sort(result, new AbsComparator(currentPrice));
 
 		return result;
+	}
+
+	public void setPositionType(Integer ticketNo, Integer posType) {
+		Position pos = jdbcManager.from(Position.class).where("ticketNo=?", ticketNo).getSingleResult();
+		if (pos == null) return;
+
+		pos.posCd = posType;
+		jdbcManager.update(pos).execute();
 	}
 }

@@ -1,7 +1,11 @@
 package org.dyndns.bluefield.fxc.entity;
 
 public class DiscPosition {
+	public Integer ticketNo;
+
 	public Boolean isLong;
+
+	public Integer posType;
 
 	public Double openPrice;
 	public Double slPrice;

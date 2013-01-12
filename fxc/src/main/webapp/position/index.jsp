@@ -14,6 +14,13 @@ function unReserve(form, id) {
 	form.submit();
 }
 
+function changeType(form, ticketNo) {
+	var sel = form['type'+ticketNo];
+	form.ticketNo.value = ticketNo;
+	form.selValue.value = sel.value;
+	form.submit();
+}
+
 </script>
 
 </head>
@@ -56,10 +63,16 @@ function unReserve(form, id) {
 </tr>
 </table>
 
-<p>SL確定益</p>
+<p>ポジション</p>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.PositionAction" actionMethod="setPositionType" value="${action}">
+
+<input type="hidden" name="ticketNo" />
+<input type="hidden" name="selValue" />
+<input type="hidden" name="ak" value="${accessKey}" />
+
 <table border="1">
 <tr>
-<th>建値</th><th>SL</th><th>ロット</th><th>証拠金</th><th>SL損益</th><th>現損益</th>
+<th>建値</th><th>SL</th><th>ロット</th><th>SL損益</th><th>現損益</th><th>種別</th>
 </tr>
 <c:forEach var="d" items="${discs}">
 <tr>
@@ -73,19 +86,68 @@ function unReserve(form, id) {
 	<c:if test="${d.slPrice == null}">-</c:if>
 </td>
 <td>${d.lots}</td>
-<td align="right">
-	<c:if test="${d.margin != null}">
-		${my:commaSep(d.margin)}
-	</c:if>
-	<c:if test="${d.margin == null}">-</c:if>
-</td>
 <td align="right">${my:commaSep(d.slProfit)}</td>
 <td align="right">${my:commaSep(d.realProfit)}</td>
+<td>
+<select name="type${d.ticketNo}" onchange="changeType(this.form, ${d.ticketNo})">
+<c:if test="${d.isLong}">
+	<c:choose>
+	<c:when test="${d.posType == 2}">
+	    <option value="0"></option>
+		<option value="2" selected="selected">複利ロング</option>
+		<option value="3">裁量ロング</option>
+	    <option value="1">本体ロング</option>
+	</c:when>
+	<c:when test="${d.posType == 3}">
+	    <option value="0"></option>
+		<option value="2">複利ロング</option>
+		<option value="3" selected="selected">裁量ロング</option>
+	    <option value="1">本体ロング</option>
+	</c:when>
+	<c:otherwise>
+	    <option value="0" selected="selected"></option>
+		<option value="2">複利ロング</option>
+		<option value="3">裁量ロング</option>
+	    <option value="1">本体ロング</option>
+	</c:otherwise>
+	</c:choose>
+</c:if>
+<c:if test="${! d.isLong}">
+	<c:choose>
+	<c:when test="${d.posType == 5}">
+	    <option value="0"></option>
+		<option value="5" selected="selected">出口益S</option>
+		<option value="6">固定ショート</option>
+		<option value="7">裁量ショート</option>
+	</c:when>
+	<c:when test="${d.posType == 6}">
+	    <option value="0"></option>
+		<option value="5">出口益S</option>
+		<option value="6" selected="selected">固定ショート</option>
+		<option value="7">裁量ショート</option>
+	</c:when>
+	<c:when test="${d.posType == 7}">
+	    <option value="0"></option>
+		<option value="5">出口益S</option>
+		<option value="6">固定ショート</option>
+		<option value="7" selected="selected">裁量ショート</option>
+	</c:when>
+	<c:otherwise>
+	    <option value="0" selected="selected"></option>
+		<option value="5">出口益S</option>
+		<option value="6">固定ショート</option>
+		<option value="7">裁量ショート</option>
+	</c:otherwise>
+	</c:choose>
+</c:if>
+</select>
+</td>
+
 </tr>
 </c:forEach>
 </table>
-
-<p>調整分</p>
+</t:form>
+<p>資金調整分</p>
 <table border="1">
 <tr>
 	<th>金額</th>
