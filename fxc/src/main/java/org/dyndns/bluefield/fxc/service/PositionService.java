@@ -337,4 +337,7 @@ public class PositionService {
 		}
 	}
 
+	public List<Position> getPositions() {
+		return jdbcManager.from(Position.class).orderBy("posType, openPrice desc").getResultList();
+	}
 }

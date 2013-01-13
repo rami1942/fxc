@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.SimuratePosition;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
@@ -34,6 +35,8 @@ public class SimurationAction {
 	public Double shortLots;
 
 	public String accessKey;
+
+	public List<Position> exportPos;
 
 	public ActionResult index() {
 
@@ -67,5 +70,10 @@ public class SimurationAction {
 
 
 		return new Forward("index.jsp");
+	}
+
+	public ActionResult export() {
+		exportPos = positionService.getPositions();
+		return new Forward("export.jsp");
 	}
 }

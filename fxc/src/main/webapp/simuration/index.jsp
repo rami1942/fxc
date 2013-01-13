@@ -78,6 +78,7 @@
 <li><a href="../chart?ak=${accessKey}">チャート</a></li>
 <li><a href="../position?ak=${accessKey}">ポジション</a></li>
 <li><a href="../?ak=${accessKey}">トラップ</a></li>
+<li><a href="../simuration/export?ak=${accessKey}">エクスポート</a></li>
 </ul>
 
 </body>
