@@ -8,6 +8,7 @@ import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
 import org.dyndns.bluefield.fxc.service.PositionService;
+import org.dyndns.bluefield.fxc.service.ToggleTpRequestService;
 import org.dyndns.bluefield.fxc.service.PositionService.LongInfo;
 import org.dyndns.bluefield.fxc.service.PositionService.LosscutInfo;
 import org.seasar.cubby.action.ActionClass;
@@ -24,6 +25,8 @@ public class IndexAction {
 	private PositionService positionService;
 	@Resource
 	private ConfigService configService;
+	@Resource
+	private ToggleTpRequestService toggleTpRequestService;
 
 	@RequestParameter
 	public String price;
@@ -31,6 +34,8 @@ public class IndexAction {
 	@RequestParameter
 	public Integer ticketNo;
 
+	@RequestParameter
+	public Integer tpFlag;
 
 	public List<ShortTrap> shorts;
 	public List<Position> longs;
@@ -90,5 +95,10 @@ public class IndexAction {
 	public ActionResult freezePosition() {
 		positionService.setPositionType(ticketNo, 0);
 		return new Redirect("./");
+	}
+
+	public ActionResult toggleTp() {
+		toggleTpRequestService.toggleTp(ticketNo, tpFlag);
+		return new Redirect("./?ak=" + configService.getAuthKey());
 	}
 }

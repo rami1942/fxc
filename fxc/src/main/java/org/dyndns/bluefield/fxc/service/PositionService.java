@@ -13,6 +13,7 @@ import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.entity.SimuratePosition;
+import org.dyndns.bluefield.fxc.entity.ToggleTpRequest;
 import org.seasar.extension.jdbc.JdbcManager;
 
 public class PositionService {
@@ -37,7 +38,15 @@ public class PositionService {
 		for (ShortTrap s : traps) {
 			int magic = (int)Math.round(s.openPrice * 100  + 100000);
 			Position p = jdbcManager.from(Position.class).where("magicNo=?", magic).getSingleResult();
-			s.isReal = (p == null) ? 0 : 1;
+			if (p != null) {
+				s.isReal = 1;
+				s.tpPrice = p.tpPrice;
+				s.ticketNo = p.ticketNo;
+				ToggleTpRequest ttr = jdbcManager.from(ToggleTpRequest.class).where("ticketNo=?", s.ticketNo).getSingleResult();
+				s.isRequesting = (ttr != null);
+			} else {
+				s.isReal = 0;
+			}
 		}
 		return traps;
 	}
@@ -339,5 +348,9 @@ public class PositionService {
 
 	public List<Position> getPositions() {
 		return jdbcManager.from(Position.class).orderBy("posType, openPrice desc").getResultList();
+	}
+
+	public Position findByTicketNo(Integer ticketNo) {
+		return jdbcManager.from(Position.class).where("ticketNo=?", ticketNo).getSingleResult();
 	}
 }

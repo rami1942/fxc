@@ -17,6 +17,14 @@ public class ShortTrap {
 	@Transient
 	public Integer isReal;
 
+	@Transient
+	public Double tpPrice;
+	@Transient
+	public Integer ticketNo;
+
+	@Transient
+	public Boolean isRequesting;
+
 	public Integer getId() {
 		return id;
 	}

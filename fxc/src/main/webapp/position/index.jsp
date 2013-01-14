@@ -185,7 +185,8 @@ function changeType(form, ticketNo) {
 </tr>
 <tr>
 	<td>
-		可能額: ${shAmount}<br/>
+		出口益: ${my:commaSep(shAmount)}<br/>
+		残額: ${my:commaSep(exitRemain)}<br/>
 		可能量(Lot): ${hedgeLots}
 	</td>
 	<td>
