@@ -32,6 +32,8 @@
 <c:otherwise>${p.posCd}</c:otherwise>
 </c:choose>
 </td>
+<td>${p.tpPrice}</td>
+<td>${p.slPrice}</td>
 </tr>
 </c:forEach>
 </table>
