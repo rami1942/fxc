@@ -32,8 +32,18 @@
 <c:otherwise>${p.posCd}</c:otherwise>
 </c:choose>
 </td>
-<td>${p.tpPrice}</td>
-<td>${p.slPrice}</td>
+<td>
+<c:choose>
+<c:when test="${p.long && p.tpPrice == 0.0}">999</c:when>
+<c:otherwise>${p.tpPrice}</c:otherwise>
+</c:choose>
+</td>
+<td>
+<c:choose>
+<c:when test="${!p.long && p.slPrice == 0.0}">999</c:when>
+<c:otherwise>${p.slPrice}</c:otherwise>
+</c:choose>
+</td>
 </tr>
 </c:forEach>
 </table>
