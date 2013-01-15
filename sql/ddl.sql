@@ -117,4 +117,8 @@ alter table position_history add (magic_no int);
 alter table position_history add (pos_type char(1));
 ---
 
+create table toggle_tp_request (
+  ticket_no int primary key,
+  tp_price double not null
+);
 

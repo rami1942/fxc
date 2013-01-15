@@ -185,7 +185,8 @@ function changeType(form, ticketNo) {
 </tr>
 <tr>
 	<td>
-		可能額: ${shAmount}<br/>
+		出口益: ${my:commaSep(shAmount)}<br/>
+		残額: ${my:commaSep(exitRemain)}<br/>
 		可能量(Lot): ${hedgeLots}
 	</td>
 	<td>
@@ -218,6 +219,9 @@ function changeType(form, ticketNo) {
 <ul>
 <li><a href="../chart?ak=${accessKey}">チャート</a></li>
 <li><a href="../?ak=${accessKey}">トラップ</a></li>
+<li><a href="../simuration?ak=${accessKey}">試算</a></li>
+<li><a href="../simuration/export?ak=${accessKey}">エクスポート</a></li>
+<li><a href="../settlement?ak=${accessKey}">結果</a></li>
 <li><a href="../config?ak=${accessKey}">設定</a></li>
 </ul>
 

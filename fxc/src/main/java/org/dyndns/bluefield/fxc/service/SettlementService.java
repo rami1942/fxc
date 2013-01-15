@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.Position;
+import org.dyndns.bluefield.fxc.entity.PositionHistory;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.entity.SettlementHistory;
 import org.seasar.extension.jdbc.JdbcManager;
@@ -108,4 +109,8 @@ public class SettlementService {
 		return hedgedFixed;
 	}
 
+	public List<PositionHistory> getHistory(String date) {
+		List<PositionHistory> hist = jdbcManager.from(PositionHistory.class).where("closeDt between ? and ?", date + " 00:00:00", date + " 23:59:59").getResultList();
+		return hist;
+	}
 }

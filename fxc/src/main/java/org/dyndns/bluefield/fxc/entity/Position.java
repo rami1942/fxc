@@ -27,6 +27,10 @@ public class Position {
 
 	public Integer posCd;
 
+	public boolean isLong() {
+		return posType == 0;
+	}
+
 	public String getLotsDisp() {
 		int l = (int)Math.round(lots * 100000);
 		return PriceUtil.separateComma(Integer.toString(l));

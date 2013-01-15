@@ -54,7 +54,8 @@ public class PositionAction {
 	public List<ReservedProfit> reservedProfits;
 	public Integer remain;
 
-	public String shAmount;
+	public Integer shAmount;
+	public Integer exitRemain;
 	public Double hedgeLots;
 
 	public Integer oneLinePrice;
@@ -137,8 +138,8 @@ public class PositionAction {
 
 		// ヘッジ可能量
 		int exp = positionService.exitProfit();
-		shAmount = PriceUtil.separateComma(Integer.toString(exp + virtualPriceReservation));
-		hedgeLots = calcHedgeLots(exp + virtualPriceReservation);
+		exitRemain = shAmount = exp;
+		int exitUse = 0;
 
 		// 確保益
 		discs = positionService.discPositions(currentRate);
@@ -163,10 +164,18 @@ public class PositionAction {
 			} else {
 				d.realProfit = (int)Math.round((d.openPrice - currentRate) * d.lots * 100000 + d.swapPoint);
 			}
+
+			if (d.posType == 5) {
+				exitRemain +=d.slProfit;
+				exitUse += d.slProfit;
+			}
 		}
 
+		// 出口益S
+		hedgeLots = calcHedgeLots(exitRemain);
+
 		// 余裕額
-		remain = diff.kkwProfit;
+		remain = diff.kkwProfit - exitUse;
 		reservedProfits = settlementService.reservedProfits();
 		for (ReservedProfit rp : reservedProfits) {
 			remain += rp.amount;

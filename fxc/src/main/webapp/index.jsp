@@ -14,6 +14,15 @@ function freeze(form, ticketNo) {
 	form.submit();
 }
 
+function toggleTp(form, ticketNo) {
+	form.ticketNo.value = ticketNo;
+	if (form['tp' + ticketNo].checked) {
+		form.tpFlag.value = "1";
+	} else {
+		form.tpFlag.value = "0";
+	}
+	form.submit();
+}
 </script>
 </head>
 <body>
@@ -46,19 +55,37 @@ function freeze(form, ticketNo) {
 </td>
 </tr>
 </table>
+<t:form actionClass="org.dyndns.bluefield.fxc.action.IndexAction" actionMethod="toggleTp" value="${action}" method="GET">
+<input type="hidden" name="ak" value="${accessKey}" />
+<input type="hidden" name="ticketNo" value="" />
+<input type="hidden" name="tpFlag" value="" />
+
 <table border="1">
+<tr><th>#</th><th>OPEN</th><th>ロット</th><th>POS</th><th>TP</th></tr>
 <c:forEach var="sp" items="${shorts}" varStatus="stat">
 <tr>
   <td>${stat.count}</td>
   <td>${f:out(sp.openPrice) }</td>
   <td align="right">${f:out(my:commaSep(eachLots)) }</td>
-  <td>
+  <td align="center">
   	<c:if test="${sp.isReal == 1}">◯</c:if>
   	<c:if test="${sp.isReal == 0}">&nbsp;</c:if>
+  </td>
+  <td>
+  	<c:if test="${sp.tpPrice != null && sp.isReal==1}">
+  		<c:choose>
+  			<c:when test="${sp.isRequesting}">...</c:when>
+  			<c:otherwise>
+			  	<c:if test="${sp.tpPrice != 0.0}"><input type="checkbox" name="tp${sp.ticketNo}" checked="checked" onclick="toggleTp(this.form, ${sp.ticketNo})"> ${sp.tpPrice}</c:if>
+	  			<c:if test="${sp.tpPrice == 0.0}"><input type="checkbox" name="tp${sp.ticketNo}" onclick="toggleTp(this.form, ${sp.ticketNo})" />&nbsp;</c:if>
+  			</c:otherwise>
+  		</c:choose>
+  	</c:if>
   </td>
 </tr>
 </c:forEach>
 </table>
+</t:form>
 <table>
 <tr>
 <td>

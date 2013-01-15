@@ -4,6 +4,7 @@ package org.dyndns.bluefield.fxc.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,6 +12,8 @@ import javax.annotation.Resource;
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
 import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
+import org.dyndns.bluefield.fxc.entity.SimuratePosition;
+import org.dyndns.bluefield.fxc.entity.ToggleTpRequest;
 import org.seasar.extension.jdbc.JdbcManager;
 
 public class PositionService {
@@ -35,7 +38,15 @@ public class PositionService {
 		for (ShortTrap s : traps) {
 			int magic = (int)Math.round(s.openPrice * 100  + 100000);
 			Position p = jdbcManager.from(Position.class).where("magicNo=?", magic).getSingleResult();
-			s.isReal = (p == null) ? 0 : 1;
+			if (p != null) {
+				s.isReal = 1;
+				s.tpPrice = p.tpPrice;
+				s.ticketNo = p.ticketNo;
+				ToggleTpRequest ttr = jdbcManager.from(ToggleTpRequest.class).where("ticketNo=?", s.ticketNo).getSingleResult();
+				s.isRequesting = (ttr != null);
+			} else {
+				s.isReal = 0;
+			}
 		}
 		return traps;
 	}
@@ -239,5 +250,107 @@ public class PositionService {
 
 		pos.posCd = posType;
 		jdbcManager.update(pos).execute();
+	}
+
+	public List<SimuratePosition> filteredPositions(double targetRate) {
+		List<Position> pos = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo=0").orderBy("openPrice desc").getResultList();
+
+		double exitRate = exitRate();
+
+		LinkedList<SimuratePosition> sps = new LinkedList<SimuratePosition>();
+		for (Position p : pos) {
+			SimuratePosition sp = new SimuratePosition();
+			sp.openPrice = p.openPrice;
+			sp.slPrice = p.slPrice == 0.0 ? null : p.slPrice;
+			sp.tpPrice = p.tpPrice == 0.0 ? null : p.tpPrice;
+			sp.posType = p.posType;
+			sp.posCd = p.posCd;
+			sp.lots = p.lots;
+			sp.swapPoint = p.swapPoint;
+
+			if (p.posCd == 1) {
+				if (targetRate > exitRate) {
+					sp.active = false;
+				} else {
+					sp.active = true;
+					sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000) + sp.swapPoint;
+				}
+			} else if (sp.isLong()) {
+				if (sp.slPrice != null && targetRate < sp.slPrice) {
+					sp.active = false;
+				} else {
+					sp.active = true;
+					sp.proLoss = (int)Math.round((targetRate - sp.openPrice) * sp.lots * 100000) + sp.swapPoint;
+				}
+			} else {
+				if (sp.slPrice != null && targetRate > sp.slPrice) {
+					sp.active = false;
+				} else {
+					sp.active = true;
+					sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000) + sp.swapPoint;
+				}
+			}
+			sps.add(sp);
+		}
+
+		double tpWidth = configService.getTpWidth();
+		double lots = (double)configService.getLotsByTrap() / 100000;
+
+		List<ShortTrap> traps = jdbcManager.from(ShortTrap.class).orderBy("openPrice desc").getResultList();
+		for (ShortTrap t : traps) {
+			SimuratePosition sp = new SimuratePosition();
+			sp.openPrice = t.openPrice;
+			sp.tpPrice = sp.openPrice - tpWidth;
+			sp.posType = 1;
+			sp.posCd = 4;
+			sp.lots = lots;
+			sp.swapPoint = 0;
+
+			if (targetRate >= sp.openPrice && targetRate <= exitRate) {
+				sp.active = true;
+				sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000);
+			} else {
+				sp.active = false;
+			}
+
+			sps.add(sp);
+		}
+
+		return sps;
+	}
+
+	public Integer getMargin(List<SimuratePosition> sps) {
+		double longs = 0.0;
+		double shorts = 0.0;
+
+		int longMargin = 0;
+		int shortMargin = 0;
+
+		for (SimuratePosition p : sps) {
+			if (!p.isActive()) continue;
+			if (p.isLong()) {
+				longs += p.lots;
+				longMargin += p.openPrice * p.lots * 100000 * 0.04;
+			} else {
+				shorts += p.lots;
+				shortMargin += p.openPrice * p.lots * 100000 * 0.04;
+			}
+		}
+
+		if (longs == shorts) {
+			return longMargin > shortMargin ? longMargin : shortMargin;
+		} else if (longs > shorts) {
+			return longMargin;
+		} else {
+			return shortMargin;
+		}
+	}
+
+	public List<Position> getPositions() {
+		return jdbcManager.from(Position.class).orderBy("posType, openPrice desc").getResultList();
+	}
+
+	public Position findByTicketNo(Integer ticketNo) {
+		return jdbcManager.from(Position.class).where("ticketNo=?", ticketNo).getSingleResult();
 	}
 }
