@@ -184,6 +184,45 @@ __declspec(dllexport) int __stdcall GetHistoryRequest(int *ticketNo, int *posCd)
 	return 1;
 }
 
+__declspec(dllexport) int __stdcall GetToggleTpRequest(int *ticketNo, double *tpPrice) {
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, "select ticket_no, tp_price from toggle_tp_request", false)) {
+		return 0;
+	}
+
+	long ticket;
+	double tp;
+	SQLBindCol(hStmt, 1, SQL_C_LONG, &ticket, 0, NULL);
+	SQLBindCol(hStmt, 2, SQL_C_DOUBLE, &tp, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			return 0;
+		}
+		ticketNo[i] = (int)ticket;
+		tpPrice[i] = tp;
+		i++;
+	}
+
+	DBCloseStmt(hStmt);
+	ticketNo[i] = 0;
+
+	if (!DBExecute(hEnv, hDBC, &hStmt, "delete from toggle_tp_request", false)) {
+		DBEndTrans(hEnv, hDBC, false);
+		return 0;
+	}
+
+
+	DBEndTrans(hEnv, hDBC, true);
+	return 1;
+
+}
+
+
 __declspec(dllexport) int __stdcall SetMark() {
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, "update position set is_real = 1", false)) {
@@ -244,3 +283,4 @@ __declspec(dllexport) int __stdcall SetAccountInfo(double balance, double margin
 
 	return 1;
 }
+
