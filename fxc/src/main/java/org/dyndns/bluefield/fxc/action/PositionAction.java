@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
@@ -70,6 +71,11 @@ public class PositionAction {
 
 	public Double currentRate;
 	public Double exitRate;
+
+	public Double longsTotal;
+	public Double shortsTotal;
+	public Double longsKKW;
+	public Double shortsHedge;
 
 	@RequestParameter
 	public Integer reserveAmount;
@@ -141,6 +147,8 @@ public class PositionAction {
 		exitRemain = shAmount = exp;
 		int exitUse = 0;
 
+		longsTotal = shortsTotal = longsKKW = shortsHedge = 0.0;
+
 		// 確保益
 		discs = positionService.discPositions(currentRate);
 		for (DiscPosition d : discs) {
@@ -169,6 +177,18 @@ public class PositionAction {
 				exitRemain +=d.slProfit;
 				exitUse += d.slProfit;
 			}
+
+			if (d.isLong) {
+				longsTotal += d.lots;
+			} else {
+				shortsTotal += d.lots;
+			}
+			if (!d.isLong && d.posType != 7) shortsHedge += d.lots;
+		}
+
+		for (Position p : positionService.getKKWBody()) {
+			longsTotal += p.lots;
+			longsKKW += p.lots;
 		}
 
 		// 出口益S
