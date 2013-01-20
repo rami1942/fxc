@@ -225,9 +225,10 @@ public class PositionService {
 	}
 
 	public List<DiscPosition> discPositions(Double currentPrice) {
-		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and magicNo = 0 and posCd in (0,2,3,5,6,7)").getResultList();
+		List<Position> discs = jdbcManager.from(Position.class).where("symbol='AUDJPYpro' and posCd <> 1").getResultList();
 		List<DiscPosition> result = new ArrayList<DiscPosition>(discs.size());
 		for (Position p : discs) {
+			if (p.magicNo != 0 && p.tpPrice != null && p.tpPrice != 0.0) continue;
 			DiscPosition dp = new DiscPosition();
 			dp.ticketNo = p.ticketNo;
 			dp.isLong = (p.posType == 0);
@@ -235,7 +236,11 @@ public class PositionService {
 			dp.slPrice = p.slPrice;
 			dp.lots = p.lots;
 			dp.swapPoint = p.swapPoint;
-			dp.posType = p.posCd;
+			if (p.magicNo != 0) {
+				dp.posType = 4;
+			} else {
+				dp.posType = p.posCd;
+			}
 			result.add(dp);
 		}
 
