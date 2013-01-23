@@ -144,7 +144,7 @@ public class PositionAction {
 
 		// ヘッジ可能量
 		int exp = positionService.exitProfit();
-		exitRemain = shAmount = exp;
+		exitRemain = shAmount = exp + virtualPriceReservation;
 		int exitUse = 0;
 
 		longsTotal = shortsTotal = longsKKW = shortsHedge = 0.0;
@@ -190,6 +190,11 @@ public class PositionAction {
 			longsTotal += p.lots;
 			longsKKW += p.lots;
 		}
+
+		longsTotal = Math.round(longsTotal * 1000.0) / 1000.0;
+		longsKKW = Math.round(longsKKW * 1000.0) / 1000.0;
+		shortsTotal = Math.round(shortsTotal * 1000.0) / 1000.0;
+		shortsHedge = Math.round(shortsHedge * 1000.0) / 1000.0;
 
 		// 出口益S
 		hedgeLots = calcHedgeLots(exitRemain);
