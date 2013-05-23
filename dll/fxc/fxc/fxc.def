@@ -16,4 +16,5 @@ EXPORTS
 	SetAccountInfo
 	GetHistoryRequest
 	InsertHistory
+	GetToggleTpRequest
 VERSION 1.0
