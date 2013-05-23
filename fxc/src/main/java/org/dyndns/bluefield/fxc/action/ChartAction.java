@@ -118,6 +118,7 @@ public class ChartAction {
 		StringBuilder buf5 = new StringBuilder();
 		List<DiscPosition> discs = positionService.discPositions(curPrice);
 		for (DiscPosition p : discs) {
+			if (p.posType == 4) continue;
 			if (p.isLong) {
 				buf.append("true");
 			} else {

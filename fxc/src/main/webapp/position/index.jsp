@@ -89,6 +89,9 @@ function changeType(form, ticketNo) {
 <td align="right">${my:commaSep(d.slProfit)}</td>
 <td align="right">${my:commaSep(d.realProfit)}</td>
 <td>
+<c:choose>
+<c:when test="${d.posType == 4}">ショートトラップ</c:when>
+<c:otherwise>
 <select name="type${d.ticketNo}" onchange="changeType(this.form, ${d.ticketNo})">
 <c:if test="${d.isLong}">
 	<c:choose>
@@ -141,6 +144,8 @@ function changeType(form, ticketNo) {
 	</c:choose>
 </c:if>
 </select>
+</c:otherwise>
+</c:choose>
 </td>
 
 </tr>
