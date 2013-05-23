@@ -49,20 +49,23 @@ public class SimurationAction {
 
 		longLots = shortLots = 0.0;
 
+		balance = configService.getBalance().intValue();
+
 		proLossTotal = 0;
 		for (SimuratePosition p : positions) {
-			if (p.proLoss != null) proLossTotal += p.proLoss;
-
 			if (p.isActive()) {
+				if (p.proLoss != null) proLossTotal += p.proLoss;
 				if (p.isLong()) longLots += p.lots;
 				else shortLots += p.lots;
+			} else {
+				if (p.proLoss != null) balance += p.proLoss;
 			}
+
 		}
 		longLots = Math.round(longLots * 100.0) / 100.0;
 		shortLots = Math.round(shortLots * 100.0) / 100.0;
 
 
-		balance = configService.getBalance().intValue();
 		requiredMargin = positionService.getMargin(positions);
 
 		marginPer = ((double)balance + (double)proLossTotal) /requiredMargin * 100;

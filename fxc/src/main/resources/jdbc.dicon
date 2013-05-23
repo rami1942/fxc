@@ -152,7 +152,7 @@
 			"com.mysql.jdbc.Driver"
 		</property>
 		<property name="URL">
-			"jdbc:mysql://localhost:3306/fxc_dev"
+			"jdbc:mysql://192.168.1.11:3306/fxc_dev"
 		</property>
 		<property name="user">"fxc_dev"</property>
 		<property name="password">"fxc_dev"</property>

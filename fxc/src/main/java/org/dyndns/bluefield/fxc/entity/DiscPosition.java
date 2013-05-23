@@ -11,7 +11,6 @@ public class DiscPosition {
 	public Double slPrice;
 	public Double lots;
 
-	public Integer margin;
 	public Integer slProfit;
 	public Integer swapPoint;
 

@@ -153,14 +153,15 @@ public class PositionAction {
 		discs = positionService.discPositions(currentRate);
 		for (DiscPosition d : discs) {
 			if (d.slPrice == 0.0) d.slPrice = null;
+
 			if (d.isLong) {
 				if (d.slPrice != null) {
-					d.margin = (int)Math.round(d.openPrice * 0.04 * d.lots * 100000);
 					d.slProfit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
 				}
 			} else {
-				d.margin = null;
-				if (d.slPrice != null) {
+				if (d.posType == 4) {
+					d.slProfit = null;
+				} else if (d.slPrice != null) {
 					d.slProfit = (int)Math.round((d.openPrice - d.slPrice) * d.lots * 100000);
 				} else {
 					d.slProfit = 0;

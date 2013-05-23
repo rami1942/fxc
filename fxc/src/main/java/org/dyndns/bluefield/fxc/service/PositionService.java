@@ -290,6 +290,7 @@ public class PositionService {
 			} else {
 				if (sp.slPrice != null && targetRate > sp.slPrice) {
 					sp.active = false;
+					sp.proLoss = (int)Math.round((sp.openPrice - sp.slPrice) * sp.lots * 100000) + sp.swapPoint;
 				} else {
 					sp.active = true;
 					sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000) + sp.swapPoint;
