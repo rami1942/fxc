@@ -42,7 +42,11 @@ function changeType(form, ticketNo) {
 </t:form>
 
 <hr />
-
+Longs: ${longsTotal}<br/>
+Shorts: ${shortsTotal}<br/>
+本体ロング: ${longsKKW}<br/>
+ヘッジショート: ${shortsHedge}<br/>
+<hr />
 <table>
 <tr><td>累積利益</td><td>¥${kkwProfit}</td></tr>
 <tr>

@@ -48,7 +48,7 @@ public class IndexAction {
 
 	public ActionResult index() {
 		shorts = positionService.getShortTraps();
-		longs = positionService.getLongPositions();
+		longs = positionService.getKKWBody();
 		eachLots = configService.getLotsByTrap();
 		accessKey = configService.getAuthKey();
 

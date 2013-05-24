@@ -51,7 +51,7 @@ public class PositionService {
 		return traps;
 	}
 
-	public List<Position> getLongPositions() {
+	public List<Position> getKKWBody() {
 		return jdbcManager.from(Position.class).where("posCd=1").orderBy("openPrice desc").getResultList();
 	}
 
@@ -88,7 +88,7 @@ public class PositionService {
 	}
 
 	public LongInfo calcTraps() {
-		List<Position> longs = getLongPositions();
+		List<Position> longs = getKKWBody();
 		return calcTraps(longs);
 	}
 
@@ -164,7 +164,7 @@ public class PositionService {
 			total += (t.openPrice - exitPrice) * lotsPerTrap;
 		}
 
-		List<Position> longs = getLongPositions();
+		List<Position> longs = getKKWBody();
 		for (Position p : longs) {
 			total += (exitPrice - p.openPrice) * p.lots * 100000;
 		}
@@ -173,7 +173,7 @@ public class PositionService {
 	}
 
 	public int calcOneLinePrice() {
-		List<Position> longs = getLongPositions();
+		List<Position> longs = getKKWBody();
 		int amount = 0;
 		for (Position p : longs) {
 			amount += p.lots * 100000;
@@ -290,6 +290,7 @@ public class PositionService {
 			} else {
 				if (sp.slPrice != null && targetRate > sp.slPrice) {
 					sp.active = false;
+					sp.proLoss = (int)Math.round((sp.openPrice - sp.slPrice) * sp.lots * 100000) + sp.swapPoint;
 				} else {
 					sp.active = true;
 					sp.proLoss = (int)Math.round((sp.openPrice - targetRate) * sp.lots * 100000) + sp.swapPoint;

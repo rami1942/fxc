@@ -51,7 +51,7 @@ public class ChartAction {
 
 	public ActionResult index() {
 		List<ShortTrap> shorts = positionService.getShortTraps();
-		List<Position> longs = positionService.getLongPositions();
+		List<Position> longs = positionService.getKKWBody();
 		Double exitPrice = shorts.size() > 0 ? shorts.get(0).openPrice : 0.0;
 
 		Double trapWidth = configService.getTrapWidth();
