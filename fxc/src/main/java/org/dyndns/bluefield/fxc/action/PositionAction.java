@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dyndns.bluefield.fxc.entity.DiscPosition;
+import org.dyndns.bluefield.fxc.entity.Position;
 import org.dyndns.bluefield.fxc.entity.ReservedProfit;
 import org.dyndns.bluefield.fxc.entity.ShortTrap;
 import org.dyndns.bluefield.fxc.service.ConfigService;
@@ -70,6 +71,11 @@ public class PositionAction {
 
 	public Double currentRate;
 	public Double exitRate;
+
+	public Double longsTotal;
+	public Double shortsTotal;
+	public Double longsKKW;
+	public Double shortsHedge;
 
 	@RequestParameter
 	public Integer reserveAmount;
@@ -138,21 +144,24 @@ public class PositionAction {
 
 		// ヘッジ可能量
 		int exp = positionService.exitProfit();
-		exitRemain = shAmount = exp;
+		exitRemain = shAmount = exp + virtualPriceReservation;
 		int exitUse = 0;
+
+		longsTotal = shortsTotal = longsKKW = shortsHedge = 0.0;
 
 		// 確保益
 		discs = positionService.discPositions(currentRate);
 		for (DiscPosition d : discs) {
 			if (d.slPrice == 0.0) d.slPrice = null;
+
 			if (d.isLong) {
 				if (d.slPrice != null) {
-					d.margin = (int)Math.round(d.openPrice * 0.04 * d.lots * 100000);
 					d.slProfit = (int)Math.round((d.slPrice - d.openPrice) * d.lots * 100000 + d.swapPoint);
 				}
 			} else {
-				d.margin = null;
-				if (d.slPrice != null) {
+				if (d.posType == 4) {
+					d.slProfit = null;
+				} else if (d.slPrice != null) {
 					d.slProfit = (int)Math.round((d.openPrice - d.slPrice) * d.lots * 100000);
 				} else {
 					d.slProfit = 0;
@@ -169,7 +178,24 @@ public class PositionAction {
 				exitRemain +=d.slProfit;
 				exitUse += d.slProfit;
 			}
+
+			if (d.isLong) {
+				longsTotal += d.lots;
+			} else {
+				shortsTotal += d.lots;
+			}
+			if (!d.isLong && d.posType != 7) shortsHedge += d.lots;
 		}
+
+		for (Position p : positionService.getKKWBody()) {
+			longsTotal += p.lots;
+			longsKKW += p.lots;
+		}
+
+		longsTotal = Math.round(longsTotal * 1000.0) / 1000.0;
+		longsKKW = Math.round(longsKKW * 1000.0) / 1000.0;
+		shortsTotal = Math.round(shortsTotal * 1000.0) / 1000.0;
+		shortsHedge = Math.round(shortsHedge * 1000.0) / 1000.0;
 
 		// 出口益S
 		hedgeLots = calcHedgeLots(exitRemain);
