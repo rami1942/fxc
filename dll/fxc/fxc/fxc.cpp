@@ -6,8 +6,14 @@
 
 #include "odbcfunc.h"
 
+// SQL Injection? 聞こえないなぁ。マルチスレッド？それも聞こえないなぁ。
+
 static SQLHENV hEnv;
 static SQLHDBC hDBC;
+
+//////////////////////////////////////////////////////////////////////////
+// 環境、DBコネクション
+//////////////////////////////////////////////////////////////////////////
 
 __declspec(dllexport) int __stdcall InitEnv() {
 	DBConnectInit(&hEnv);
@@ -28,6 +34,64 @@ __declspec(dllexport) int __stdcall Disconnect() {
 	DBDisconnectDataSource(hEnv, hDBC);
 	return 0;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Configから値を取得する
+//////////////////////////////////////////////////////////////////////////
+
+int GetConfigValue(const char *key, void *value, SQLSMALLINT colType) {
+	char buf[1024];
+	sprintf_s(buf, 1024, "select conf_value from configuration where conf_key='%s'", key);
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+		return 0;
+	}
+
+	SQLBindCol(hStmt, 1, colType, value, 0, NULL);
+
+	int i = 0;
+	while(true) {
+		int rc = SQLFetch(hStmt);
+		if (rc == SQL_NO_DATA_FOUND) break;
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			DBCloseStmt(hStmt);
+			return 0;
+		}
+	}
+	DBCloseStmt(hStmt);
+	return 1;
+}
+
+__declspec(dllexport) double __stdcall GetConfigByDouble(const char *key) {
+	double val;
+	if (GetConfigValue(key, &val, SQL_C_DOUBLE)) {
+		return val;
+	} else {
+		return 0;
+	}
+}
+
+__declspec(dllexport) int __stdcall GetConfigByInt(const char *key) {
+	long val;
+	if (GetConfigValue(key, &val, SQL_C_LONG)) {
+		return val;
+	} else {
+		return 0;
+	}
+}
+
+__declspec(dllexport) int __stdcall GetTrapLots() {
+	return GetConfigByInt("lots");
+}
+
+__declspec(dllexport) double __stdcall GetTakeProfitWidth() {
+	return GetConfigByDouble("tp_width");
+}
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
 
 __declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 
@@ -53,63 +117,6 @@ __declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 	buffer[i++] = 0.0L;
 
 	return 1;
-}
-
-__declspec(dllexport) int __stdcall UpdatePrice(double price) {
-	char buf[1024];
-	sprintf_s(buf, 1024, "update configuration set conf_value='%lf' where conf_key='current_price'", price);
-
-	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
-		return 0;
-	}
-
-	DBEndTrans(hEnv, hDBC, true);
-	return 1;
-}
-
-__declspec(dllexport) int __stdcall GetTrapLots() {
-	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "select conf_value from configuration where conf_key='lots'", false)) {
-		return 0;
-	}
-
-	long lots;
-	SQLBindCol(hStmt, 1, SQL_C_LONG, &lots, 0, NULL);
-
-	int i = 0;
-	while(true) {
-		int rc = SQLFetch(hStmt);
-		if (rc == SQL_NO_DATA_FOUND) break;
-		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
-			DBCloseStmt(hStmt);
-			return 0;
-		}
-	}
-	DBCloseStmt(hStmt);
-	return lots;
-}
-
-__declspec(dllexport) double __stdcall GetTakeProfitWidth() {
-	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, "select conf_value from configuration where conf_key='tp_width'", false)) {
-		return 0;
-	}
-
-	double tpWidth;
-	SQLBindCol(hStmt, 1, SQL_C_DOUBLE, &tpWidth, 0, NULL);
-
-	int i = 0;
-	while(true) {
-		int rc = SQLFetch(hStmt);
-		if (rc == SQL_NO_DATA_FOUND) break;
-		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
-			DBCloseStmt(hStmt);
-			return 0;
-		}
-	}
-	DBCloseStmt(hStmt);
-	return tpWidth;
 }
 
 __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
@@ -140,7 +147,6 @@ __declspec(dllexport) int __stdcall GetDeleteRequest(double *position) {
 		DBEndTrans(hEnv, hDBC, false);
 		return 0;
 	}
-
 
 	DBEndTrans(hEnv, hDBC, true);
 	return 1;
@@ -178,8 +184,6 @@ __declspec(dllexport) int __stdcall GetHistoryRequest(int *ticketNo, int *posCd)
 		DBEndTrans(hEnv, hDBC, false);
 		return 0;
 	}
-
-
 	DBEndTrans(hEnv, hDBC, true);
 	return 1;
 }
@@ -215,8 +219,6 @@ __declspec(dllexport) int __stdcall GetToggleTpRequest(int *ticketNo, double *tp
 		DBEndTrans(hEnv, hDBC, false);
 		return 0;
 	}
-
-
 	DBEndTrans(hEnv, hDBC, true);
 	return 1;
 
@@ -268,6 +270,10 @@ __declspec(dllexport) int __stdcall InsertHistory(
 	return 1;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// config更新関連
+//////////////////////////////////////////////////////////////////////////
+
 __declspec(dllexport) int __stdcall SetAccountInfo(double balance, double margin) {
 	char buf[1024];
 	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='balance'", balance);
@@ -284,3 +290,19 @@ __declspec(dllexport) int __stdcall SetAccountInfo(double balance, double margin
 	return 1;
 }
 
+__declspec(dllexport) int __stdcall UpdatePrice(double price) {
+	char buf[1024];
+	sprintf_s(buf, 1024, "update configuration set conf_value='%lf' where conf_key='current_price'", price);
+
+	SQLHSTMT hStmt;
+	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
+		return 0;
+	}
+
+	DBEndTrans(hEnv, hDBC, true);
+	return 1;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////

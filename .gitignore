@@ -10,3 +10,4 @@ ipch
 fxc.vcxproj.user
 scaffold.vcxproj.user
 dll/fxc/fxc.suo
+fxc.opensdf

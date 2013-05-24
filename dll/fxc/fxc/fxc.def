@@ -17,4 +17,5 @@ EXPORTS
 	GetHistoryRequest
 	InsertHistory
 	GetToggleTpRequest
+	GetConfigByDouble
 VERSION 1.0

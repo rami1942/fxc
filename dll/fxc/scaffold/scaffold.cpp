@@ -19,6 +19,9 @@ extern int __stdcall ClearMark();
 extern int __stdcall SetAccountInfo(double balance, double margin);
 extern int __stdcall UpdatePosition(int ticket_no, int magic_no, int pos_type, double open_price, double take_profit, double stop_loss, int swap, double profit, double lots, char *symbol);
 
+extern int __stdcall GetTrapLots();
+extern double __stdcall GetTakeProfitWidth();
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 
@@ -39,8 +42,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	*/
 
 	Connect();
-	SetMark();
-	UpdatePosition(12, 10, 0, 80.2, 81.9, 79.0, 0, 50, 0.3, "audjpy");
+
+	long tpw = GetTrapLots();
+	double pw = GetTakeProfitWidth();
+
 	ClearMark();
 	Disconnect();
 
