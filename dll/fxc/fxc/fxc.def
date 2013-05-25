@@ -6,16 +6,15 @@ EXPORTS
 	Connect
 	Disconnect
 	GetTrapList
-	UpdatePrice
 	GetTrapLots
 	GetTakeProfitWidth
 	GetDeleteRequest
 	SetMark
 	ClearMark
 	UpdatePosition
-	SetAccountInfo
 	GetHistoryRequest
 	InsertHistory
 	GetToggleTpRequest
 	GetConfigByDouble
+	SetConfigDouble
 VERSION 1.0

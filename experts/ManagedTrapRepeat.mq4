@@ -19,17 +19,16 @@
    int Connect();
    int Disconnect();
    int GetTrapList(double buffer[]);
-   int UpdatePrice(double price);
    int GetTrapLots();
    double GetTakeProfitWidth();
    int GetDeleteRequest(double prices[]);
    int SetMark();
    int ClearMark();
    int UpdatePosition(int, int, int, double, double, double, int, double, double, string);
-   int SetAccountInfo(double, double);
    int GetHistoryRequest(int ticketNo[], int posCd[]);
    int InsertHistory(int, int, int, int, string, double, string, double, double, double, string, double, double, double);
    int GetToggleTpRequest(int ticketNo[], double tpPrice[]);
+   int SetConfigDouble(string key, double value);
 #import
 
 //--- input parameters
@@ -114,12 +113,15 @@ void doEachTick() {
       }
    }
    
-   UpdatePrice(Bid);
+   // Record some values.
+   SetConfigDouble("ask", Ask);
+   SetConfigDouble("current_price", Bid);
+   SetConfigDouble("balance", AccountBalance());
+   SetConfigDouble("margin", AccountMargin());
+   
    deleteShort();
-   
-   SetAccountInfo(AccountBalance(), AccountMargin());
-   
-   if (SetMark() == 1) {
+
+   if (SetMark()) {
       for (i = 0; i < OrdersTotal(); i++) {
          if (!OrderSelect(i, SELECT_BY_POS)) continue;
          if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
