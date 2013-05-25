@@ -11,4 +11,7 @@ insert into configuration (conf_key, conf_value) values
 ('vp_reserve', 0),
 ('base_dt', '2012-09-20 11:32:00'),
 ('profit_reservation', 0),
-('disc_long_base_price', 85.0);
+('disc_long_base_price', 85.0),
+('ask', '94.684');
+
+---
