@@ -92,7 +92,6 @@ __declspec(dllexport) double __stdcall GetTakeProfitWidth() {
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-
 __declspec(dllexport) int __stdcall GetTrapList(double *buffer) {
 
 	SQLHSTMT hStmt;
@@ -224,6 +223,9 @@ __declspec(dllexport) int __stdcall GetToggleTpRequest(int *ticketNo, double *tp
 
 }
 
+//////////////////////////////////////////////////////////////////////////
+// 
+//////////////////////////////////////////////////////////////////////////
 
 __declspec(dllexport) int __stdcall SetMark() {
 	SQLHSTMT hStmt;
@@ -240,6 +242,10 @@ __declspec(dllexport) int __stdcall ClearMark() {
 	}
 	return 1;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// 
+//////////////////////////////////////////////////////////////////////////
 
 __declspec(dllexport) int __stdcall UpdatePosition(int ticket_no, int magic_no, int pos_type, double open_price, double take_profit, double stop_loss, int swap, double profit, double lots, char *symbol) {
 	char buf[2048];
@@ -274,35 +280,16 @@ __declspec(dllexport) int __stdcall InsertHistory(
 // configçXêVä÷òA
 //////////////////////////////////////////////////////////////////////////
 
-__declspec(dllexport) int __stdcall SetAccountInfo(double balance, double margin) {
+__declspec(dllexport) int __stdcall SetConfigDouble(const char* key, double value) {
 	char buf[1024];
-	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='balance'", balance);
+	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='%s'", value, key);
 	SQLHSTMT hStmt;
 	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
 		return 0;
 	}
-
-	sprintf_s(buf, 1024, "update configuration set conf_value=%lf where conf_key='margin'", margin);
-	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
-		return 0;
-	}
-
 	return 1;
 }
-
-__declspec(dllexport) int __stdcall UpdatePrice(double price) {
-	char buf[1024];
-	sprintf_s(buf, 1024, "update configuration set conf_value='%lf' where conf_key='current_price'", price);
-
-	SQLHSTMT hStmt;
-	if (!DBExecute(hEnv, hDBC, &hStmt, buf, false)) {
-		return 0;
-	}
-
-	DBEndTrans(hEnv, hDBC, true);
-	return 1;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
+// Obsolete
 //////////////////////////////////////////////////////////////////////////
