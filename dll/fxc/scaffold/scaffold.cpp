@@ -45,8 +45,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	long tpw = GetTrapLots();
 	double pw = GetTakeProfitWidth();
-
-	ClearMark();
+	printf("%ld %lf\n", tpw, pw);
 	Disconnect();
 
 	TerminateEnv();
