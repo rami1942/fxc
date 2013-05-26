@@ -1,0 +1,11 @@
+@(sp: SettleSummary)
+
+@main("Summary") {
+
+<p>
+口座残高: ￥@{"%,d".format(sp.margin)}(@{"%+,d".format(sp.balanceDiff)})<br/>
+含み損益: ￥@{"%,d".format(sp.balance)}(@{"%+,d".format(sp.profitDiff)})<br/>
+スワップ: ￥@{"%,d".format(sp.swapPoint)}<br/>
+</p>
+
+}
