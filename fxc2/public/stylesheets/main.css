@@ -1,0 +1,40 @@
+table.std {
+        border: solid 1px #000000;
+        border-collapse: collapse;
+}
+
+table.std th {
+        padding: 4px;
+        border: solid 1px #000000;
+        background-color: #99ccff;
+}
+table.std td {
+        padding: 4px;
+        border: solid 1px #000000;
+}
+
+table.std td.header {
+        background-color: #66ccff;
+        font-size: x-large;
+}
+
+table.std td.footer {
+        border-top: 2px solid black;
+}
+
+h1 {
+        font-size: large;
+        border-bottom: 1px solid red;
+}
+
+h1.menu {
+        font-size: small;
+        border: none;
+        padding: 1px;
+        margin: 1px;
+}
+
+h2 {
+        font-size: medium;
+}
+
