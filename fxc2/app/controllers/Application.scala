@@ -14,5 +14,10 @@ object Application extends Controller {
   def summary = Action {
     Ok(views.html.summary(SettlementHistory.summary()))
   }
+
+  def resetSummary = Action {
+    SettlementHistory.clear
+    Redirect(routes.Application.summary)
+  }
   
 }

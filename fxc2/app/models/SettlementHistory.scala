@@ -8,7 +8,7 @@ import play.api.Play.current
 import java.util.Date
 
 case class SettleSummary (
-//  lastSettleDt : Date
+  lastSettleDt : Date,
   margin : Long,
   balance : Long,
   profit : Long,
@@ -41,6 +41,7 @@ object SettlementHistory {
     var profitDiff = if (last.size > 0) (profit - last.head.profit.round) else 0
 
     SettleSummary(
+      if (last.size > 0) last.head.settleDt else new Date(),
       Configuration.getByKey("margin").toLong,
       balance,
       profit,
@@ -50,5 +51,18 @@ object SettlementHistory {
     )
   }
 
+  def clear = DB.withConnection { implicit c =>
+    SQL(
+      """
+        insert into settlement_history
+          (settle_type, settle_dt, balance, profit) values (
+            0, now(), {balance}, {profit})
+      """).
+    on(
+      'balance -> Configuration.getByKey("balance").toDouble,
+      'profit -> SQL("select sum(profit) + sum(swap_point) from position").
+                   as(scalar[Double].single)
+    ).executeInsert()
+  }
 
 }
