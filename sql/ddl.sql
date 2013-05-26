@@ -8,7 +8,6 @@ create table configuration (
   conf_value varchar(255)
 );
 
-
 create table history (
   id int auto_increment primary key,
   event_type int not null,
@@ -22,7 +21,6 @@ create table delete_request (
   id int auto_increment primary key,
   price double not null
 );
-
 
 create table position (
   ticket_no int primary key,
@@ -39,7 +37,8 @@ create table position (
   is_real char(1) default 0,
   symbol varchar(16),
   lots double,
-  is_wide_body char(1) default 1
+  is_wide_body char(1) default 1,
+  pos_cd char(1) default 0
 );
 
 create table settlement_history (
@@ -50,7 +49,6 @@ create table settlement_history (
   balance double not null,
   profit  double not null
 );
-
 
 create table reserved_profit (
   id int auto_increment primary key,
@@ -68,15 +66,10 @@ begin
 end;//
 delimiter ;
 
-
-alter table position add (pos_cd char(1) default 0);
-
-
 create table history_request (
   ticket_no int primary key,
   pos_cd char(1)
 );
-
 
 create table position_history (
   ticket_no int primary key,
@@ -95,9 +88,11 @@ create table position_history (
   close_price double,
 
   swap_point int,
-  profit double
-);
+  profit double,
 
+  magic_no int,
+  pos_type char(1)
+);
 
 delimiter //
 create trigger position_delete after delete on position
@@ -113,12 +108,9 @@ begin
 end;//
 delimiter ;
 
-alter table position_history add (magic_no int);
-alter table position_history add (pos_type char(1));
----
-
 create table toggle_tp_request (
   ticket_no int primary key,
   tp_price double not null
 );
 
+---
