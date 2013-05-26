@@ -121,7 +121,7 @@ void doEachTick() {
    
    deleteShort();
 
-   if (SetMark()) {
+   if (SetMark() == 1) {
       for (i = 0; i < OrdersTotal(); i++) {
          if (!OrderSelect(i, SELECT_BY_POS)) continue;
          if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
