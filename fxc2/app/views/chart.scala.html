@@ -1,0 +1,128 @@
+@(chartInfo: ChartInfo, pos: List[Position])
+
+@import helper._
+
+@mainjs("Chart") {
+<p>
+@{"%tF %<tT" format(chartInfo.now)}
+@{"%3.3f" format(chartInfo.ask)} - @{"%3.3f" format(chartInfo.bid)}
+
+
+<canvas id="cvs" width="1500" height="1500"></canvas>
+} {
+<script type="text/javascript">
+
+var widthFactor = 100;
+
+//var unitHeight = 120;
+var unitHeight = 40;
+var priceHigh = 105.0;
+//var priceLow = 96.0;
+var priceLow = 80.0;
+
+var baseY = 80;
+
+window.onload=function() {
+  var canvas = document.getElementById('cvs');
+  var ctx = canvas.getContext('2d');
+
+  drawGauge(ctx);
+
+  @pos.map {p =>
+  drawPos(ctx, @p.posType.id, @p.openPrice, @p.lots, @p.dispPos);
+  }
+
+  var bid = 97.702;
+
+  var yw = (priceHigh - bid) * unitHeight + baseY;
+  ctx.lineWidth=3;
+  ctx.strokeStyle='rgb(0, 192, 0)';
+  ctx.beginPath();
+  ctx.moveTo(70, yw);
+  ctx.lineTo(1400, yw);
+  ctx.stroke();
+
+}
+
+function drawPos(ctx, posCd, price, lots, xpos) {
+  var yw = (priceHigh - price) * unitHeight + baseY;
+  var width = lots * widthFactor;
+
+  if (posCd == 0) {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle='rgb(255, 0, 0)';
+    ctx.beginPath();
+    ctx.moveTo(xpos, yw);
+    ctx.lineTo(xpos + width, yw);
+    ctx.lineTo(xpos + width, yw - 10);
+    ctx.lineTo(xpos + width / 2, yw - 20);
+    ctx.lineTo(xpos, yw - 10);
+    ctx.lineTo(xpos, yw);
+    ctx.stroke();
+
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(xpos, yw);
+    ctx.lineTo(xpos + width, yw);
+    ctx.stroke();
+  } else {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle='rgb(0, 0, 128)';
+    ctx.beginPath();
+    ctx.moveTo(xpos, yw);
+    ctx.lineTo(xpos + width, yw);
+    ctx.lineTo(xpos + width, yw + 10);
+    ctx.lineTo(xpos + width / 2, yw + 20);
+    ctx.lineTo(xpos, yw + 10);
+    ctx.lineTo(xpos, yw);
+    ctx.stroke();
+
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(xpos, yw);
+    ctx.lineTo(xpos + width, yw);
+    ctx.stroke();
+
+  }
+
+  
+}
+
+function drawGauge(ctx) {
+  // レートの目盛
+  var p = priceHigh;
+  var yp = baseY;
+  while (p >= priceLow) {
+    // 価格
+    ctx.font="16px 'Times New Roman'";
+    ctx.fillStyle = 'black';
+    ctx.fillText(p + '.0', 20, yp + 5);
+
+    // 横線
+    ctx.lineWidth = 2;
+    ctx.strokeStyle='black';
+    ctx.beginPath();
+    ctx.moveTo(70, yp);
+    ctx.lineTo(110, yp);
+    ctx.stroke();
+
+    p = p - 1.0;
+    yp = yp + unitHeight;
+  }
+  p = priceHigh;
+  yp = baseY;
+  while (p >= priceLow) {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle='rgb(200, 200, 200)';
+    ctx.beginPath();
+    ctx.moveTo(150, yp);
+    ctx.lineTo(1400, yp);
+    ctx.stroke();
+
+    p = p - 0.5;
+    yp = yp + unitHeight / 2;
+  }
+}
+
+</script>
+}

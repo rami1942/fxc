@@ -114,3 +114,8 @@ create table toggle_tp_request (
 );
 
 ---
+
+alter table position add (
+  disp_pos int not null default 0
+);
+

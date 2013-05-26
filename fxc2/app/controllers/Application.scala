@@ -7,6 +7,14 @@ import models.Configuration
 import models.SettlementHistory
 import models.Position
 
+import java.util.Date
+
+case class ChartInfo(
+  now : Date,
+  ask : Double,
+  bid : Double
+)
+
 object Application extends Controller {
   
   def index = Action {
@@ -24,5 +32,14 @@ object Application extends Controller {
   def resetSummary = Action {
     SettlementHistory.clear
     Redirect(routes.Application.summary)
+  }
+
+  def chart = Action {
+    Ok(views.html.chart(
+         ChartInfo(
+           new Date(),
+           Configuration.getByKey("ask").toDouble,
+           Configuration.getByKey("current_price").toDouble),
+         Position.all))
   }
 }

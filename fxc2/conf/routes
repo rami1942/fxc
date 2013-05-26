@@ -5,6 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /summary		    controllers.Application.summary
+GET     /chart                      controllers.Application.chart
 
 POST    /summary/reset              controllers.Application.resetSummary
 
