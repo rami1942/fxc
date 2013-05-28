@@ -5,8 +5,11 @@
 @mainjs("Chart") {
 <p>
 @{"%tF %<tT" format(chartInfo.now)}
-@{"%3.3f" format(chartInfo.ask)} - @{"%3.3f" format(chartInfo.bid)}
-
+レート: @{"%3.3f" format(chartInfo.ask)}-@{"%3.3f" format(chartInfo.bid)}
+</p>
+<p>
+<a href="@routes.Application.summary">サマリ</a>
+</p>
 
 <canvas id="cvs" width="1500" height="1500"></canvas>
 } {
@@ -19,14 +22,7 @@ var unitHeight = @chartInfo.unitHeight;
 var priceHigh = @chartInfo.priceHigh;
 var priceLow = @chartInfo.priceLow;
 
-/*
-var unitHeight = 40;
-var priceHigh = 105.0;
-var priceLow = 80.0;
-*/
-
-
-var baseY = 80;
+var baseY = 20;
 
 window.onload=function() {
   var canvas = document.getElementById('cvs');
