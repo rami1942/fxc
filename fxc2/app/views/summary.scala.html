@@ -1,0 +1,48 @@
+@(sp: SettleSummary, pos: List[Position], ask:Double, bid:Double)
+
+@import helper._
+
+@main("Summary") {
+<h1>口座サマリ</h1>
+<p>
+前回: @{"%tF %<tT".format(sp.lastSettleDt)}
+</p>
+<p>
+口座残高: ￥@{"%,d".format(sp.margin)}(@{"%+,d".format(sp.balanceDiff)})<br/>
+含み損益: ￥@{"%,d".format(sp.balance)}(@{"%+,d".format(sp.profitDiff)})<br/>
+スワップ: ￥@{"%,d".format(sp.swapPoint)}<br/>
+</p>
+
+@form(routes.Application.resetSummary) {
+  <input type="submit" value="リセット" />
+}
+<h1>レート</h1>
+Ask: @{"%3.3f".format(ask)}  Bid: @{"%3.3f".format(bid)}
+Slip: @{"%3.3f".format(ask - bid)}
+</p>
+
+<h1>ポジション</h1>
+<table class="std">
+<tr>
+  <th>建値</th>
+  <th>TP</th>
+  <th>SL</th>
+  <th>ロット</th>
+  <th>現損益</th>
+  <th>スワップ</th>
+  <th>種別</th>
+</tr>
+@pos.map {p => 
+  <tr>
+    <td>@{if (p.posType == 0) "L" else "S"}@p.openPrice</td>
+    <td>@{if (p.tpPrice == 0.0) "-" else "%3.3f".format(p.tpPrice) }</td>
+    <td>@{if (p.slPrice == 0.0) "-" else "%3.3f".format(p.slPrice) }</td>
+    <td align="right">@{"%2.2f".format(p.lots)}</td>
+    <td align="right">@{"%,d".format(p.profit.toLong)}</td>
+    <td align="right">@p.swapPoint</td>
+    <td>@PosCd.getLabel(p.posCd)</td>
+  </tr>
+}
+</table>
+
+}
