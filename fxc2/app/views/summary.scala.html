@@ -24,7 +24,7 @@
 <a href="@routes.Application.chart">チャート(新)</a>
 <br/>
 <a href="/fxc/?ak=@authKey">トラップ</a><br/>
-<a href="/fxc/simuration/export?ak=@authKey">エクスポート</a><br/>
+<a href="@routes.Application.export">エクスポート</a><br/>
 <a href="/fxc/settlement/?ak=@authKey">結果</a><br/>
 <a href="/fxc/config/?ak=@authKey">設定</a><br/>
 </div>
@@ -40,6 +40,7 @@ Slip: @{"%3.3f".format(ask - bid)}
 <h1>ポジション</h1>
 <table class="std">
 <tr>
+  <th>No</th>
   <th>建値</th>
   <th>TP</th>
   <th>SL</th>
@@ -50,6 +51,7 @@ Slip: @{"%3.3f".format(ask - bid)}
 </tr>
 @pos.map {p => 
   <tr>
+    <td>@p.ticketNo</td>
     <td>@{if (p.posType == PosType.OP_BUY) "L" else "S"}@p.openPrice</td>
     <td>@{if (p.tpPrice == 0.0) "-" else "%3.3f".format(p.tpPrice) }</td>
     <td>@{if (p.slPrice == 0.0) "-" else "%3.3f".format(p.slPrice) }</td>

@@ -1,0 +1,30 @@
+@(pos: List[Position], ask:Double, bid:Double, account:Long)
+
+@import helper._
+
+@main("エクスポート") {
+<table>
+<tr>
+<td>@{"%3.3f".format(ask)}</td><td>@{"%3.3f".format(bid)}</td>
+<td>@account</td>
+</tr>
+@pos.map {p => 
+  <tr>
+    <td>@p.ticketNo</td>
+    <td>@{if (p.posType == PosType.OP_BUY) "L" else "S"}</td>
+    <td>@p.openPrice</td>
+    <td>@{"%2.2f".format(p.lots)}</td>
+    <td>@{p.swapPoint}</td>
+    <td>@PosCd.getLabel(p.posCd)</td>
+
+    <td>@{if (p.tpPrice == 0.0) { 
+            if (p.posType == PosType.OP_BUY) "999" else "0"
+          } else "%3.3f".format(p.tpPrice) }</td>
+    <td>@{if (p.slPrice == 0.0) {
+            if (p.posType == PosType.OP_BUY) "0" else "999"
+          } else "%3.3f".format(p.slPrice) }</td>
+  </tr>
+}
+</table>
+
+}

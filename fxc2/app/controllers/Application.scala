@@ -22,10 +22,6 @@ case class ChartInfo(
 
 object Application extends Controller {
   
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
-  }
-
   def summary = Action {
     Ok(views.html.summary(
          SettlementHistory.summary(),
@@ -64,5 +60,13 @@ object Application extends Controller {
            Configuration.getByKey("chart:priceHigh").toDouble,
            Configuration.getByKey("chart:priceLow").toDouble),
          Position.all))
+  }
+
+  def export = Action {
+    Ok(views.html.export(
+         Position.all,
+         Configuration.getByKey("ask").toDouble,
+         Configuration.getByKey("current_price").toDouble,
+         Configuration.getByKey("balance").toLong))
   }
 }

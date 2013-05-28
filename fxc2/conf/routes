@@ -3,10 +3,9 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /fxc2/                      controllers.Application.index
 GET     /fxc2/summary		    controllers.Application.summary
 GET     /fxc2/chart                 controllers.Application.chart
+GET     /fxc2/export                controllers.Application.export
 
 POST    /fxc2/summary/reset         controllers.Application.resetSummary
 
