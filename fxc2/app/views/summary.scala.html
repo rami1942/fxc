@@ -1,9 +1,10 @@
-@(sp: SettleSummary, pos: List[Position], ask:Double, bid:Double)
+@(sp: SettleSummary, pos: List[Position], ask:Double, bid:Double, authKey:String)
 
 @import helper._
 
-@main("Summary") {
+@main("サマリ") {
 <h1>口座サマリ</h1>
+<div id="summary-account">
 <p>
 前回: @{"%tF %<tT".format(sp.lastSettleDt)}
 </p>
@@ -16,6 +17,19 @@
 @form(routes.Application.resetSummary) {
   <input type="submit" value="リセット" />
 }
+</div>
+
+<div id="summary-menu">
+<a href="/fxc/chart?ak=@authKey">チャート</a><br/>
+<a href="/fxc/?ak=@authKey">トラップ</a><br/>
+<a href="/fxc/simuration/export?ak=@authKey">エクスポート</a><br/>
+<a href="/fxc/settlement/?ak=@authKey">結果</a><br/>
+<a href="/fxc/config/?ak=@authKey">設定</a><br/>
+</div>
+
+<div id="space"></div>
+
+
 <h1>レート</h1>
 Ask: @{"%3.3f".format(ask)}  Bid: @{"%3.3f".format(bid)}
 Slip: @{"%3.3f".format(ask - bid)}
@@ -34,12 +48,12 @@ Slip: @{"%3.3f".format(ask - bid)}
 </tr>
 @pos.map {p => 
   <tr>
-    <td>@{if (p.posType == 0) "L" else "S"}@p.openPrice</td>
+    <td>@{if (p.posType == PosType.OP_BUY) "L" else "S"}@p.openPrice</td>
     <td>@{if (p.tpPrice == 0.0) "-" else "%3.3f".format(p.tpPrice) }</td>
     <td>@{if (p.slPrice == 0.0) "-" else "%3.3f".format(p.slPrice) }</td>
     <td align="right">@{"%2.2f".format(p.lots)}</td>
     <td align="right">@{"%,d".format(p.profit.toLong)}</td>
-    <td align="right">@p.swapPoint</td>
+    <td align="right">@{"%,d".format(p.swapPoint)}</td>
     <td>@PosCd.getLabel(p.posCd)</td>
   </tr>
 }

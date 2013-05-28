@@ -38,3 +38,17 @@ h2 {
         font-size: medium;
 }
 
+#summary-account {
+  float: left;
+  width: 400px;
+  height: 180px;
+}
+
+#summary-menu {
+  float: none;
+  height: 180px;
+}
+
+#space {
+  clear: left;
+}

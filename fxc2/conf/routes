@@ -4,10 +4,11 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /summary		    controllers.Application.summary
-GET     /chart                      controllers.Application.chart
+GET     /fxc2/                      controllers.Application.index
+GET     /fxc2/summary		    controllers.Application.summary
+GET     /fxc2/chart                 controllers.Application.chart
 
-POST    /summary/reset              controllers.Application.resetSummary
+POST    /fxc2/summary/reset         controllers.Application.resetSummary
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /fxc2/assets/*file          controllers.Assets.at(path="/public", file)

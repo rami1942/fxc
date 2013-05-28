@@ -31,7 +31,8 @@ object Application extends Controller {
          SettlementHistory.summary(),
          Position.all,
          Configuration.getByKey("ask").toDouble,
-         Configuration.getByKey("current_price").toDouble))
+         Configuration.getByKey("current_price").toDouble,
+         Configuration.getByKey("auth_key").value))
   }
 
   def resetSummary = Action {
