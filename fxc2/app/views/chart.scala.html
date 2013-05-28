@@ -12,13 +12,19 @@
 } {
 <script type="text/javascript">
 
-var widthFactor = 100;
+var widthFactor = @chartInfo.widthFactor;
+var bid = @chartInfo.bid;
 
-//var unitHeight = 120;
+var unitHeight = 120;
+var priceHigh = 105.0;
+var priceLow = 96.0;
+
+/*
 var unitHeight = 40;
 var priceHigh = 105.0;
-//var priceLow = 96.0;
 var priceLow = 80.0;
+*/
+
 
 var baseY = 80;
 
@@ -29,10 +35,8 @@ window.onload=function() {
   drawGauge(ctx);
 
   @pos.map {p =>
-  drawPos(ctx, @p.posType.id, @p.openPrice, @p.lots, @p.dispPos);
+    drawPos(ctx, @p.posType.id, @p.openPrice, @p.lots, @p.dispPos);
   }
-
-  var bid = 97.702;
 
   var yw = (priceHigh - bid) * unitHeight + baseY;
   ctx.lineWidth=3;

@@ -9,6 +9,7 @@ case class Configuration(
   key : String,
   value : String 
 ) {
+  def toInt : Int = value.toInt
   def toDouble : Double = value.toDouble
   def toLong : Long = value.toDouble.round
   def toCurrency : String = "%,d".format(toLong)
