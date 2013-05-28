@@ -229,7 +229,7 @@ Shorts: ${shortsTotal}<br/>
 <li><a href="../chart?ak=${accessKey}">チャート</a></li>
 <li><a href="../?ak=${accessKey}">トラップ</a></li>
 <li><a href="../simuration?ak=${accessKey}">試算</a></li>
-<li><a href="../simuration/export?ak=${accessKey}">エクスポート</a></li>
+<li><a href="/fxc2/export">エクスポート</a></li>
 <li><a href="../settlement?ak=${accessKey}">結果</a></li>
 <li><a href="../config?ak=${accessKey}">設定</a></li>
 </ul>

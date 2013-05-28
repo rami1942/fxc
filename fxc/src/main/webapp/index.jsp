@@ -28,8 +28,10 @@ function toggleTp(form, ticketNo) {
 <body>
 
 <ul>
-<li><a href="chart?ak=${accessKey}">チャート</a></li>
-<li><a href="position?ak=${accessKey}">ポジション</a></li>
+<li><a href="chart?ak=${accessKey}">チャート(旧)</a></li>
+<li><a href="/fxc2/chart">チャート(新)</a></li>
+<li><a href="/fxc2/summary">サマリ</a></li>
+<li><a href="position?ak=${accessKey}">ポジション(旧)</a></li>
 <li><a href="config?ak=${accessKey}">設定</a></li>
 </ul>
 
