@@ -152,10 +152,10 @@
 			"com.mysql.jdbc.Driver"
 		</property>
 		<property name="URL">
-			"jdbc:mysql://192.168.1.11:3306/fxc_prod"
+			"jdbc:mysql://192.168.1.20:3306/fxc_prod"
 		</property>
-		<property name="user">"fxc_prod"</property>
-		<property name="password">"fxc_prod"</property>
+		<property name="user">"fxc"</property>
+		<property name="password">"fxc"</property>
 	</component>
 
 	<!-- for SQLServer -->
