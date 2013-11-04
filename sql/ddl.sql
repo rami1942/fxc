@@ -1,13 +1,17 @@
+--- ショートトラップ
+
 create table short_trap (
   id int auto_increment primary key,
   open_price double not null
 );
 
+--- 設定もろもろ
 create table configuration (
   conf_key varchar(255) not null primary key,
   conf_value varchar(255)
 );
 
+--- 資金の推移履歴
 create table history (
   id int auto_increment primary key,
   event_type int not null,
@@ -17,11 +21,14 @@ create table history (
   ticket_no int
 );
 
+--- ポジション削除要求
 create table delete_request (
   id int auto_increment primary key,
   price double not null
 );
 
+
+--- 現在生きているポジション
 create table position (
   ticket_no int primary key,
 
@@ -41,6 +48,8 @@ create table position (
   pos_cd char(1) default 0
 );
 
+
+--- 資金の推移履歴 historyと整理できてない
 create table settlement_history (
   id int auto_increment primary key,
   settle_type char(1) default 0 not null,
@@ -50,6 +59,7 @@ create table settlement_history (
   profit  double not null
 );
 
+--- KKW用の確保益だが..位置づけ変えるか消す
 create table reserved_profit (
   id int auto_increment primary key,
   reserve_dt datetime,
@@ -57,6 +67,12 @@ create table reserved_profit (
   amount int,
   description text
 );
+
+
+---
+--- short_trapが削除された時に対応するオーダーをDeleteするリクエストを
+--- 発行するトリガー
+---
 
 delimiter //
 create trigger short_delete after delete on short_trap
@@ -66,10 +82,14 @@ begin
 end;//
 delimiter ;
 
+--- ポジションが消えた時にMTにposition_hisotryを挿入要求出すためのTBL
+
 create table history_request (
   ticket_no int primary key,
   pos_cd char(1)
 );
+
+--- 過去のポジション
 
 create table position_history (
   ticket_no int primary key,
@@ -94,16 +114,23 @@ create table position_history (
   pos_type char(1)
 );
 
+--- トラップのTPのON/OFF
+--- そのうち消す
+
 create table toggle_tp_request (
   ticket_no int primary key,
   tp_price double not null
 );
+
+--- 表示位置指定用に追加したカラムだが..消す
 
 alter table position add (
   disp_pos int not null default 0
 );
 
 
+---
+--- ポジションが消えた時にポジション履歴挿入のリクエストをかけるトリガー
 ---
 
 drop trigger position_delete;
@@ -120,21 +147,6 @@ begin
   insert into history_request (ticket_no, pos_cd) 
     values (OLD.ticket_no, OLD.pos_cd);
 
---  if OLD.ticket_no = 19719151 then
---    delete from short_trap where open_price in (98.25, 98.0, 97.75);
---  end if;
-
 end;//
 delimiter ;
 
-delimiter //
-create trigger position_insert after insert on position
-for each row
-begin
-  if NEW.ticket_no = 19726138 then
-    insert into toggle_tp_request (ticket_no, tp_price) values
-    (19717932, 0), (19716234, 0), (19716016);
-  end if;
-
-end;//
-delimiter ;
