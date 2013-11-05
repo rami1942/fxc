@@ -29,6 +29,8 @@ create table delete_request (
 
 
 --- 現在生きているポジション
+--- 無駄なカラムあるので消す
+
 create table position (
   ticket_no int primary key,
 
@@ -149,4 +151,37 @@ begin
 
 end;//
 delimiter ;
+
+
+--- MTへのポジションOpen/Modify要求
+
+--- 要求時にはdone_flgは0に設定。
+--- MTが処理し、正常終了したら1に、異常の場合は2に設定。
+--- レコードの削除は呼び出し側責任。
+
+--- Open時: 
+--- リクエスト時にはticket_noはNULLで挿入。MTがOpenしたらそのticket_noを設定。
+--- Open, TP, SLは指定されたものを使用。
+
+--- Modify時:
+--- リクエスト側はticket_no, tp, slを設定。open,lots,symbolは無視される。
+
+create table c_open_request (
+  id int auto_increment primary key,
+
+  is_modify char(1) not null,
+
+  is_buy char(1) not null,
+  open_price double,
+  tp_price double,
+  sl_price double,
+  lots double,
+  symbol varchar(255) default 'AUDJPYpro',
+
+
+  is_done char(1) default 0,
+  ticket_no int,
+  request_dt datetime,
+  process_dt datetime
+) Engine=InnoDB;
 
